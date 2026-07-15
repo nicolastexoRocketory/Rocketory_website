@@ -15,7 +15,6 @@ REMOTE_PATH="${MITTWALD_REMOTE_PATH:-/home/p-jscfah/html/rocketory}"
 SITE_URL="${NEXT_PUBLIC_SITE_URL:-https://rocketory.de}"
 GIT_REMOTE="${MITTWALD_GIT_REMOTE:-git@github.com:nicolastexo/Rocketory-Landingpage.git}"
 GIT_BRANCH="${MITTWALD_GIT_BRANCH:-main}"
-GITHUB_DEPLOY_KEY="${MITTWALD_GITHUB_DEPLOY_KEY:-$HOME/.ssh/github_rocketory}"
 
 trap mittwald_cleanup_ssh_wrapper EXIT
 
@@ -31,7 +30,7 @@ REMOTE_PATH=$(printf %q "$REMOTE_PATH")
 SITE_URL=$(printf %q "$SITE_URL")
 GIT_REMOTE=$(printf %q "$GIT_REMOTE")
 GIT_BRANCH=$(printf %q "$GIT_BRANCH")
-GITHUB_DEPLOY_KEY=$(printf %q "$GITHUB_DEPLOY_KEY")
+GITHUB_DEPLOY_KEY="\$HOME/.ssh/github_rocketory"
 
 cd "\$REMOTE_PATH"
 

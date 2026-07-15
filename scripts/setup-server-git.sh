@@ -11,7 +11,6 @@ source "$ROOT_DIR/scripts/lib/mittwald-ssh.sh"
 REMOTE_PATH="${MITTWALD_REMOTE_PATH:-/home/p-jscfah/html/rocketory}"
 GIT_REMOTE="${MITTWALD_GIT_REMOTE:-git@github.com:nicolastexo/Rocketory-Landingpage.git}"
 GIT_BRANCH="${MITTWALD_GIT_BRANCH:-main}"
-GITHUB_DEPLOY_KEY="${MITTWALD_GITHUB_DEPLOY_KEY:-$HOME/.ssh/github_rocketory}"
 
 trap mittwald_cleanup_ssh_wrapper EXIT
 
@@ -21,7 +20,7 @@ set -euo pipefail
 REMOTE_PATH=$(printf %q "$REMOTE_PATH")
 GIT_REMOTE=$(printf %q "$GIT_REMOTE")
 GIT_BRANCH=$(printf %q "$GIT_BRANCH")
-GITHUB_DEPLOY_KEY=$(printf %q "$GITHUB_DEPLOY_KEY")
+GITHUB_DEPLOY_KEY="\$HOME/.ssh/github_rocketory"
 
 mkdir -p "\$HOME/.ssh"
 chmod 700 "\$HOME/.ssh"
