@@ -1,0 +1,47 @@
+.rk-admin-wordmark {
+  display: inline-block !important;
+  white-space: nowrap !important;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  background: var(--rk-ci-gradient, linear-gradient(135deg, #c1272d 0%, #ff5c00 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+  text-decoration-color: rgba(255, 92, 0, 0.35);
+}
+
+.rk-admin-wordmark-ory {
+  display: inline !important;
+  font-style: italic;
+  color: inherit;
+}
+
+.rk-admin-wordmark--logo {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+}
+
+.rk-admin-wordmark--icon {
+  font-size: 1.25rem;
+}
+
+.login__brand .rk-admin-wordmark {
+  margin: 0 auto;
+}
+
+/* Payload setzt in .step-nav alle Kinder auf display:block */
+.step-nav__home .rk-admin-wordmark,
+.step-nav__home .rk-admin-wordmark-ory {
+  display: inline !important;
+  white-space: nowrap !important;
+}
+
+.step-nav__home .rk-admin-wordmark {
+  display: inline-block !important;
+}

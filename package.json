@@ -1,0 +1,44 @@
+{
+  "name": "rocketory-landingpage",
+  "version": "1.0.0",
+  "description": "Rocketory Landingpage – Next.js + Payload CMS",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
+    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env src/scripts/seed-posts.ts",
+    "seed:categories": "cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env src/scripts/seed-categories.ts",
+    "sync:media": "cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env src/scripts/sync-media.ts",
+    "cleanup:media": "cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env src/scripts/cleanup-unused-media.ts",
+    "compress:images": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/compress-images.ts",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
+  },
+  "dependencies": {
+    "@payloadcms/db-sqlite": "3.49.1",
+    "@payloadcms/next": "3.49.1",
+    "@payloadcms/richtext-lexical": "3.49.1",
+    "@types/nodemailer": "^8.0.1",
+    "cross-env": "^7.0.3",
+    "graphql": "^16.10.0",
+    "next": "15.3.9",
+    "nodemailer": "^9.0.3",
+    "payload": "3.49.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

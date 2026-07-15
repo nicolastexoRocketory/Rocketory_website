@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kontakt – Rocketory</title>
+  <link rel="stylesheet" href="assets/css/main.css?v=11">
+  <link rel="stylesheet" href="assets/css/contact.css">
+</head>
+<body>
+<div class="rk-shell">
+  <div class="rk">
+    <div id="rk-nav-mount"></div>
+
+    <section class="rk-contact-main rk-contact-main--minimal" id="kontakt-form">
+      <div class="rk-inner">
+        <div class="rk-contact-form-only">
+          <div class="rk-contact-form-wrap">
+            <form class="rk-contact-form rk-multistep-form" id="rkContactForm" novalidate>
+              <div class="rk-form-head">
+                <h2 class="rk-h2">Projekt <em>anfragen.</em></h2>
+                <p class="rk-form-intro" id="rkFormIntro">In wenigen Schritten – dauert etwa 2 Minuten.</p>
+              </div>
+
+              <div class="rk-form-progress-wrap">
+                <p class="rk-form-progress-label" id="rkFormProgressLabel" aria-live="polite"><span class="rk-form-progress-current">01</span> / 05</p>
+                <div class="rk-form-progress" id="rkFormProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25" aria-label="Formularfortschritt">
+                  <div class="rk-form-progress-bar" id="rkFormProgressBar"></div>
+                </div>
+              </div>
+
+              <div class="rk-form-steps" id="rkFormSteps">
+                <fieldset class="rk-form-step is-active" data-step="1">
+                  <legend class="rk-form-step-title" id="rkIntentLegend">Wobei können wir dir helfen?</legend>
+                  <p class="rk-form-step-lead">Wähle dein Anliegen – im nächsten Schritt geht es gezielt weiter.</p>
+                  <div class="rk-topic-grid" role="radiogroup" aria-labelledby="rkIntentLegend" aria-required="true">
+                    <label class="rk-topic-card">
+                      <input type="radio" name="intent" value="individuell" required>
+                      <span class="rk-topic-card-inner">
+                        <strong>Individuelles Projekt</strong>
+                        <span>Maßgeschneidertes Webdesign nach deinen Vorstellungen</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card">
+                      <input type="radio" name="intent" value="festpreis">
+                      <span class="rk-topic-card-inner">
+                        <strong>Festpreiswebsite</strong>
+                        <span>Klarer Umfang, fester Preis – Smart oder Business</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card">
+                      <input type="radio" name="intent" value="seo">
+                      <span class="rk-topic-card-inner">
+                        <strong>Suchmaschinenoptimierung (SEO)</strong>
+                        <span>Mehr Sichtbarkeit bei Google – nachhaltig und messbar</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card">
+                      <input type="radio" name="intent" value="redesign">
+                      <span class="rk-topic-card-inner">
+                        <strong>Website ReDesign oder ReLaunch</strong>
+                        <span>Bestehende Seite modernisieren oder neu aufstellen</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card rk-topic-card--wide">
+                      <input type="radio" name="intent" value="beratung">
+                      <span class="rk-topic-card-inner">
+                        <strong>Beratung</strong>
+                        <span>Kostenlos und unverbindlich – wir helfen dir bei der Einordnung</span>
+                      </span>
+                    </label>
+                  </div>
+                  <span class="rk-field-error rk-field-error--block" id="rkIntentError" role="alert"></span>
+                </fieldset>
+
+                <fieldset class="rk-form-step" data-step="2" data-branch="individuell" hidden>
+                  <legend class="rk-form-step-title">Projektinfos</legend>
+                  <p class="rk-form-step-lead">Je mehr du uns erzählst, desto gezielter können wir im Erstgespräch antworten.</p>
+                  <div class="rk-form-row rk-form-row--full">
+                    <div class="rk-field">
+                      <label for="rkProjectBrief">Was soll das Projekt umfassen? <span aria-hidden="true">*</span></label>
+                      <textarea id="rkProjectBrief" name="project_brief" rows="4" placeholder="Ziele, Seiten, Funktionen, Referenzen – alles, was dir wichtig ist"></textarea>
+                      <span class="rk-field-error" id="rkProjectBriefError" role="alert"></span>
+                    </div>
+                  </div>
+                  <div class="rk-form-row">
+                    <div class="rk-field">
+                      <label for="rkProjectPages">Ungefährer Umfang</label>
+                      <select id="rkProjectPages" name="project_pages">
+                        <option value="">Bitte wählen (optional)</option>
+                        <option value="Bis 5 Seiten">Bis 5 Seiten</option>
+                        <option value="Bis 12 Seiten">Bis 12 Seiten</option>
+                        <option value="Mehr als 12 Seiten">Mehr als 12 Seiten</option>
+                        <option value="Weiß ich noch nicht">Weiß ich noch nicht</option>
+                      </select>
+                    </div>
+                    <div class="rk-field">
+                      <label for="rkProjectTimeline">Gewünschter Start</label>
+                      <select id="rkProjectTimeline" name="project_timeline">
+                        <option value="">Bitte wählen (optional)</option>
+                        <option value="So schnell wie möglich">So schnell wie möglich</option>
+                        <option value="In den nächsten 3 Monaten">In den nächsten 3 Monaten</option>
+                        <option value="In 3–6 Monaten">In 3–6 Monaten</option>
+                        <option value="Noch unklar">Noch unklar</option>
+                      </select>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <fieldset class="rk-form-step" data-step="2" data-branch="festpreis" hidden>
+                  <legend class="rk-form-step-title" id="rkFestpreisLegend">Welches Paket passt zu dir?</legend>
+                  <p class="rk-form-step-lead">Festpreiswebsite mit klarem Umfang – wähle das passende Modell.</p>
+                  <div class="rk-topic-grid" role="radiogroup" aria-labelledby="rkFestpreisLegend" aria-required="true">
+                    <label class="rk-topic-card">
+                      <input type="radio" name="festpreis_paket" value="Smart">
+                      <span class="rk-topic-card-inner">
+                        <strong>Smart</strong>
+                        <span>Bis 5 Seiten · HTML, WordPress oder Next.js &amp; Payload · SEO Basics</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card">
+                      <input type="radio" name="festpreis_paket" value="Business">
+                      <span class="rk-topic-card-inner">
+                        <strong>Business</strong>
+                        <span>Bis 12 Seiten · HTML, WordPress oder Next.js &amp; Payload · SEO-Architektur</span>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="rk-festpreis-tech" id="rkFestpreisTech" hidden>
+                    <p class="rk-festpreis-tech-title" id="rkFestpreisTechLegend">Technologie wählen</p>
+                    <div class="rk-topic-grid rk-topic-grid--tech" role="radiogroup" aria-labelledby="rkFestpreisTechLegend" aria-required="true">
+                      <label class="rk-topic-card">
+                        <input type="radio" name="festpreis_tech" value="Statisches HTML">
+                        <span class="rk-topic-card-inner">
+                          <strong>Statisches HTML</strong>
+                          <span>Maximale Performance, schnelle Lieferung – ideal bei festem Umfang ohne Sonderfunktionen</span>
+                        </span>
+                      </label>
+                      <label class="rk-topic-card">
+                        <input type="radio" name="festpreis_tech" value="WordPress CMS">
+                        <span class="rk-topic-card-inner">
+                          <strong>WordPress CMS</strong>
+                          <span>Inhalte selbst pflegen, Plugins installieren und ausprobieren</span>
+                        </span>
+                      </label>
+                      <label class="rk-topic-card">
+                        <input type="radio" name="festpreis_tech" value="CMS mit Next.js und Payload">
+                        <span class="rk-topic-card-inner">
+                          <strong>CMS mit Next.js &amp; Payload</strong>
+                          <span>Strukturierte Inhalte selbst pflegen – mit Next.js-Performance und klarem Backend</span>
+                        </span>
+                      </label>
+                    </div>
+                    <span class="rk-field-error rk-field-error--block" id="rkFestpreisTechError" role="alert"></span>
+                  </div>
+                  <span class="rk-field-error rk-field-error--block" id="rkFestpreisError" role="alert"></span>
+                </fieldset>
+
+                <fieldset class="rk-form-step" data-step="2" data-branch="seo" hidden>
+                  <legend class="rk-form-step-title" id="rkSeoLegend">Welche Laufzeit stellst du dir vor?</legend>
+                  <p class="rk-form-step-lead">SEO braucht Zeit – wir empfehlen mindestens 6 Monate für spürbare Ergebnisse.</p>
+                  <div class="rk-topic-grid" role="radiogroup" aria-labelledby="rkSeoLegend" aria-required="true">
+                    <label class="rk-topic-card">
+                      <input type="radio" name="seo_laufzeit" value="6 Monate">
+                      <span class="rk-topic-card-inner">
+                        <strong>6 Monate</strong>
+                        <span>Guter Einstieg für erste Optimierungen und sichtbare Fortschritte</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card">
+                      <input type="radio" name="seo_laufzeit" value="12 Monate">
+                      <span class="rk-topic-card-inner">
+                        <strong>12 Monate</strong>
+                        <span>Nachhaltiger Aufbau – ideal für langfristiges Ranking-Wachstum</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card rk-topic-card--wide">
+                      <input type="radio" name="seo_laufzeit" value="Weiß ich noch nicht">
+                      <span class="rk-topic-card-inner">
+                        <strong>Weiß ich noch nicht</strong>
+                        <span>Wir beraten dich im Erstgespräch zur passenden Laufzeit</span>
+                      </span>
+                    </label>
+                  </div>
+                  <span class="rk-field-error rk-field-error--block" id="rkSeoError" role="alert"></span>
+                </fieldset>
+
+                <fieldset class="rk-form-step" data-step="2" data-branch="redesign" hidden>
+                  <legend class="rk-form-step-title" id="rkRedesignLegend">ReDesign oder ReLaunch?</legend>
+                  <p class="rk-form-step-lead">Beides modernisiert deinen Auftritt – der Unterschied liegt im Umfang.</p>
+                  <div class="rk-topic-grid" role="radiogroup" aria-labelledby="rkRedesignLegend" aria-required="true">
+                    <label class="rk-topic-card">
+                      <input type="radio" name="redesign_typ" value="ReDesign">
+                      <span class="rk-topic-card-inner">
+                        <strong>ReDesign</strong>
+                        <span>Bestehende Website optisch und inhaltlich überarbeiten</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card">
+                      <input type="radio" name="redesign_typ" value="ReLaunch">
+                      <span class="rk-topic-card-inner">
+                        <strong>ReLaunch</strong>
+                        <span>Neue Website mit klarerem Auftritt, Struktur und Technik</span>
+                      </span>
+                    </label>
+                  </div>
+                  <span class="rk-field-error rk-field-error--block" id="rkRedesignError" role="alert"></span>
+                </fieldset>
+
+                <fieldset class="rk-form-step" data-step="3" hidden>
+                  <legend class="rk-form-step-title">Wie heißt du?</legend>
+                  <p class="rk-form-step-lead">Damit wir dich persönlich ansprechen können.</p>
+                  <div class="rk-form-row">
+                    <div class="rk-field">
+                      <label for="rkName">Name <span aria-hidden="true">*</span></label>
+                      <input type="text" id="rkName" name="name" required autocomplete="name" placeholder="Dein Name">
+                      <span class="rk-field-error" id="rkNameError" role="alert"></span>
+                    </div>
+                    <div class="rk-field">
+                      <label for="rkCompany">Unternehmen</label>
+                      <input type="text" id="rkCompany" name="company" autocomplete="organization" placeholder="Optional – Firma oder Marke">
+                    </div>
+                  </div>
+                </fieldset>
+
+                <fieldset class="rk-form-step" data-step="4" hidden>
+                  <legend class="rk-form-step-title">Wie erreichen wir dich?</legend>
+                  <p class="rk-form-step-lead">Wir antworten in der Regel innerhalb von 24 Stunden.</p>
+                  <div class="rk-form-row">
+                    <div class="rk-field">
+                      <label for="rkEmail">E-Mail <span aria-hidden="true">*</span></label>
+                      <input type="email" id="rkEmail" name="email" required autocomplete="email" placeholder="deine@email.de" inputmode="email">
+                      <span class="rk-field-error" id="rkEmailError" role="alert"></span>
+                    </div>
+                    <div class="rk-field">
+                      <label for="rkPhone">Telefon</label>
+                      <input type="tel" id="rkPhone" name="phone" autocomplete="tel" placeholder="Optional – für Rückfragen" inputmode="tel">
+                    </div>
+                  </div>
+                </fieldset>
+
+                <fieldset class="rk-form-step" data-step="5" hidden>
+                  <legend class="rk-form-step-title">Erzähl uns von deinem Projekt</legend>
+                  <p class="rk-form-step-lead">Je mehr Details, desto gezielter können wir im Erstgespräch antworten.</p>
+                  <div class="rk-form-summary" id="rkFormSummary" aria-live="polite"></div>
+                  <div class="rk-form-row rk-form-row--full">
+                    <div class="rk-field">
+                      <label for="rkMessage">Nachricht <span aria-hidden="true">*</span></label>
+                      <textarea id="rkMessage" name="message" required placeholder="Was soll die Website leisten? Gibt es schon eine bestehende Seite? Wann soll es losgehen?" rows="6"></textarea>
+                      <span class="rk-field-error" id="rkMessageError" role="alert"></span>
+                    </div>
+                  </div>
+                  <div class="rk-form-row rk-form-row--full">
+                    <div class="rk-field">
+                      <label for="rkReferral">Wie hast du von uns erfahren?</label>
+                      <select id="rkReferral" name="referral">
+                        <option value="">Bitte wählen (optional)</option>
+                        <option value="Google / Suche">Google / Suche</option>
+                        <option value="Empfehlung">Empfehlung</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Vor Ort / persönlicher Kontakt">Vor Ort / persönlicher Kontakt</option>
+                        <option value="Sonstiges">Sonstiges</option>
+                      </select>
+                    </div>
+                  </div>
+                  <p class="rk-form-note">Mit dem Absenden erklärst du dich einverstanden, dass wir deine Angaben zur Bearbeitung der Anfrage verwenden. Weitere Infos in unserer Datenschutzerklärung.</p>
+                </fieldset>
+              </div>
+
+              <div class="rk-form-actions">
+                <button type="button" class="rk-form-back" id="rkFormBack" hidden>
+                  <span aria-hidden="true">←</span> Zurück
+                </button>
+                <button type="button" class="rk-form-next rk-dot-cta" id="rkFormNext">
+                  <span class="rk-dot-cta-label">Weiter</span>
+                  <div class="dot-ring" aria-hidden="true"><span></span></div>
+                </button>
+                <button type="submit" class="rk-dot-cta rk-form-submit" id="rkFormSubmit" hidden>
+                  <span class="rk-dot-cta-label">Anfrage absenden</span>
+                  <div class="dot-ring" aria-hidden="true"><span></span></div>
+                </button>
+              </div>
+
+              <div class="rk-form-success" id="rkFormSuccess" role="status" aria-live="polite">
+                <strong>Vielen Dank – deine Anfrage ist unterwegs.</strong>
+                <p>Wir melden uns innerhalb von 24 Stunden persönlich bei dir.</p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <div id="rk-footer-mount"></div>
+  </div>
+</div>
+<script src="js/scroll.js"></script>
+<script src="js/includes.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/kontakt.js"></script>
+</body>
+</html>

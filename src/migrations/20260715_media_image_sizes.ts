@@ -1,0 +1,43 @@
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-sqlite'
+
+export async function up({ db }: MigrateUpArgs): Promise<void> {
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_thumbnail_url\` text;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_thumbnail_width\` numeric;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_thumbnail_height\` numeric;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_thumbnail_mime_type\` text;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_thumbnail_filesize\` numeric;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_thumbnail_filename\` text;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_card_url\` text;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_card_width\` numeric;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_card_height\` numeric;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_card_mime_type\` text;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_card_filesize\` numeric;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_card_filename\` text;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_hero_url\` text;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_hero_width\` numeric;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_hero_height\` numeric;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_hero_mime_type\` text;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_hero_filesize\` numeric;`)
+  await db.run(sql`ALTER TABLE \`media\` ADD COLUMN \`sizes_hero_filename\` text;`)
+}
+
+export async function down({ db }: MigrateDownArgs): Promise<void> {
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_hero_filename\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_hero_filesize\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_hero_mime_type\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_hero_height\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_hero_width\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_hero_url\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_card_filename\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_card_filesize\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_card_mime_type\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_card_height\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_card_width\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_card_url\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_thumbnail_filename\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_thumbnail_filesize\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_thumbnail_mime_type\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_thumbnail_height\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_thumbnail_width\`;`)
+  await db.run(sql`ALTER TABLE \`media\` DROP COLUMN \`sizes_thumbnail_url\`;`)
+}

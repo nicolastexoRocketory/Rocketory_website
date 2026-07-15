@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Inter:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap');
+
+@layer payload-default {
+  :root {
+    /* Rocketory CI */
+    --rk-red: #c1272d;
+    --rk-orange: #ff5c00;
+    --rk-orange-hover: #e05300;
+    --rk-ci-gradient: linear-gradient(135deg, #c1272d 0%, #ff5c00 100%);
+    --rk-ink: #0a0f1e;
+    --rk-muted: #5c6070;
+    --rk-bg: #ffffff;
+    --rk-bg-warm: #f5f4f0;
+    --rk-bg-cool: #f8f9fa;
+    --rk-border: rgba(10, 15, 30, 0.1);
+
+    /* Payload light theme → Frontend-Farben */
+    --color-base-0: rgb(255, 255, 255);
+    --color-base-50: rgb(248, 249, 250);
+    --color-base-100: rgb(245, 244, 240);
+    --color-base-150: rgb(235, 233, 228);
+    --color-base-200: rgb(220, 218, 212);
+    --color-base-800: rgb(10, 15, 30);
+    --color-base-850: rgb(8, 12, 24);
+    --color-base-900: rgb(5, 8, 16);
+
+    --theme-bg: var(--rk-bg-warm);
+    --theme-input-bg: var(--rk-bg);
+    --theme-text: var(--rk-ink);
+    --theme-border-color: var(--rk-border);
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+  }
+
+  html {
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Primär-Buttons: Orange CI */
+  .btn--style-primary {
+    background: var(--rk-ci-gradient) !important;
+    --bg-color: transparent;
+    --hover-bg: transparent;
+    --color: #ffffff;
+    --hover-color: #ffffff;
+  }
+
+  .btn--style-primary:hover:not(.btn--disabled) {
+    background: linear-gradient(135deg, #a82228 0%, #e05300 100%) !important;
+  }
+
+  .btn--style-primary.btn--disabled {
+    background: rgba(255, 92, 0, 0.35) !important;
+    --color: #ffffff;
+    --hover-color: #ffffff;
+  }
+
+  /* Sidebar / Navigation */
+  .nav-group__toggle,
+  .nav-group__indicator {
+    font-family: 'DM Sans', var(--font-body);
+  }
+
+  .nav-group__toggle:hover,
+  .nav-group__toggle:focus-visible {
+    color: var(--rk-orange);
+  }
+
+  /* Login-Seite */
+  .login {
+    background: linear-gradient(180deg, var(--rk-bg-warm) 0%, var(--rk-bg-cool) 100%);
+  }
+
+  .login__brand {
+    margin-bottom: 2rem;
+  }
+
+  /* Header-Logo: Payload reserviert nur 18×18px für .step-nav__home */
+  .step-nav__home {
+    width: auto !important;
+    height: auto !important;
+    max-width: none;
+    overflow: visible !important;
+    flex-shrink: 0;
+    display: flex !important;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .step-nav__home a,
+  .step-nav__home > * {
+    display: flex !important;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .login .card {
+    background: var(--rk-bg);
+    border: 1px solid var(--rk-border);
+    box-shadow: 0 12px 40px rgba(10, 15, 30, 0.06);
+  }
+
+  /* Fokus-Ringe in Orange */
+  :focus-visible {
+    outline-color: var(--rk-orange);
+  }
+
+  a:not(.btn):hover {
+    color: var(--rk-orange);
+  }
+}

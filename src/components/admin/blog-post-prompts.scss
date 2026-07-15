@@ -1,0 +1,70 @@
+.rk-blog-prompts {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rk-blog-prompts-intro {
+  padding: 1rem 1.25rem;
+  border-radius: 4px;
+  border: 1px solid var(--theme-elevation-150);
+  background: var(--theme-elevation-50);
+}
+
+.rk-blog-prompts-intro-title {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.rk-blog-prompts-intro-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--theme-elevation-700);
+}
+
+.rk-blog-prompt-collapsible.collapsible {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  background: var(--theme-elevation-50);
+}
+
+.rk-blog-prompt-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.rk-blog-prompt-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--theme-text);
+}
+
+.rk-blog-prompt-description {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--theme-elevation-600);
+}
+
+.rk-blog-prompt-text {
+  margin: 0;
+  padding: 0 1.25rem 1.25rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--theme-elevation-800);
+}
+
+.rk-blog-prompt-collapsible .copy-to-clipboard {
+  flex-shrink: 0;
+}
