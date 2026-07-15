@@ -3478,12 +3478,12 @@ a.rk-about-detail-value:hover{color:var(--red)!important;}
 .rk-footer-meta{
   font-family:var(--font-sans);font-size:clamp(0.625rem,0.8vw,0.6875rem);
   font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
-  color:rgba(245,244,240,0.38);
+  color:rgba(245,244,240,0.58);
 }
 .rk-footer-col h5{
   font-family:var(--font-sans);font-size:clamp(0.625rem,0.75vw,0.6875rem);
   font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
-  color:rgba(245,244,240,0.42);margin-bottom:clamp(14px,2vw,18px);
+  color:rgba(245,244,240,0.62);margin-bottom:clamp(14px,2vw,18px);
 }
 .rk-footer-links{
   list-style:none;margin:0;padding:0;
@@ -3535,7 +3535,7 @@ a.rk-footer-link--trustus:hover{color:var(--tu-hero-text)!important;}
 }
 .rk-footer-note{
   font-size:clamp(0.75rem,0.95vw,0.8125rem);line-height:1.55;font-weight:300;
-  color:rgba(245,244,240,0.45);max-width:26ch;
+  color:rgba(245,244,240,0.62);max-width:26ch;
 }
 .rk-footer-bar{
   border-top:1px solid rgba(255,255,255,0.08);
@@ -3546,12 +3546,12 @@ a.rk-footer-link--trustus:hover{color:var(--tu-hero-text)!important;}
 }
 .rk-footer-copy{
   font-size:clamp(0.6875rem,0.85vw,0.75rem);
-  color:rgba(245,244,240,0.38);line-height:1.5;
+  color:rgba(245,244,240,0.58);line-height:1.5;
 }
 .rk-footer-legal{display:flex;flex-wrap:wrap;gap:8px 20px;}
 .rk-footer-legal .rk-footer-link{
   font-size:clamp(0.6875rem,0.85vw,0.75rem);
-  color:rgba(245,244,240,0.42)!important;
+  color:rgba(245,244,240,0.58)!important;
 }
 
 /* ── Tablet & Desktop (mobile-first) ── */

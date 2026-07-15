@@ -51,6 +51,15 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
       lang="de"
       className={`${dmSans.variable} ${inter.variable} ${instrumentSerif.variable}`}
     >
+      <head>
+        <link
+          rel="preload"
+          href="/assets/fonts/Rostex-Regular.otf"
+          as="font"
+          type="font/otf"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>
         <SiteSchema />
         {children}

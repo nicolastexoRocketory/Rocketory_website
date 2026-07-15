@@ -14,7 +14,7 @@ export const metadata = buildPageMetadata({
   description:
     'Design, Technik, Texte, Hosting – Webdesign, SEO und Betreuung aus Bünde. Persönlich gebaut, fair kalkuliert, langfristig betreut.',
   path: '/',
-  image: '/assets/images/team-raketenstart.png',
+  image: '/assets/images/team-raketenstart.webp',
 })
 
 export default async function LandingPage() {
@@ -26,6 +26,12 @@ export default async function LandingPage() {
 
   return (
     <>
+      <link
+        rel="preload"
+        href="/assets/images/team-raketenstart.webp"
+        as="image"
+        fetchPriority="high"
+      />
       <PageSchema nodes={buildHomePageSchema()} />
       <LegacyPage {...page} content={content} />
     </>

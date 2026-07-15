@@ -86,7 +86,7 @@ export function buildOptimizedImgTag({
 }
 
 function buildHomeHeroBackgroundHtml(): string {
-  return `<img src="/assets/images/team-raketenstart.png" alt="" width="1024" height="682" id="rkHeroBg" class="rk-hero-img" fetchpriority="high" decoding="async" aria-hidden="true">`
+  return `<img src="/assets/images/team-raketenstart.webp" alt="" width="1024" height="682" id="rkHeroBg" class="rk-hero-img" fetchpriority="high" decoding="async" aria-hidden="true">`
 }
 
 /** Hero-Bilder direkt einbinden (ohne Next-Image-Optimierung / Komprimierung). */

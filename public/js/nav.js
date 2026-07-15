@@ -11,7 +11,7 @@
       if (!panel || !btn) return;
       resetMenuSubViews(true);
       panel.classList.remove('is-open', 'is-reveal');
-      panel.setAttribute('aria-hidden', 'true');
+      panel.setAttribute('inert', '');
       btn.classList.remove('is-open');
       btn.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
@@ -21,7 +21,7 @@
     function openMenu() {
       if (!panel || !btn) return;
       panel.classList.add('is-open');
-      panel.setAttribute('aria-hidden', 'false');
+      panel.removeAttribute('inert');
       btn.classList.add('is-open');
       btn.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';

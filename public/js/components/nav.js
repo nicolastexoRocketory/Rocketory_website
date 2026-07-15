@@ -3,7 +3,7 @@
   window.__RK_COMPONENTS.nav =
     '<nav class="rk-nav">' +
     '<div class="rk-nav-inner">' +
-    '<a href="index.html" class="rk-logo" aria-label="Rocketory"><span class="rk-logo-lockup"><span class="rk-logo-word">ROCKET</span><img class="rk-logo-icon" src="assets/images/rocketory-o-icon.png?v=3" alt="" width="226" height="150" decoding="async" aria-hidden="true"><span class="rk-logo-word">RY</span></span></a>' +
+    '<a href="index.html" class="rk-logo" aria-label="Rocketory"><span class="rk-logo-lockup"><span class="rk-logo-word">ROCKET</span><img class="rk-logo-icon" src="assets/images/rocketory-o-icon.webp?v=4" alt="" width="226" height="150" decoding="async" aria-hidden="true"><span class="rk-logo-word">RY</span></span></a>' +
     '<nav class="rk-nav-center" aria-label="Hauptnavigation">' +
     '<a href="index.html">Home</a>' +
     '<a href="agentur.html">Agentur</a>' +
@@ -49,9 +49,9 @@
     '<li><a href="technologien.html#cms-payload" class="rk-svc-mega-link"><span class="rk-svc-mega-link-main"><strong>Next.js &amp; Payload</strong><span>Moderne Architektur mit strukturiertem Backend</span></span><span class="rk-svc-mega-link-dot dot-ring" aria-hidden="true"><span></span></span></a></li>' +
     '</ul></div>' +
     '</div></div></div></div></div></div></nav>' +
-    '<div class="rk-menu-panel" id="rkMenuPanel" aria-hidden="true" data-lenis-prevent>' +
+    '<div class="rk-menu-panel" id="rkMenuPanel" inert data-lenis-prevent>' +
     '<div class="rk-menu-panel-head">' +
-    '<a href="index.html" class="rk-logo" data-rk-close aria-label="Rocketory"><span class="rk-logo-lockup"><span class="rk-logo-word">ROCKET</span><img class="rk-logo-icon" src="assets/images/rocketory-o-icon.png?v=3" alt="" width="226" height="150" decoding="async" aria-hidden="true"><span class="rk-logo-word">RY</span></span></a>' +
+    '<a href="index.html" class="rk-logo" data-rk-close aria-label="Rocketory"><span class="rk-logo-lockup"><span class="rk-logo-word">ROCKET</span><img class="rk-logo-icon" src="assets/images/rocketory-o-icon.webp?v=4" alt="" width="226" height="150" decoding="async" aria-hidden="true"><span class="rk-logo-word">RY</span></span></a>' +
     '<button class="rk-menu-close" id="rkMenuClose" aria-label="Menü schließen">' +
     'Schließen<div class="dot-ring"><span></span></div></button></div>' +
     '<div class="rk-menu-panel-subnav" aria-hidden="true">' +
