@@ -90,7 +90,7 @@ export const EmailSettings: GlobalConfig = {
           name: 'fromEmail',
           type: 'email',
           label: 'Absender-E-Mail',
-          defaultValue: 'kontakt@rocketory.de',
+          defaultValue: 'beratung@rocketory.de',
         },
         {
           name: 'replyToEmail',
@@ -102,11 +102,13 @@ export const EmailSettings: GlobalConfig = {
         },
         {
           name: 'notificationEmail',
-          type: 'email',
+          type: 'text',
           label: 'Benachrichtigung an',
-          defaultValue: 'kontakt@rocketory.de',
+          defaultValue:
+            'beratung@rocketory.de, nicolas@rocketory.de, nicolastexo@rocketory.de',
           admin: {
-            description: 'E-Mail-Adresse, an die neue Kontaktanfragen gesendet werden.',
+            description:
+              'Eine oder mehrere E-Mail-Adressen (komma- oder semikolongetrennt), an die neue Kontaktanfragen gesendet werden.',
           },
         },
         {
@@ -135,16 +137,19 @@ export const EmailSettings: GlobalConfig = {
         },
         {
           name: 'notificationCc',
-          type: 'email',
+          type: 'text',
           label: 'CC (optional)',
           admin: {
-            description: 'Zusätzliche Empfänger für Benachrichtigungen.',
+            description: 'Zusätzliche Empfänger (komma- oder semikolongetrennt).',
           },
         },
         {
           name: 'notificationBcc',
-          type: 'email',
+          type: 'text',
           label: 'BCC (optional)',
+          admin: {
+            description: 'Blindkopie-Empfänger (komma- oder semikolongetrennt).',
+          },
         },
       ],
     },

@@ -5,7 +5,7 @@ export const WEBSITE_ID = `${SITE_URL}/#website`
 export const LOCAL_BUSINESS_ID = `${SITE_URL}/#localbusiness`
 export const PLACE_BUNDE_ID = `${SITE_URL}/agentur#place-buende`
 
-export const ORG_EMAIL = 'kontakt@rocketory.de'
+export const ORG_EMAIL = 'beratung@rocketory.de'
 export const ORG_LEGAL_NAME = 'FairFlock GmbH'
 export const ORG_BRAND = SITE_NAME
 

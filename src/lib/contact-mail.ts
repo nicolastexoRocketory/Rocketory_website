@@ -46,11 +46,25 @@ function buildCustomerEmailBody(doc: ContactInquiry, settings?: EmailSetting): s
     'Dein Anliegen:',
     doc.intentLabel || doc.intent || 'Kontaktanfrage',
     '',
-    'Bei Rückfragen erreichst du uns unter kontakt@rocketory.de.',
+    'Bei Rückfragen erreichst du uns unter beratung@rocketory.de.',
     '',
     'Viele Grüße',
     'Dein Rocketory-Team',
   ].join('\n')
+}
+
+function parseEmailList(...values: Array<string | null | undefined>): string[] {
+  const emails = new Set<string>()
+
+  for (const value of values) {
+    if (!value) continue
+    for (const part of value.split(/[,;]+/)) {
+      const email = part.trim()
+      if (email.includes('@')) emails.add(email)
+    }
+  }
+
+  return [...emails]
 }
 
 function createTransporter(settings: EmailSetting) {
@@ -95,17 +109,19 @@ export async function sendContactInquiryNotification(
   const transporter = createTransporter(settings)
   const prefix = settings.notificationSubjectPrefix?.trim() || 'Kontaktanfrage'
   const intentLabel = doc.intentLabel || doc.intent || 'Anfrage'
-  const notificationEmail = settings.notificationEmail?.trim()
+  const recipients = parseEmailList(settings.notificationEmail)
+  const cc = parseEmailList(settings.notificationCc)
+  const bcc = parseEmailList(settings.notificationBcc)
 
-  if (notificationEmail) {
+  if (recipients.length) {
     await transporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
-      to: notificationEmail,
+      to: recipients.join(', '),
       replyTo: doc.email,
       subject: `${prefix}: ${intentLabel} – ${doc.name}`,
       text: buildAdminEmailBody(doc, settings),
-      ...(settings.notificationCc ? { cc: settings.notificationCc } : {}),
-      ...(settings.notificationBcc ? { bcc: settings.notificationBcc } : {}),
+      ...(cc.length ? { cc: cc.join(', ') } : {}),
+      ...(bcc.length ? { bcc: bcc.join(', ') } : {}),
     })
   }
 

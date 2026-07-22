@@ -979,7 +979,7 @@ export interface EmailSetting {
    */
   replyToEmail?: string | null;
   /**
-   * E-Mail-Adresse, an die neue Kontaktanfragen gesendet werden.
+   * Eine oder mehrere E-Mail-Adressen (komma- oder semikolongetrennt), an die neue Kontaktanfragen gesendet werden.
    */
   notificationEmail?: string | null;
   notificationSubjectPrefix?: string | null;
@@ -989,9 +989,12 @@ export interface EmailSetting {
   sendCustomerConfirmation?: boolean | null;
   customerConfirmationSubject?: string | null;
   /**
-   * Zusätzliche Empfänger für Benachrichtigungen.
+   * Zusätzliche Empfänger (komma- oder semikolongetrennt).
    */
   notificationCc?: string | null;
+  /**
+   * Blindkopie-Empfänger (komma- oder semikolongetrennt).
+   */
   notificationBcc?: string | null;
   /**
    * Wird am Ende der internen Benachrichtigungsmail angehängt.
