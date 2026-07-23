@@ -35,7 +35,7 @@
     festpreis: 'Festpreiswebsite',
     seo: 'Suchmaschinenoptimierung (SEO)',
     redesign: 'Website ReDesign oder ReLaunch',
-    beratung: 'Beratung'
+    beratung: 'Hierzu brauche ich Beratung'
   };
 
   var fields = {
@@ -99,6 +99,17 @@
   function festpreisNeedsTech() {
     var paket = getCheckedValue('festpreis_paket');
     return paket === 'Smart' || paket === 'Business';
+  }
+
+  function shouldAutoAdvance() {
+    return window.matchMedia('(min-width:769px)').matches;
+  }
+
+  function scheduleAdvance(fromStep) {
+    window.setTimeout(function () {
+      if (currentStep !== fromStep) return;
+      advanceFromStep(fromStep);
+    }, 280);
   }
 
   function toggleFestpreisTech() {
@@ -401,11 +412,14 @@
         errors.intent.textContent = '';
         errors.intent.classList.remove('is-visible');
       }
-      if (currentStep === 1 && window.matchMedia('(min-width:769px)').matches) {
-        window.setTimeout(function () {
-          advanceFromStep(1);
-        }, 280);
+    });
+    radio.addEventListener('click', function () {
+      if (errors.intent) {
+        errors.intent.textContent = '';
+        errors.intent.classList.remove('is-visible');
       }
+      if (currentStep !== 1 || !shouldAutoAdvance()) return;
+      scheduleAdvance(1);
     });
   });
 
@@ -429,13 +443,28 @@
           errors.festpreisTech.textContent = '';
           errors.festpreisTech.classList.remove('is-visible');
         }
-        if (currentStep !== 2 || !window.matchMedia('(min-width:769px)').matches) return;
+      });
+      radio.addEventListener('click', function () {
+        var intent =
+          groupName === 'festpreis_paket' || groupName === 'festpreis_tech'
+            ? 'festpreis'
+            : groupName === 'seo_laufzeit'
+              ? 'seo'
+              : 'redesign';
         if (groupName === 'festpreis_paket') {
-          if (festpreisNeedsTech()) return;
+          toggleFestpreisTech();
         }
-        window.setTimeout(function () {
-          advanceFromStep(2);
-        }, 280);
+        if (errors[intent]) {
+          errors[intent].textContent = '';
+          errors[intent].classList.remove('is-visible');
+        }
+        if (groupName === 'festpreis_tech' && errors.festpreisTech) {
+          errors.festpreisTech.textContent = '';
+          errors.festpreisTech.classList.remove('is-visible');
+        }
+        if (currentStep !== 2 || !shouldAutoAdvance()) return;
+        if (groupName === 'festpreis_paket' && festpreisNeedsTech()) return;
+        scheduleAdvance(2);
       });
     });
   });

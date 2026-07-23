@@ -8,6 +8,8 @@ export const LEGACY_PAGE_ROUTES: Record<string, string> = {
   'blog.html': '/blog',
   'projekte.html': '/projekte',
   'referenzen.html': '/blog',
+  'impressum.html': '/impressum',
+  'datenschutz.html': '/datenschutz',
 }
 
 export function resolveLegacyHref(href: string): string {

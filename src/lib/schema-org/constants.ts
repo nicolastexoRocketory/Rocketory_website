@@ -6,12 +6,13 @@ export const LOCAL_BUSINESS_ID = `${SITE_URL}/#localbusiness`
 export const PLACE_BUNDE_ID = `${SITE_URL}/agentur#place-buende`
 
 export const ORG_EMAIL = 'beratung@rocketory.de'
+export const ORG_PHONE = '+491607624145'
 export const ORG_LEGAL_NAME = 'FairFlock GmbH'
 export const ORG_BRAND = SITE_NAME
 
 export const ORG_ADDRESS = {
   '@type': 'PostalAddress' as const,
-  streetAddress: 'Bünde',
+  streetAddress: 'Zimmerstr. 16',
   addressLocality: 'Bünde',
   addressRegion: 'Nordrhein-Westfalen',
   postalCode: '32257',

@@ -27,18 +27,37 @@
 
 .rk-contact-main{padding:clamp(40px,8vw,72px) 0;border-bottom:1px solid var(--border);background:var(--bg);}
 .rk-contact-main--minimal{
+  position:relative;
+  isolation:isolate;
   padding:calc(var(--rk-nav-h) + clamp(72px,11vw,112px)) 0 clamp(56px,8vw,88px);
-  background:var(--bg-warm);
+  background:var(--hero-bg);
   min-height:calc(100vh - var(--rk-nav-h));
   display:flex;align-items:flex-start;
+  overflow:hidden;
 }
-.rk-contact-main--minimal > .rk-inner{width:100%;}
+.rk-contact-bg{
+  position:absolute;inset:0;z-index:0;
+  pointer-events:none;overflow:hidden;
+}
+.rk-contact-bg picture,
+.rk-contact-bg img{
+  display:block;width:100%;height:100%;
+  object-fit:cover;object-position:center center;
+}
+.rk-contact-bg::after{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(180deg,rgba(10,15,30,0.72) 0%,rgba(10,15,30,0.55) 42%,rgba(10,15,30,0.78) 100%),
+    rgba(10,15,30,0.28);
+}
+.rk-contact-main--minimal > .rk-inner{position:relative;z-index:1;width:100%;}
 .rk-contact-form-only{
   width:100%;max-width:min(40rem,100%);margin:0 auto;
 }
 .rk-contact-main--minimal .rk-contact-form-wrap{
   width:100%;margin:0;padding:clamp(28px,5vw,40px) clamp(24px,4vw,36px);
-  background:var(--bg);border:1px solid var(--border);
+  background:var(--bg);border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 24px 60px rgba(0,0,0,0.28);
 }
 
 .rk-contact-grid{display:grid;grid-template-columns:1fr;gap:clamp(32px,5vw,56px);align-items:start;}
@@ -217,16 +236,18 @@
   flex:1;
 }
 .rk-topic-card:hover .rk-topic-card-inner{
-  border-color:rgba(193,39,45,0.35);background:rgba(193,39,45,0.03);
+  border-color:var(--green-border);background:var(--green-soft);
 }
 .rk-topic-card input:focus-visible + .rk-topic-card-inner{
-  outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(193,39,45,0.12);
+  outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(21,128,61,0.16);
 }
-.rk-topic-card input:checked + .rk-topic-card-inner{
-  border-color:var(--red);background:rgba(193,39,45,0.06);
-  box-shadow:0 0 0 1px rgba(193,39,45,0.15);
+.rk-topic-card input:checked + .rk-topic-card-inner,
+.rk-topic-card:hover input:checked + .rk-topic-card-inner{
+  border-color:var(--green);background:var(--green-hover);
+  box-shadow:0 0 0 1px rgba(21,128,61,0.18);
 }
-.rk-topic-card input:checked + .rk-topic-card-inner strong{color:var(--red);}
+.rk-topic-card input:checked + .rk-topic-card-inner strong,
+.rk-topic-card:hover input:checked + .rk-topic-card-inner strong{color:var(--green);}
 .rk-festpreis-tech{
   margin-top:clamp(24px,4vw,32px);
   padding-top:clamp(24px,4vw,32px);
@@ -263,7 +284,7 @@
   transition:color .2s ease;
 }
 .rk-form-back:hover{color:var(--ink)!important;}
-.rk-form-back[hidden],.rk-form-submit[hidden]{display:none!important;}
+.rk-form-back[hidden],.rk-form-next[hidden],.rk-form-submit[hidden]{display:none!important;}
 .rk-multistep-form.is-submitted .rk-form-head,
 .rk-multistep-form.is-submitted .rk-form-progress-wrap,
 .rk-multistep-form.is-submitted .rk-form-stepper,

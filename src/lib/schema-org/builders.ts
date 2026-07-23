@@ -13,6 +13,7 @@ import {
   ORG_ADDRESS,
   ORG_BRAND,
   ORG_EMAIL,
+  ORG_PHONE,
   ORG_LEGAL_NAME,
   ORG_SAME_AS,
   ORGANIZATION_ID,
@@ -91,6 +92,7 @@ export function buildGlobalSchemaNodes(): SchemaNode[] {
       },
       image: `${SITE_URL}/assets/images/team-rocketory.webp`,
       email: ORG_EMAIL,
+      telephone: ORG_PHONE,
       address: ORG_ADDRESS,
       sameAs: ORG_SAME_AS,
     },
@@ -102,6 +104,7 @@ export function buildGlobalSchemaNodes(): SchemaNode[] {
       url: SITE_URL,
       image: `${SITE_URL}/assets/images/team-rocketory.webp`,
       email: ORG_EMAIL,
+      telephone: ORG_PHONE,
       address: ORG_ADDRESS,
       geo: GEO_BUNDE,
       parentOrganization: { '@id': ORGANIZATION_ID },
@@ -330,9 +333,32 @@ export function buildKontaktPageSchema(): SchemaNode[] {
       '@id': `${SITE_URL}/kontakt#contact`,
       contactType: 'customer service',
       email: ORG_EMAIL,
+      telephone: ORG_PHONE,
       areaServed: 'DE',
       availableLanguage: ['de'],
     },
+  ]
+}
+
+export function buildImpressumPageSchema(): SchemaNode[] {
+  return [
+    baseWebPage(
+      '/impressum',
+      'Impressum – Rocketory',
+      'Impressum von Rocketory / FairFlock GmbH – Anbieterkennzeichnung gemäß DDG.',
+    ),
+    buildBreadcrumb('/impressum', 'Impressum'),
+  ]
+}
+
+export function buildDatenschutzPageSchema(): SchemaNode[] {
+  return [
+    baseWebPage(
+      '/datenschutz',
+      'Datenschutzerklärung – Rocketory',
+      'Datenschutzerklärung von Rocketory – Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO.',
+    ),
+    buildBreadcrumb('/datenschutz', 'Datenschutz'),
   ]
 }
 

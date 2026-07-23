@@ -13,6 +13,8 @@ const STATIC_ROUTES = [
   { path: '/blog', priority: 0.8 },
   { path: '/projekte', priority: 0.8 },
   { path: '/kontakt', priority: 0.7 },
+  { path: '/impressum', priority: 0.3 },
+  { path: '/datenschutz', priority: 0.3 },
 ] as const
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

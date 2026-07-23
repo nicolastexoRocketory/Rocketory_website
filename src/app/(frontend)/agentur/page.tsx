@@ -28,6 +28,10 @@ async function applyGoogleMapsSettings(content: string): Promise<string> {
 
     if (settings.googleMapsEmbedUrl) {
       next = next.replace(
+        /(<iframe[^>]*data-rk-google-maps-embed[^>]*data-src=")[^"]*(")/,
+        `$1${escapeHtmlAttr(settings.googleMapsEmbedUrl)}$2`,
+      )
+      next = next.replace(
         /(<iframe[^>]*data-rk-google-maps-embed[^>]*src=")[^"]*(")/,
         `$1${escapeHtmlAttr(settings.googleMapsEmbedUrl)}$2`,
       )

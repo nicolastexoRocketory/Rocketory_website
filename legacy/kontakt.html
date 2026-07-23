@@ -13,6 +13,12 @@
     <div id="rk-nav-mount"></div>
 
     <section class="rk-contact-main rk-contact-main--minimal" id="kontakt-form">
+      <div class="rk-contact-bg" aria-hidden="true">
+        <picture>
+          <source srcset="assets/images/kontakt-cosmos.webp" type="image/webp">
+          <img src="assets/images/kontakt-cosmos.jpg" alt="" width="1024" height="683" decoding="async" fetchpriority="high">
+        </picture>
+      </div>
       <div class="rk-inner">
         <div class="rk-contact-form-only">
           <div class="rk-contact-form-wrap">
@@ -65,8 +71,8 @@
                     <label class="rk-topic-card rk-topic-card--wide">
                       <input type="radio" name="intent" value="beratung">
                       <span class="rk-topic-card-inner">
-                        <strong>Beratung</strong>
-                        <span>Kostenlos und unverbindlich – wir helfen dir bei der Einordnung</span>
+                        <strong>Hierzu brauche ich Beratung</strong>
+                        <span>Weiß ich nicht – kostenlos und unverbindlich, wir helfen bei der Einordnung</span>
                       </span>
                     </label>
                   </div>
@@ -91,7 +97,8 @@
                         <option value="Bis 5 Seiten">Bis 5 Seiten</option>
                         <option value="Bis 12 Seiten">Bis 12 Seiten</option>
                         <option value="Mehr als 12 Seiten">Mehr als 12 Seiten</option>
-                        <option value="Weiß ich noch nicht">Weiß ich noch nicht</option>
+                        <option value="Weiß ich nicht">Weiß ich nicht</option>
+                        <option value="Hierzu brauche ich Beratung">Hierzu brauche ich Beratung</option>
                       </select>
                     </div>
                     <div class="rk-field">
@@ -101,7 +108,8 @@
                         <option value="So schnell wie möglich">So schnell wie möglich</option>
                         <option value="In den nächsten 3 Monaten">In den nächsten 3 Monaten</option>
                         <option value="In 3–6 Monaten">In 3–6 Monaten</option>
-                        <option value="Noch unklar">Noch unklar</option>
+                        <option value="Weiß ich nicht">Weiß ich nicht</option>
+                        <option value="Hierzu brauche ich Beratung">Hierzu brauche ich Beratung</option>
                       </select>
                     </div>
                   </div>
@@ -123,6 +131,13 @@
                       <span class="rk-topic-card-inner">
                         <strong>Business</strong>
                         <span>Bis 12 Seiten · HTML, WordPress oder Next.js &amp; Payload · SEO-Architektur</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card rk-topic-card--wide">
+                      <input type="radio" name="festpreis_paket" value="Hierzu brauche ich Beratung">
+                      <span class="rk-topic-card-inner">
+                        <strong>Hierzu brauche ich Beratung</strong>
+                        <span>Weiß ich nicht – wir finden im Gespräch das passende Paket</span>
                       </span>
                     </label>
                   </div>
@@ -150,6 +165,13 @@
                           <span>Strukturierte Inhalte selbst pflegen – mit Next.js-Performance und klarem Backend</span>
                         </span>
                       </label>
+                      <label class="rk-topic-card rk-topic-card--wide">
+                        <input type="radio" name="festpreis_tech" value="Hierzu brauche ich Beratung">
+                        <span class="rk-topic-card-inner">
+                          <strong>Hierzu brauche ich Beratung</strong>
+                          <span>Weiß ich nicht – wir empfehlen die passende Technologie</span>
+                        </span>
+                      </label>
                     </div>
                     <span class="rk-field-error rk-field-error--block" id="rkFestpreisTechError" role="alert"></span>
                   </div>
@@ -175,10 +197,10 @@
                       </span>
                     </label>
                     <label class="rk-topic-card rk-topic-card--wide">
-                      <input type="radio" name="seo_laufzeit" value="Weiß ich noch nicht">
+                      <input type="radio" name="seo_laufzeit" value="Hierzu brauche ich Beratung">
                       <span class="rk-topic-card-inner">
-                        <strong>Weiß ich noch nicht</strong>
-                        <span>Wir beraten dich im Erstgespräch zur passenden Laufzeit</span>
+                        <strong>Hierzu brauche ich Beratung</strong>
+                        <span>Weiß ich nicht – wir beraten dich im Erstgespräch zur passenden Laufzeit</span>
                       </span>
                     </label>
                   </div>
@@ -201,6 +223,13 @@
                       <span class="rk-topic-card-inner">
                         <strong>ReLaunch</strong>
                         <span>Neue Website mit klarerem Auftritt, Struktur und Technik</span>
+                      </span>
+                    </label>
+                    <label class="rk-topic-card rk-topic-card--wide">
+                      <input type="radio" name="redesign_typ" value="Hierzu brauche ich Beratung">
+                      <span class="rk-topic-card-inner">
+                        <strong>Hierzu brauche ich Beratung</strong>
+                        <span>Weiß ich nicht – wir klären gemeinsam, was sinnvoller ist</span>
                       </span>
                     </label>
                   </div>
@@ -263,7 +292,7 @@
                       </select>
                     </div>
                   </div>
-                  <p class="rk-form-note">Mit dem Absenden erklärst du dich einverstanden, dass wir deine Angaben zur Bearbeitung der Anfrage verwenden. Weitere Infos in unserer Datenschutzerklärung.</p>
+                  <p class="rk-form-note">Mit dem Absenden erklärst du dich einverstanden, dass wir deine Angaben zur Bearbeitung der Anfrage verwenden. Weitere Infos in unserer <a href="datenschutz.html" class="rk-text-link">Datenschutzerklärung</a>.</p>
                 </fieldset>
               </div>
 

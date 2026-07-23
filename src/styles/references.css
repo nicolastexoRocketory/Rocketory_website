@@ -828,3 +828,295 @@ body.rk-author-modal-open{overflow:hidden;}
   .rk-blog-article .rk-blog-back:hover{color:inherit!important;}
   .rk-blog-sidebar-links a:hover{color:var(--ink)!important;padding-left:0;}
 }
+
+/* ── Legal pages (Impressum / Datenschutz) ── */
+.rk-legal-section{padding:clamp(40px,7vw,88px) 0 clamp(64px,10vw,120px);}
+.rk-legal{
+  max-width:42rem;
+  display:flex;
+  flex-direction:column;
+  gap:clamp(28px,4vw,40px);
+}
+.rk-legal-toc{
+  padding:clamp(18px,2.5vw,24px);
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.55);
+}
+.rk-legal-toc h2{
+  font-family:var(--font-sans);
+  font-size:clamp(0.8125rem,1vw,0.875rem);
+  font-weight:700;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  color:var(--red);
+  margin:0 0 12px;
+}
+.rk-legal-toc ol{
+  margin:0;
+  padding-left:1.2rem;
+  display:grid;
+  gap:6px;
+}
+.rk-legal-toc a{
+  color:var(--ink);
+  text-decoration:none;
+  font-size:clamp(0.875rem,1.05vw,0.9375rem);
+  line-height:1.45;
+}
+.rk-legal-toc a:hover{color:var(--red);}
+.rk-legal-block h2{
+  font-family:var(--font-serif);
+  font-style:italic;
+  font-weight:400;
+  font-size:clamp(1.35rem,2.2vw,1.75rem);
+  letter-spacing:-0.02em;
+  line-height:1.15;
+  margin:0 0 clamp(12px,1.5vw,16px);
+  color:var(--ink);
+}
+.rk-legal-block p,
+.rk-legal-block li{
+  font-family:var(--font-body);
+  font-size:clamp(0.9375rem,1.15vw,1.0625rem);
+  line-height:1.65;
+  font-weight:300;
+  color:var(--muted);
+  margin:0 0 0.85em;
+}
+.rk-legal-block ul{
+  margin:0 0 0.85em;
+  padding-left:1.2rem;
+  display:grid;
+  gap:0.35em;
+}
+.rk-legal-block code{
+  font-size:0.92em;
+  padding:0.1em 0.35em;
+  background:rgba(0,0,0,0.05);
+  border-radius:3px;
+}
+.rk-legal-contact{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:10px;
+}
+.rk-legal-contact li{
+  display:grid;
+  grid-template-columns:minmax(7rem,9rem) minmax(0,1fr);
+  gap:12px;
+  margin:0;
+  align-items:baseline;
+}
+.rk-legal-contact span:first-child{
+  font-family:var(--font-sans);
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  color:var(--red);
+}
+.rk-legal-note{
+  font-size:clamp(0.8125rem,1vw,0.875rem)!important;
+  color:var(--muted)!important;
+  opacity:0.9;
+}
+.rk-legal-related{
+  margin-top:clamp(8px,1.5vw,16px);
+  font-size:clamp(0.9375rem,1.1vw,1rem);
+  color:var(--muted);
+}
+@media(max-width:600px){
+  .rk-legal-contact li{grid-template-columns:1fr;gap:2px;}
+}
+
+/* ── Impressum Bento ── */
+.rk-bento{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:clamp(10px,1.4vw,14px);
+}
+.rk-bento-tile{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:clamp(10px,1.4vw,14px);
+  padding:clamp(22px,3vw,32px);
+  border:1px solid var(--border);
+  background:var(--bg);
+  min-height:0;
+  overflow:hidden;
+}
+.rk-bento-tile--brand{
+  background:var(--hero-bg);
+  border-color:rgba(255,255,255,0.1);
+  color:var(--hero-text);
+  min-height:clamp(280px,42vw,380px);
+  justify-content:flex-end;
+}
+.rk-bento-tile--brand .rk-bento-label{color:var(--red);}
+.rk-bento-tile--brand .rk-bento-title{color:var(--hero-text);}
+.rk-bento-tile--brand .rk-bento-lead,
+.rk-bento-tile--brand .rk-bento-address,
+.rk-bento-tile--brand .rk-bento-note{
+  color:var(--hero-muted);
+}
+.rk-bento-tile--contact,
+.rk-bento-tile--cta{
+  background:var(--bg-warm);
+}
+.rk-bento-tile--register,
+.rk-bento-tile--odr{
+  background:var(--bg-cool);
+}
+.rk-bento-tile--cta{
+  text-decoration:none;
+  color:inherit;
+  transition:border-color .2s ease, background .2s ease;
+}
+.rk-bento-tile--cta:hover{
+  border-color:rgba(10,15,30,0.22);
+  background:#efece4;
+}
+.rk-bento-tile--cta .rk-bento-arrow{
+  margin-top:auto;
+  font-family:var(--font-serif);
+  font-style:italic;
+  font-size:clamp(1.75rem,3vw,2.25rem);
+  line-height:1;
+  color:var(--red);
+}
+.rk-bento-label{
+  margin:0;
+  font-family:var(--font-sans);
+  font-size:clamp(0.6875rem,0.9vw,0.75rem);
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--red);
+}
+.rk-bento-title{
+  margin:0;
+  font-family:var(--font-serif);
+  font-style:italic;
+  font-weight:400;
+  font-size:clamp(1.5rem,2.6vw,2.15rem);
+  letter-spacing:-0.03em;
+  line-height:1.05;
+  color:var(--ink);
+}
+.rk-bento-lead,
+.rk-bento-meta,
+.rk-bento-note{
+  margin:0;
+  font-family:var(--font-body);
+  font-size:clamp(0.875rem,1.05vw,0.975rem);
+  line-height:1.55;
+  font-weight:300;
+  color:var(--muted);
+}
+.rk-bento-address{
+  margin:0;
+  font-style:normal;
+  font-family:var(--font-body);
+  font-size:clamp(0.9375rem,1.1vw,1.0625rem);
+  line-height:1.6;
+  font-weight:300;
+  color:var(--ink);
+}
+.rk-bento-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:12px;
+}
+.rk-bento-list li{
+  display:grid;
+  gap:2px;
+  margin:0;
+}
+.rk-bento-list li > span:first-child{
+  font-family:var(--font-sans);
+  font-size:0.6875rem;
+  font-weight:700;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.rk-bento-list li > span:last-child,
+.rk-bento-list li > a{
+  font-family:var(--font-body);
+  font-size:clamp(0.9375rem,1.1vw,1.05rem);
+  line-height:1.45;
+  font-weight:400;
+  color:var(--ink);
+}
+.rk-bento-prose{
+  display:grid;
+  gap:0.85em;
+}
+.rk-bento-prose p{
+  margin:0;
+  font-family:var(--font-body);
+  font-size:clamp(0.875rem,1.05vw,0.975rem);
+  line-height:1.65;
+  font-weight:300;
+  color:var(--muted);
+}
+@media(min-width:700px){
+  .rk-bento{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-auto-rows:minmax(160px,auto);
+  }
+  .rk-bento-tile--brand{grid-column:1 / -1;}
+  .rk-bento-tile--wide{grid-column:1 / -1;}
+  .rk-bento-tile--half{min-height:220px;}
+}
+@media(min-width:1024px){
+  .rk-bento{
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    grid-auto-rows:minmax(140px,auto);
+    gap:14px;
+  }
+  .rk-bento-tile--brand{
+    grid-column:1 / span 4;
+    grid-row:1 / span 2;
+    min-height:0;
+  }
+  .rk-bento-tile--contact{
+    grid-column:5 / span 2;
+    grid-row:1 / span 2;
+  }
+  .rk-bento-tile--entity{
+    grid-column:1 / span 3;
+    grid-row:3 / span 2;
+  }
+  .rk-bento-tile--register{
+    grid-column:4 / span 3;
+    grid-row:3 / span 2;
+  }
+  .rk-bento-tile--fairflock{
+    grid-column:1 / span 2;
+    grid-row:5 / span 2;
+  }
+  .rk-bento-tile--content{
+    grid-column:3 / span 2;
+    grid-row:5 / span 2;
+  }
+  .rk-bento-tile--cta{
+    grid-column:5 / span 2;
+    grid-row:5 / span 2;
+  }
+  .rk-bento-tile--wide{
+    grid-column:1 / -1;
+  }
+  .rk-bento-tile--half{
+    grid-column:span 3;
+    min-height:0;
+  }
+  .rk-bento-tile--odr{
+    grid-column:1 / -1;
+  }
+}
