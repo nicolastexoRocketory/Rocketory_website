@@ -75,7 +75,40 @@
 }
 .rk-form-intro{
   font-size:clamp(0.875rem,1.1vw,0.9375rem);color:var(--muted);
-  line-height:1.65;margin-bottom:clamp(24px,4vw,32px);max-width:520px;
+  line-height:1.65;margin-bottom:clamp(16px,2.5vw,20px);max-width:520px;
+}
+.rk-shell .rk-whatsapp-cta,
+.rk-whatsapp-cta{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin:0 0 clamp(24px,4vw,32px);
+  padding:12px 16px;
+  border:1px solid rgba(21,128,61,0.28);
+  background:rgba(21,128,61,0.08);
+  color:#15803d!important;
+  font-family:var(--font-sans);
+  font-size:clamp(0.8125rem,1vw,0.875rem);
+  font-weight:600;
+  letter-spacing:0.01em;
+  line-height:1.2;
+  text-decoration:none!important;
+  transition:background .18s ease,border-color .18s ease,color .18s ease;
+}
+.rk-shell .rk-whatsapp-cta svg,
+.rk-whatsapp-cta svg{
+  width:18px;height:18px;flex-shrink:0;fill:currentColor;
+}
+.rk-shell .rk-whatsapp-cta:hover,
+.rk-whatsapp-cta:hover{
+  background:rgba(21,128,61,0.14);
+  border-color:rgba(21,128,61,0.45);
+  color:#116b34!important;
+}
+.rk-shell .rk-whatsapp-cta:focus-visible,
+.rk-whatsapp-cta:focus-visible{
+  outline:2px solid #15803d;
+  outline-offset:3px;
 }
 .rk-form-row{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:16px;}
 .rk-field{display:flex;flex-direction:column;gap:8px;}
@@ -379,6 +412,12 @@
     border-color:var(--border);background:var(--bg);box-shadow:none;
   }
   .rk-topic-card:hover .rk-topic-card-inner{border-color:var(--border);background:var(--bg);}
+  .rk-shell .rk-whatsapp-cta:hover,
+  .rk-whatsapp-cta:hover{
+    background:rgba(21,128,61,0.08);
+    border-color:rgba(21,128,61,0.28);
+    color:#15803d!important;
+  }
   .rk-form-back:hover{color:var(--muted)!important;}
   .rk-info-card a:hover{color:var(--ink)!important;}
 }

@@ -5,6 +5,7 @@ import React from 'react'
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/metadata'
 import { SiteSchema } from '@/components/SiteSchema'
 import { CookieBanner } from '@/components/CookieBanner'
+import { WhatsAppFloat } from '@/components/WhatsAppFloat'
 import '@/styles/main.css'
 
 const dmSans = DM_Sans({
@@ -71,6 +72,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
       <body>
         <SiteSchema />
         {children}
+        <WhatsAppFloat />
         <CookieBanner />
       </body>
     </html>

@@ -9,7 +9,11 @@ import { buildPostSchemaJsonLd } from '../build-post-schema-jsonld'
 import {
   CORE_SERVICES,
   GEO_BUNDE,
+  LEGAL_ADDRESS,
   LOCAL_BUSINESS_ID,
+  MAPS_URL,
+  META_AGENTUR_BUENDE,
+  META_STANDORTE,
   ORG_ADDRESS,
   ORG_BRAND,
   ORG_EMAIL,
@@ -18,6 +22,7 @@ import {
   ORG_SAME_AS,
   ORGANIZATION_ID,
   PLACE_BUNDE_ID,
+  SERVICE_AREA_CITIES,
   SITE_DESCRIPTION,
   WEBSITE_ID,
 } from './constants'
@@ -39,15 +44,11 @@ function pageId(path: string): string {
   return path === '/' ? `${SITE_URL}/#webpage` : `${SITE_URL}${path}#webpage`
 }
 
-function buildBreadcrumb(path: string, currentName: string): SchemaNode {
-  const crumbs = [{ name: 'Startseite', path: '/' }]
-  if (path !== '/') {
-    crumbs.push({ name: currentName, path })
-  }
-
+function buildBreadcrumbTrail(crumbs: { name: string; path: string }[]): SchemaNode {
+  const last = crumbs[crumbs.length - 1]
   return {
     '@type': 'BreadcrumbList',
-    '@id': `${SITE_URL}${path === '/' ? '' : path}#breadcrumb`,
+    '@id': `${SITE_URL}${last.path === '/' ? '' : last.path}#breadcrumb`,
     itemListElement: crumbs.map((crumb, index) => ({
       '@type': 'ListItem',
       position: index + 1,
@@ -55,6 +56,65 @@ function buildBreadcrumb(path: string, currentName: string): SchemaNode {
       item: `${SITE_URL}${crumb.path === '/' ? '' : crumb.path}`,
     })),
   }
+}
+
+function buildBreadcrumb(path: string, currentName: string): SchemaNode {
+  const crumbs = [{ name: 'Startseite', path: '/' }]
+  if (path !== '/') {
+    crumbs.push({ name: currentName, path })
+  }
+  return buildBreadcrumbTrail(crumbs)
+}
+
+function buildFaqPage(path: string, faqs: { question: string; answer: string }[]): SchemaNode {
+  return {
+    '@type': 'FAQPage',
+    '@id': `${SITE_URL}${path}#faq`,
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+}
+
+function buildPlaceBuende(): SchemaNode {
+  return {
+    '@type': 'Place',
+    '@id': PLACE_BUNDE_ID,
+    name: 'Bünde',
+    alternateName: 'Zigarrenstadt Bünde',
+    description:
+      'Bünde ist eine Mittelstadt mit rund 47.500 Einwohnern im Kreis Herford (Ostwestfalen-Lippe, NRW), bekannt als Zigarrenstadt. Rocketory hat hier sein einziges Kundenbüro (Zimmerstr. 16, 32257 Bünde) und betreut Unternehmen in OWL.',
+    geo: GEO_BUNDE,
+    address: ORG_ADDRESS,
+    containedInPlace: [
+      {
+        '@type': 'AdministrativeArea',
+        name: 'Kreis Herford',
+      },
+      {
+        '@type': 'AdministrativeArea',
+        name: 'Ostwestfalen-Lippe',
+      },
+      {
+        '@type': 'State',
+        name: 'Nordrhein-Westfalen',
+      },
+    ],
+  }
+}
+
+function serviceAreaNodes() {
+  return [
+    ...SERVICE_AREA_CITIES.map((name) => ({ '@type': 'City' as const, name })),
+    { '@type': 'AdministrativeArea' as const, name: 'Ostwestfalen-Lippe' },
+    { '@type': 'AdministrativeArea' as const, name: 'Kreis Herford' },
+    { '@type': 'State' as const, name: 'Nordrhein-Westfalen' },
+  ]
 }
 
 function baseWebPage(
@@ -93,28 +153,40 @@ export function buildGlobalSchemaNodes(): SchemaNode[] {
       image: `${SITE_URL}/assets/images/team-rocketory.webp`,
       email: ORG_EMAIL,
       telephone: ORG_PHONE,
-      address: ORG_ADDRESS,
+      address: LEGAL_ADDRESS,
+      location: { '@id': LOCAL_BUSINESS_ID },
       sameAs: ORG_SAME_AS,
     },
     {
       '@type': ['LocalBusiness', 'ProfessionalService'],
       '@id': LOCAL_BUSINESS_ID,
       name: ORG_BRAND,
+      alternateName: 'Rocketory – Webdesign Bünde',
       legalName: ORG_LEGAL_NAME,
       url: SITE_URL,
-      image: `${SITE_URL}/assets/images/team-rocketory.webp`,
+      image: [
+        `${SITE_URL}/assets/images/buende/buende-a30.webp`,
+        `${SITE_URL}/assets/images/team-rocketory.webp`,
+      ],
       email: ORG_EMAIL,
       telephone: ORG_PHONE,
       address: ORG_ADDRESS,
       geo: GEO_BUNDE,
+      hasMap: MAPS_URL,
       parentOrganization: { '@id': ORGANIZATION_ID },
-      areaServed: [
-        { '@type': 'City', name: 'Bünde' },
-        { '@type': 'AdministrativeArea', name: 'Ostwestfalen-Lippe' },
-        { '@type': 'State', name: 'Nordrhein-Westfalen' },
-      ],
+      areaServed: serviceAreaNodes(),
       priceRange: '€€',
-      knowsAbout: ['Webdesign', 'SEO', 'WordPress', 'Next.js', 'Payload CMS'],
+      knowsAbout: [
+        'Webdesign',
+        'SEO',
+        'WordPress',
+        'Next.js',
+        'Payload CMS',
+        'Lokales SEO OWL',
+        'Webdesign Bünde',
+        'Zigarrenstadt Bünde',
+      ],
+      foundingLocation: { '@id': PLACE_BUNDE_ID },
     },
     {
       '@type': 'WebSite',
@@ -157,10 +229,11 @@ export function buildGlobalSchemaNodes(): SchemaNode[] {
           name: service.name,
           description: service.description,
           provider: { '@id': LOCAL_BUSINESS_ID },
-          areaServed: { '@type': 'City', name: 'Bünde' },
+          areaServed: serviceAreaNodes(),
         },
       })),
     },
+    buildPlaceBuende(),
   ]
 }
 
@@ -196,19 +269,138 @@ export function buildAgenturPageSchema(): SchemaNode[] {
       mainEntity: { '@id': ORGANIZATION_ID },
     },
     buildBreadcrumb('/agentur', 'Agentur'),
+    buildPlaceBuende(),
+  ]
+}
+
+export function buildAgenturBuendePageSchema(): SchemaNode[] {
+  const description = META_AGENTUR_BUENDE
+
+  const faqs = [
     {
-      '@type': 'Place',
-      '@id': PLACE_BUNDE_ID,
-      name: 'Bünde',
-      description:
-        'Bünde in Ostwestfalen-Lippe – Standort von Rocketory und Schwerpunkt für regionales Webdesign und SEO.',
-      geo: GEO_BUNDE,
-      address: ORG_ADDRESS,
-      containedInPlace: {
-        '@type': 'AdministrativeArea',
-        name: 'Ostwestfalen-Lippe',
-      },
+      question: 'Wo hat Rocketory sein Büro?',
+      answer:
+        'Rocketory ist die Agenturmarke der FairFlock GmbH. Das Büro liegt in der Zimmerstraße 16, 32257 Bünde (Remise) – das ist unser einziger physischer Kundenstandort. Der rechtliche Firmensitz der FairFlock GmbH ist Sonnenhügel 16a, 32257 Bünde.',
     },
+    {
+      question: 'Warum sitzt eine Webdesign-Agentur ausgerechnet in Bünde?',
+      answer:
+        'Weil hier Mittelstand, Handwerk und lokale Dienstleister zu Hause sind – und weil wir als FairFlock-Unit regional verankert arbeiten. Bünde ist Zigarrenstadt, Wirtschaftsstandort und Alltag für Betriebe, die digital Anfragen brauchen.',
+    },
+    {
+      question: 'Gibt es ein Rocketory-Büro in Herford oder Bielefeld?',
+      answer:
+        'Nein. Wir haben kein Zweitbüro. Termine und Betreuung für Kunden aus Herford, Bielefeld und dem restlichen OWL laufen von Bünde aus – online oder nach Absprache vor Ort bei dir.',
+    },
+    {
+      question: 'Arbeitet Rocketory nur für Unternehmen aus Bünde?',
+      answer:
+        'Nein. Bünde ist Standort und Schwerpunkt. Projekte begleiten wir in der gesamten OWL-Region und darüber hinaus – wenn der Fit stimmt. Überblick: https://rocketory.de/standorte',
+    },
+    {
+      question: 'Kann ich euch vor Ort in Bünde treffen?',
+      answer:
+        'Ja, nach Absprache. Viele Erstgespräche starten online; vor Ort in Bünde oder bei dir ist möglich, wenn es zum Projekt passt. Kontakt: https://rocketory.de/kontakt',
+    },
+    {
+      question: 'Was macht Rocketory in Bünde konkret?',
+      answer:
+        'Webdesign, SEO und langfristige Website-Betreuung für KMU, Handwerk und lokale Dienstleister – persönlich betreut und fair kalkuliert. Details: https://rocketory.de/angebote',
+    },
+    {
+      question: 'Seid ihr eine Remote-Agentur?',
+      answer:
+        'Nein. Wir sind lokal verankert in Bünde und nutzen digitale Tools für effiziente Zusammenarbeit – ohne anonyme Callcenter-Struktur.',
+    },
+  ]
+
+  return [
+    {
+      ...baseWebPage(
+        '/agentur/buende',
+        'Webdesign-Agentur in Bünde (OWL) – Rocketory',
+        description,
+        'AboutPage',
+      ),
+      mainEntity: { '@id': LOCAL_BUSINESS_ID },
+      about: { '@id': PLACE_BUNDE_ID },
+      primaryImageOfPage: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/assets/images/buende/buende-a30.webp`,
+      },
+      significantLink: [`${SITE_URL}/standorte`, `${SITE_URL}/kontakt`, `${SITE_URL}/angebote`],
+    },
+    buildBreadcrumbTrail([
+      { name: 'Startseite', path: '/' },
+      { name: 'Agentur', path: '/agentur' },
+      { name: 'Bünde', path: '/agentur/buende' },
+    ]),
+    buildPlaceBuende(),
+    buildFaqPage('/agentur/buende', faqs),
+  ]
+}
+
+export function buildStandortePageSchema(): SchemaNode[] {
+  const description = META_STANDORTE
+
+  const faqs = [
+    {
+      question: 'Wie viele Standorte hat Rocketory?',
+      answer:
+        'Einen: das Büro in Bünde (Zimmerstraße 16). Die Orte auf der Standorte-Seite beschreiben das Einsatzgebiet – keine weiteren Büros. Details: https://rocketory.de/agentur/buende',
+    },
+    {
+      question: 'Betreut ihr auch Kunden außerhalb von Bünde?',
+      answer:
+        'Ja. Schwerpunkt ist OWL (unter anderem Herford, Enger, Löhne, Bad Oeynhausen, Bielefeld). Zusammenarbeit funktioniert online und – wenn sinnvoll – vor Ort.',
+    },
+    {
+      question: 'Warum steht „Standorte“ auf der Website?',
+      answer:
+        'Damit klar ist, wo wir sitzen und wo wir arbeiten: ein physischer Standort in Bünde und ein definiertes Einsatzgebiet in Ostwestfalen-Lippe. Details: https://rocketory.de/agentur/buende',
+    },
+    {
+      question: 'Wen kontaktiere ich bei Fragen aus Herford oder Bielefeld?',
+      answer:
+        'Denselben Ansprechpartner wie in Bünde: beratung@rocketory.de oder https://rocketory.de/kontakt. Büro: Zimmerstraße 16, 32257 Bünde.',
+    },
+    {
+      question: 'Seid ihr eine Remote-Agentur?',
+      answer:
+        'Nein. Wir sind lokal verankert in Bünde und nutzen digitale Tools für effiziente Zusammenarbeit – ohne anonyme Callcenter-Struktur.',
+    },
+  ]
+
+  return [
+    {
+      ...baseWebPage('/standorte', 'Standorte & Einsatzgebiet OWL – Rocketory', description),
+      mainEntity: { '@id': LOCAL_BUSINESS_ID },
+      about: { '@id': PLACE_BUNDE_ID },
+      primaryImageOfPage: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/assets/images/buende/buende-a30.webp`,
+      },
+      significantLink: [`${SITE_URL}/agentur/buende`, `${SITE_URL}/kontakt`],
+    },
+    buildBreadcrumb('/standorte', 'Standorte'),
+    buildPlaceBuende(),
+    {
+      '@type': 'ItemList',
+      '@id': `${SITE_URL}/standorte#service-area`,
+      name: 'Einsatzgebiet Rocketory',
+      description:
+        'Städte und Gemeinden im Einsatzgebiet von Rocketory – betreut vom Standort Bünde, ohne Zweitbüros.',
+      itemListElement: SERVICE_AREA_CITIES.map((name, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name,
+        item: {
+          '@type': 'City',
+          name,
+        },
+      })),
+    },
+    buildFaqPage('/standorte', faqs),
   ]
 }
 

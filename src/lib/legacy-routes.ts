@@ -5,6 +5,8 @@ export const LEGACY_PAGE_ROUTES: Record<string, string> = {
   'technologien.html': '/technologien',
   'wartung.html': '/angebote#wartung',
   'agentur.html': '/agentur',
+  'agentur/buende.html': '/agentur/buende',
+  'standorte.html': '/standorte',
   'blog.html': '/blog',
   'projekte.html': '/projekte',
   'referenzen.html': '/blog',
@@ -54,6 +56,8 @@ export function transformLinks(html: string): string {
   result = result.replace(/href="\.\.\/blog\/([^"]+)\.html"/g, 'href="/blog/$1"')
   result = result.replace(/href="projekte\/([^"]+)\.html"/g, 'href="/projekte/$1"')
   result = result.replace(/href="\.\.\/projekte\/([^"]+)\.html"/g, 'href="/projekte/$1"')
+  result = result.replace(/href="agentur\/buende\.html(#[^"]*)?"/g, 'href="/agentur/buende$1"')
+  result = result.replace(/href="\.\.\/agentur\/buende\.html(#[^"]*)?"/g, 'href="/agentur/buende$1"')
   result = result.replace(/href="\.\.\/referenzen\.html"/g, 'href="/blog"')
   result = result.replace(/href="referenzen\.html"/g, 'href="/blog"')
   result = result.replace(/href="\.\.\/index\.html(#[^"]*)"/g, 'href="/$1"')

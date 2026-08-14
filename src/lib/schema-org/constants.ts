@@ -3,13 +3,32 @@ import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/metadata'
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`
 export const WEBSITE_ID = `${SITE_URL}/#website`
 export const LOCAL_BUSINESS_ID = `${SITE_URL}/#localbusiness`
-export const PLACE_BUNDE_ID = `${SITE_URL}/agentur#place-buende`
+export const PLACE_BUNDE_ID = `${SITE_URL}/agentur/buende#place`
+
+/** Städte/Gemeinden im Einsatzgebiet (kein Zweitbüro). */
+export const SERVICE_AREA_CITIES = [
+  'Bünde',
+  'Enger',
+  'Hiddenhausen',
+  'Kirchlengern',
+  'Rödinghausen',
+  'Löhne',
+  'Herford',
+  'Bad Oeynhausen',
+  'Minden',
+  'Lübbecke',
+  'Bielefeld',
+  'Porta Westfalica',
+  'Vlotho',
+] as const
 
 export const ORG_EMAIL = 'beratung@rocketory.de'
 export const ORG_PHONE = '+491607624145'
+export const ORG_PHONE_DISPLAY = '0160 7624 145'
 export const ORG_LEGAL_NAME = 'FairFlock GmbH'
 export const ORG_BRAND = SITE_NAME
 
+/** Öffentliche Besucher-/Büroadresse Rocketory (Remise). */
 export const ORG_ADDRESS = {
   '@type': 'PostalAddress' as const,
   streetAddress: 'Zimmerstr. 16',
@@ -19,11 +38,33 @@ export const ORG_ADDRESS = {
   addressCountry: 'DE',
 }
 
+/** Rechtlicher Firmensitz FairFlock GmbH (Impressum). */
+export const LEGAL_ADDRESS = {
+  '@type': 'PostalAddress' as const,
+  streetAddress: 'Sonnenhügel 16a',
+  addressLocality: 'Bünde',
+  addressRegion: 'Nordrhein-Westfalen',
+  postalCode: '32257',
+  addressCountry: 'DE',
+}
+
+/** Geo näher an Zimmerstr. 16, Bünde (Büro). */
 export const GEO_BUNDE = {
   '@type': 'GeoCoordinates' as const,
-  latitude: 52.1984,
-  longitude: 8.5864,
+  latitude: 52.1972,
+  longitude: 8.5839,
 }
+
+export const MAPS_URL =
+  'https://www.google.com/maps/search/?api=1&query=Zimmerstr.+16,+32257+B%C3%BCnde'
+
+export const LOCATION_OG_IMAGE = '/assets/images/buende/buende-a30.webp'
+
+export const META_AGENTUR_BUENDE =
+  'Webdesign-Agentur in Bünde: Büro Zimmerstr. 16, OWL. FairFlock-Unit Rocketory – persönlich, lokal, ohne Zweitbüros.'
+
+export const META_STANDORTE =
+  'Ein Standort in Bünde, Einsatzgebiet OWL: Herford, Enger, Löhne, Bad Oeynhausen, Bielefeld. Keine Fake-Büros.'
 
 export const ORG_SAME_AS = [
   'https://www.instagram.com/rocketory',

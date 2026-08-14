@@ -8,6 +8,8 @@ import { getPublishedProjectSlugs } from '@/lib/projects'
 const STATIC_ROUTES = [
   { path: '', priority: 1 },
   { path: '/agentur', priority: 0.8 },
+  { path: '/agentur/buende', priority: 0.85 },
+  { path: '/standorte', priority: 0.85 },
   { path: '/angebote', priority: 0.8 },
   { path: '/technologien', priority: 0.8 },
   { path: '/blog', priority: 0.8 },
@@ -18,6 +20,7 @@ const STATIC_ROUTES = [
 ] as const
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const lastModified = new Date()
   const [postSlugs, projectSlugs] = await Promise.all([
     getPublishedPostSlugs(),
     getPublishedProjectSlugs(),
@@ -28,16 +31,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...STATIC_ROUTES.map(({ path, priority }) => ({
       url: `${SITE_URL}${path}`,
+      lastModified,
       changeFrequency: 'weekly' as const,
       priority,
     })),
     ...blogSlugs.map((slug) => ({
       url: `${SITE_URL}/blog/${slug}`,
+      lastModified,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),
     ...projectSlugs.map((slug) => ({
       url: `${SITE_URL}/projekte/${slug}`,
+      lastModified,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),

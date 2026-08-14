@@ -27,6 +27,12 @@ export const MAIN_SITE_NAV: MainNavItem[] = [
       'Webdesign-Team aus Bünde mit festem Standort in Ostwestfalen-Lippe – persönlich, ehrlich, ohne Verkaufsdruck.',
   },
   {
+    name: 'Standorte',
+    path: '/standorte',
+    description:
+      'Ein Standort in Bünde – Einsatzgebiet OWL: Herford, Enger, Löhne, Bad Oeynhausen, Bielefeld und Umgebung.',
+  },
+  {
     name: 'Blog',
     path: '/blog',
     description:
