@@ -61,7 +61,6 @@
     '<nav class="rk-menu-links">' +
     '<a href="index.html" data-rk-close>Home</a>' +
     '<a href="agentur.html" data-rk-close>Agentur</a>' +
-    '<a href="standorte.html" data-rk-close>Standorte</a>' +
     '<button type="button" class="rk-menu-group-btn rk-menu-drill-btn" data-rk-menu-sub="rkMenuServicesSub" aria-controls="rkMenuServicesSub">Services <span>→</span></button>' +
     '<a href="blog.html" data-rk-close>Blog</a>' +
     '<a href="projekte.html" data-rk-close>Projekte</a></nav></div>' +

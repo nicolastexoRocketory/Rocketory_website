@@ -3704,6 +3704,11 @@ a.rk-footer-link::after{
 }
 a.rk-footer-link:hover{color:var(--hero-text)!important;}
 a.rk-footer-link:hover::after{width:100%;}
+.rk-footer-link--strong{
+  color:rgba(245,244,240,0.92)!important;
+  font-weight:600;
+}
+.rk-footer-contact .rk-footer-note{margin-top:clamp(10px,1.5vw,14px);}
 a.rk-footer-link--trustus{color:rgba(148,184,216,0.92)!important;}
 a.rk-footer-link--trustus::after{background:var(--tu-color-light);}
 a.rk-footer-link--trustus:hover{color:var(--tu-hero-text)!important;}
