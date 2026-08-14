@@ -91,6 +91,7 @@ export function getLegacyPage(relativePath: string): LegacyPageData {
 }
 
 export const BLOG_SLUGS = [
+  'eu-ai-act-ki-verordnung-webdesign',
   'zusammenarbeit-individueller-fahrplan',
   'wordpress-2026-schlank-schnell-richtig',
   'limbic-map-farben-zielgruppengerechtes-design',
