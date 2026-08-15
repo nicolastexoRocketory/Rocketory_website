@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { WHATSAPP_HREF } from '@/lib/whatsapp'
 
@@ -35,18 +35,46 @@ function readCollapsedState(): boolean {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored !== null) return stored === '1'
-    return localStorage.getItem(LEGACY_STORAGE_KEY) === '1'
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY)
+    if (legacy !== null) return legacy === '1'
+    return true
   } catch {
-    return false
+    return true
   }
 }
 
 export function ContactFloat() {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
+  const wrapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setCollapsed(readCollapsedState())
   }, [])
+
+  useEffect(() => {
+    if (collapsed) return
+
+    function onPointerDown(event: MouseEvent | TouchEvent) {
+      const target = event.target
+      if (!(target instanceof Node) || !wrapRef.current?.contains(target)) {
+        setCollapsedState(true)
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setCollapsedState(true)
+    }
+
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('touchstart', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('touchstart', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [collapsed])
 
   function setCollapsedState(next: boolean) {
     setCollapsed(next)
@@ -58,50 +86,48 @@ export function ContactFloat() {
   }
 
   return (
-    <div className={`rk-contact-float-wrap${collapsed ? ' is-collapsed' : ''}`}>
-      <div className="rk-contact-float-panel">
+    <div
+      ref={wrapRef}
+      className={`rk-contact-float-wrap${collapsed ? ' is-collapsed' : ' is-open'}`}
+    >
+      <div className="rk-contact-float-panel" role="dialog" aria-label="Kontakt">
         <button
           type="button"
           className="rk-contact-float__dismiss"
           onClick={() => setCollapsedState(true)}
-          aria-label="Kontakt-Hinweis ausblenden"
+          aria-label="Kontakt schließen"
         >
           <CloseIcon />
         </button>
 
         <div className="rk-contact-float__inner">
-          <p className="rk-contact-float__kicker">Kontakt</p>
-          <p className="rk-contact-float__title">Lass uns sprechen.</p>
-          <p className="rk-contact-float__desc">
-            Kostenlos & unverbindlich · Antwort innerhalb von 24h
-          </p>
+          <p className="rk-contact-float__note">Kostenlos · Antwort in 24&nbsp;h</p>
 
-          <div className="rk-contact-float__actions">
-            <a href="/kontakt" className="rk-dot-cta rk-contact-float__primary">
-              <span className="rk-dot-cta-label">Projekt anfragen</span>
-              <span className="dot-ring" aria-hidden="true">
-                <span />
-              </span>
-            </a>
+          <a href="/kontakt" className="rk-dot-cta rk-contact-float__primary">
+            <span className="rk-dot-cta-label">Projekt anfragen</span>
+            <span className="dot-ring" aria-hidden="true">
+              <span />
+            </span>
+          </a>
 
-            <a
-              className="rk-whatsapp-cta"
-              href={WHATSAPP_HREF}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <WhatsAppIcon />
-              <span>Lieber per WhatsApp</span>
-            </a>
-          </div>
+          <a
+            className="rk-contact-float__whatsapp"
+            href={WHATSAPP_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <WhatsAppIcon />
+            <span>WhatsApp</span>
+          </a>
         </div>
       </div>
 
       <button
         type="button"
-        className="rk-contact-float__expand"
-        onClick={() => setCollapsedState(false)}
-        aria-label="Kontakt-Hinweis anzeigen"
+        className="rk-contact-float__trigger"
+        onClick={() => setCollapsedState(!collapsed)}
+        aria-expanded={!collapsed}
+        aria-label={collapsed ? 'Kontakt anzeigen' : 'Kontakt schließen'}
       >
         <span className="rk-dot-cta-label">Kontakt</span>
         <span className="dot-ring" aria-hidden="true">

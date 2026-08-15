@@ -8,7 +8,7 @@ type RocketoryScriptsProps = {
   withBlogSidebar?: boolean
 }
 
-const SCRIPT_VERSION = '32'
+const SCRIPT_VERSION = '38'
 
 function withVersion(src: string): string {
   if (src.includes('?')) return src
@@ -128,6 +128,7 @@ export function RocketoryScripts({ scripts, withBlogSidebar = false }: Rocketory
         loadScript('/js/scroll-reveal.js'),
         loadScript('/js/inklusive-rows.js'),
         loadScript('/js/usp-carousel.js'),
+        loadScript('/js/ai-image-badge.js'),
       ])
 
       if (withBlogSidebar) {
@@ -143,7 +144,8 @@ export function RocketoryScripts({ scripts, withBlogSidebar = false }: Rocketory
           !src.includes('hero-parallax.js') &&
           !src.includes('scroll-reveal.js') &&
           !src.includes('inklusive-rows.js') &&
-          !src.includes('usp-carousel.js'),
+          !src.includes('usp-carousel.js') &&
+          !src.includes('ai-image-badge.js'),
       )
 
       if (pageScripts.length > 0) {

@@ -278,39 +278,34 @@ export function buildAgenturBuendePageSchema(): SchemaNode[] {
 
   const faqs = [
     {
-      question: 'Wo hat Rocketory sein Büro?',
+      question: 'Wie schnell meldet sich Rocketory zurück?',
       answer:
-        'Rocketory ist die Agenturmarke der FairFlock GmbH. Das Büro liegt in der Zimmerstraße 16, 32257 Bünde (Remise) – das ist unser einziger physischer Kundenstandort. Der rechtliche Firmensitz der FairFlock GmbH ist Sonnenhügel 16a, 32257 Bünde.',
+        'In der Regel innerhalb von 24 Stunden – persönlich, nicht automatisiert. Du sprichst direkt mit Menschen, die dein Projekt kennen. Kontakt: https://rocketory.de/kontakt',
     },
     {
-      question: 'Warum sitzt eine Webdesign-Agentur ausgerechnet in Bünde?',
+      question: 'Arbeitet Rocketory nur regional?',
       answer:
-        'Weil hier Mittelstand, Handwerk und lokale Dienstleister zu Hause sind – und weil wir als FairFlock-Unit regional verankert arbeiten. Bünde ist Zigarrenstadt, Wirtschaftsstandort und Alltag für Betriebe, die digital Anfragen brauchen.',
+        'Unser Herz schlägt in Bünde – wir kennen den Markt vor Ort. Projekte begleiten wir aber auch per Video und digital, wenn das für dich passt. Beispiele: https://rocketory.de/projekte',
     },
     {
-      question: 'Gibt es ein Rocketory-Büro in Herford oder Bielefeld?',
+      question: 'Was passiert nach dem Launch?',
       answer:
-        'Nein. Wir haben kein Zweitbüro. Termine und Betreuung für Kunden aus Herford, Bielefeld und dem restlichen OWL laufen von Bünde aus – online oder nach Absprache vor Ort bei dir.',
+        'Wir bleiben an deiner Seite: Wartung, Updates und persönlicher Support sorgen dafür, dass deine Website zuverlässig läuft – während du dein Business führst.',
     },
     {
-      question: 'Arbeitet Rocketory nur für Unternehmen aus Bünde?',
+      question: 'Wie lange läuft ein Monats-Abo?',
       answer:
-        'Nein. Bünde ist Standort und Schwerpunkt. Projekte begleiten wir in der gesamten OWL-Region und darüber hinaus – wenn der Fit stimmt. Überblick: https://rocketory.de/standorte',
+        'Alle monatlichen Pakete – inklusive Wartung & Sicherheit – haben eine Mindestlaufzeit von 24 Monaten. Danach ist monatlich kündbar. Details im Erstgespräch: https://rocketory.de/kontakt',
     },
     {
-      question: 'Kann ich euch vor Ort in Bünde treffen?',
+      question: 'Gibt es versteckte Kosten?',
       answer:
-        'Ja, nach Absprache. Viele Erstgespräche starten online; vor Ort in Bünde oder bei dir ist möglich, wenn es zum Projekt passt. Kontakt: https://rocketory.de/kontakt',
+        'Nein. Klare Angebote, nachvollziehbare Preise und ehrliche Empfehlungen – alles inklusive, keine versteckten Extras.',
     },
     {
-      question: 'Was macht Rocketory in Bünde konkret?',
+      question: 'Bin ich an eine anonyme Agentur gebunden?',
       answer:
-        'Webdesign, SEO und langfristige Website-Betreuung für KMU, Handwerk und lokale Dienstleister – persönlich betreut und fair kalkuliert. Details: https://rocketory.de/angebote',
-    },
-    {
-      question: 'Seid ihr eine Remote-Agentur?',
-      answer:
-        'Nein. Wir sind lokal verankert in Bünde und nutzen digitale Tools für effiziente Zusammenarbeit – ohne anonyme Callcenter-Struktur.',
+        'Rocketory ist eine Unit der FairFlock GmbH – Marketing über unsere Schwester-Agentur Viralista. Kein Ein-Mann-Setup ohne Rückhalt. Du arbeitest mit einer Struktur, die Verantwortung trägt.',
     },
   ]
 

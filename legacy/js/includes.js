@@ -109,7 +109,10 @@
 
     if (loads.length === 0) {
       authorLoads.then(mountAll).then(function () {
-        return loadScript(base + 'js/readmore.js' + v);
+        return Promise.all([
+          loadScript(base + 'js/readmore.js' + v),
+          loadScript(base + 'js/ai-image-badge.js' + v),
+        ]);
       }).catch(function (err) {
         console.error('[Rocketory] Komponenten konnten nicht geladen werden:', err);
       });
@@ -120,7 +123,10 @@
       .then(function () { return authorLoads; })
       .then(mountAll)
       .then(function () {
-        return loadScript(base + 'js/readmore.js' + v);
+        return Promise.all([
+          loadScript(base + 'js/readmore.js' + v),
+          loadScript(base + 'js/ai-image-badge.js' + v),
+        ]);
       })
       .catch(function (err) {
         console.error('[Rocketory] Komponenten konnten nicht geladen werden:', err);

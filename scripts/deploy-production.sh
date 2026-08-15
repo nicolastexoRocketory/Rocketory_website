@@ -54,8 +54,8 @@ echo "==> npm run build (on Linux server)"
 npm run build
 
 if [[ -f .env.production ]]; then
-  echo "==> npm run seed (Blog-Posts synchronisieren)"
-  npm run seed || echo "WARN: seed fehlgeschlagen – Blog ggf. manuell aktualisieren" >&2
+  echo "==> Blog-Posts synchronisieren (seed)"
+  cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env.production src/scripts/seed-posts.ts || echo "WARN: seed fehlgeschlagen – Blog ggf. manuell aktualisieren" >&2
 fi
 
 if [[ ! -f .env.production && -f "\$HOME/.config/node/.env" ]]; then

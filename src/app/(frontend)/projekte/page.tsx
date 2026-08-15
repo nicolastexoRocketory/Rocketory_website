@@ -9,8 +9,6 @@ import {
 } from '@/lib/projects'
 import { buildProjekteListingSchema } from '@/lib/schema-org'
 
-import '@/styles/references.css'
-
 export const revalidate = 3600
 
 export const metadata = buildLegacyPageMetadata('projekte.html', '/projekte')

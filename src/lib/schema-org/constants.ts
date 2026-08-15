@@ -61,7 +61,7 @@ export const MAPS_URL =
 export const LOCATION_OG_IMAGE = '/assets/images/buende/buende-a30.webp'
 
 export const META_AGENTUR_BUENDE =
-  'Webdesign-Agentur in Bünde: Büro Zimmerstr. 16, OWL. FairFlock-Unit Rocketory – persönlich, lokal, ohne Zweitbüros.'
+  'Webdesign-Agentur in Bünde (OWL): Büro Zimmerstr. 16, Kreis Herford. Rocketory – persönliche Betreuung für KMU & Handwerk, lokal statt Remote.'
 
 export const META_STANDORTE =
   'Ein Standort in Bünde, Einsatzgebiet OWL: Herford, Enger, Löhne, Bad Oeynhausen, Bielefeld. Keine Fake-Büros.'

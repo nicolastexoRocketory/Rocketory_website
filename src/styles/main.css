@@ -2955,6 +2955,11 @@ a.rk-tech-card:focus-visible{
   margin:0;font-size:clamp(0.75rem,0.95vw,0.8125rem);
   color:var(--muted);line-height:1.55;
 }
+.rk-tech-stack-cta{
+  margin:clamp(16px,2.5vw,22px) 0 0;
+  font-size:clamp(0.8125rem,1vw,0.875rem);
+  line-height:1.45;
+}
 .rk-faq-list{display:flex;flex-direction:column;}
 .rk-faq-item{border-top:1px solid var(--border);}
 .rk-faq-item:last-child{border-bottom:1px solid var(--border);}
@@ -3607,6 +3612,20 @@ button.rk-plan-toggle-label{
 .rk-cta-section.rk-tone-dark + .rk-footer .rk-footer-main{
   padding-top:clamp(28px,4vw,48px);
 }
+.rk-cta-section.rk-tone-dark + .rk-loc-credits{
+  border-top:none;
+  padding-top:clamp(20px,3vw,28px);
+}
+#main-content:has(.rk-loc-credits) + .rk-footer::before,
+.rk-loc-credits + .rk-footer::before,
+.rk-loc-credits + #rk-footer-mount .rk-footer::before{
+  display:none;
+}
+#main-content:has(.rk-loc-credits) + .rk-footer .rk-footer-main,
+.rk-loc-credits + .rk-footer .rk-footer-main,
+.rk-loc-credits + #rk-footer-mount .rk-footer .rk-footer-main{
+  padding-top:clamp(20px,3vw,28px);
+}
 .rk-cta-layout{display:grid;grid-template-columns:1fr;gap:28px;align-items:stretch;}
 .rk-cta-aside{display:flex;min-width:0;}
 .rk-cta-big{
@@ -4231,4 +4250,60 @@ a.rk-footer-link--trustus:hover{color:var(--tu-hero-text)!important;}
   .rk-featured-card:hover .rk-featured-more{color:var(--ink);}
   .rk-featured-card:hover .rk-featured-more .dot-ring{border-color:var(--ink);}
   .rk-featured-card:hover .rk-featured-more .dot-ring span{background:var(--ink);}
+}
+
+/* ── KI-Bild Kennzeichnung ── */
+.rk-ai-badge-host.rk-page-hero-media,
+.rk-ai-badge-host.rk-blog-cover,
+.rk-ai-badge-host.rk-article-split-media{
+  position:relative;
+}
+.rk-ai-badge{
+  position:absolute;z-index:4;
+  bottom:clamp(10px,2vw,16px);left:clamp(10px,2vw,16px);
+  display:inline-flex;align-items:center;gap:0.5rem;
+  padding:0.375rem 0.75rem 0.375rem 0.5rem;
+  border-radius:999px;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(14px) saturate(160%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.2);
+  box-shadow:0 4px 20px rgba(0,0,0,0.18),inset 0 1px 0 rgba(255,255,255,0.12);
+  font-family:var(--font-sans);
+  font-size:0.625rem;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:rgba(255,255,255,0.94);line-height:1;
+  pointer-events:none;user-select:none;
+}
+.rk-ai-badge--light{
+  background:rgba(255,255,255,0.72);
+  border-color:rgba(255,255,255,0.88);
+  color:rgba(10,15,30,0.88);
+  box-shadow:0 4px 18px rgba(10,15,30,0.08),inset 0 1px 0 rgba(255,255,255,0.95);
+}
+.rk-ai-badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#fff;flex-shrink:0;
+  animation:rk-ai-badge-pulse 2.4s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+.rk-ai-badge--light .rk-ai-badge-dot{
+  box-shadow:0 0 0 1px rgba(10,15,30,0.14);
+}
+@keyframes rk-ai-badge-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.72);opacity:1;transform:scale(1);}
+  50%{box-shadow:0 0 0 6px rgba(255,255,255,0);opacity:0.9;transform:scale(1.08);}
+}
+.rk-ai-badge-host--hero .rk-ai-badge{
+  bottom:clamp(20px,4vw,32px);left:clamp(20px,4vw,32px);
+  z-index:2;
+}
+.rk-ai-badge-host--split .rk-ai-badge{
+  bottom:clamp(2.75rem,6vw,3.25rem);
+}
+.rk-contact-main.rk-ai-badge-host .rk-ai-badge,
+.rk-interstitial.rk-ai-badge-host .rk-ai-badge{
+  bottom:clamp(16px,3vw,24px);left:clamp(16px,3vw,24px);z-index:3;
+}
+@media(prefers-reduced-motion:reduce){
+  .rk-ai-badge-dot{animation:none;}
 }

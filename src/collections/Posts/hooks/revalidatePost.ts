@@ -2,15 +2,19 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'paylo
 import { revalidatePath } from 'next/cache'
 
 function revalidateBlogPaths(slug?: string | null, previousSlug?: string | null) {
-  revalidatePath('/')
-  revalidatePath('/blog')
+  try {
+    revalidatePath('/')
+    revalidatePath('/blog')
 
-  if (slug) {
-    revalidatePath(`/blog/${slug}`)
-  }
+    if (slug) {
+      revalidatePath(`/blog/${slug}`)
+    }
 
-  if (previousSlug && previousSlug !== slug) {
-    revalidatePath(`/blog/${previousSlug}`)
+    if (previousSlug && previousSlug !== slug) {
+      revalidatePath(`/blog/${previousSlug}`)
+    }
+  } catch {
+    // Seed/CLI läuft außerhalb des Next.js-Request-Kontexts – Revalidation überspringen.
   }
 }
 
