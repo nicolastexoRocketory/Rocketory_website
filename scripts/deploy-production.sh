@@ -50,13 +50,20 @@ git reset --hard "origin/\$GIT_BRANCH"
 echo "==> npm ci"
 npm ci
 
+if [[ -f .env.production ]]; then
+  echo "==> Blog-Posts synchronisieren (seed, vor Build)"
+  NODE_OPTIONS=--no-deprecation ./node_modules/.bin/tsx --env-file=.env.production src/scripts/seed-posts.ts \
+    || echo "WARN: seed fehlgeschlagen – Blog ggf. manuell aktualisieren" >&2
+elif [[ -f "\$HOME/.config/node/.env" ]]; then
+  cp "\$HOME/.config/node/.env" .env.production
+  chmod 600 .env.production
+  echo "==> Blog-Posts synchronisieren (seed, vor Build)"
+  NODE_OPTIONS=--no-deprecation ./node_modules/.bin/tsx --env-file=.env.production src/scripts/seed-posts.ts \
+    || echo "WARN: seed fehlgeschlagen – Blog ggf. manuell aktualisieren" >&2
+fi
+
 echo "==> npm run build (on Linux server)"
 npm run build
-
-if [[ -f .env.production ]]; then
-  echo "==> Blog-Posts synchronisieren (seed)"
-  cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env.production src/scripts/seed-posts.ts || echo "WARN: seed fehlgeschlagen – Blog ggf. manuell aktualisieren" >&2
-fi
 
 if [[ ! -f .env.production && -f "\$HOME/.config/node/.env" ]]; then
   cp "\$HOME/.config/node/.env" .env.production
@@ -72,6 +79,9 @@ sleep 4
 curl -s -o /dev/null -w "homepage:%{http_code}\n" http://127.0.0.1:3000/ || true
 curl -s -o /dev/null -w "admin:%{http_code}\n" http://127.0.0.1:3000/admin || true
 curl -s -o /dev/null -w "media-api:%{http_code}\n" "http://127.0.0.1:3000/api/media?limit=1" || true
+curl -s -o /dev/null -w "blog:%{http_code}\n" http://127.0.0.1:3000/blog || true
+curl -s -o /dev/null -w "post-hitl:%{http_code}\n" http://127.0.0.1:3000/blog/human-in-the-loop-qualitaetskontrolle-webdesign || true
+curl -s -o /dev/null -w "post-aiact:%{http_code}\n" http://127.0.0.1:3000/blog/eu-ai-act-ki-verordnung-webdesign || true
 echo "Deploy finished. Check ${SITE_URL}"
 REMOTE
 
