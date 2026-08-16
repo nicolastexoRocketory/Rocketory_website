@@ -5,6 +5,8 @@ import { buildLegacyPageMetadata } from '@/lib/metadata'
 import { getBlogCategories, getPublishedPosts, injectPostsIntoBlog } from '@/lib/posts'
 import { buildBlogListingSchema } from '@/lib/schema-org'
 
+import '@/styles/references.css'
+
 export const revalidate = 3600
 
 export const metadata = buildLegacyPageMetadata('blog.html', '/blog')
