@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { revalidateTag } from 'next/cache'
 
 function humanizeFilename(filename: string): string {
   return filename
@@ -11,7 +12,7 @@ export const Media: CollectionConfig = {
   slug: 'media',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'filename', 'alt', 'updatedAt'],
+    defaultColumns: ['title', 'filename', 'isAiGenerated', 'alt', 'updatedAt'],
   },
   access: {
     read: () => true,
@@ -30,6 +31,16 @@ export const Media: CollectionConfig = {
         }
 
         return data
+      },
+    ],
+    afterChange: [
+      () => {
+        revalidateTag('ai-images')
+      },
+    ],
+    afterDelete: [
+      () => {
+        revalidateTag('ai-images')
       },
     ],
   },
@@ -103,6 +114,23 @@ export const Media: CollectionConfig = {
           admin: {
             description: 'Optional sichtbare Caption unter dem Bild – für alle Nutzer lesbar.',
             condition: (_, siblingData) => !siblingData?.isDecorative,
+          },
+        },
+      ],
+    },
+    {
+      type: 'collapsible',
+      label: 'Kennzeichnung',
+      admin: { initCollapsed: false },
+      fields: [
+        {
+          name: 'isAiGenerated',
+          type: 'checkbox',
+          label: 'KI-generiertes Bild',
+          defaultValue: false,
+          admin: {
+            description:
+              'Aktivieren, wenn das Bild (ganz oder teilweise) mit KI erstellt wurde. Im Frontend erscheint dann die Kennzeichnung „KI-Bild“.',
           },
         },
       ],

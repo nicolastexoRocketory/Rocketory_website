@@ -3,6 +3,7 @@ import { DM_Sans, Instrument_Serif, Inter } from 'next/font/google'
 import React from 'react'
 
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/metadata'
+import { AiImageRegistry } from '@/components/AiImageRegistry'
 import { SiteSchema } from '@/components/SiteSchema'
 import { CookieBanner } from '@/components/CookieBanner'
 import { ContactFloat } from '@/components/ContactFloat'
@@ -70,6 +71,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
         />
       </head>
       <body>
+        <AiImageRegistry />
         <SiteSchema />
         {children}
         <ContactFloat />

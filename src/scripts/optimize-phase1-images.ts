@@ -17,6 +17,8 @@ type Job = {
 const jobs: Job[] = [
   { input: 'team-raketenstart.png', output: 'team-raketenstart.webp', width: 1024, quality: 82 },
   { input: 'angebote-teaser-astronaut.png', output: 'angebote-teaser-astronaut.webp', width: 1024, quality: 82 },
+  { input: 'angebote-tech-stack.png', output: 'angebote-tech-stack.webp', width: 1024, quality: 82 },
+  { input: 'ki-vo-bridge-bg.png', output: 'ki-vo-bridge-bg.webp', width: 1024, quality: 82 },
   { input: 'team-rocketory.png', output: 'team-rocketory.webp', width: 1024, quality: 82 },
   { input: 'nasa-earth-space.jpg', output: 'nasa-earth-space.webp', width: 1920, quality: 80 },
   {

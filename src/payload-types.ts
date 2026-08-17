@@ -184,6 +184,10 @@ export interface Media {
    * Optional sichtbare Caption unter dem Bild – für alle Nutzer lesbar.
    */
   caption?: string | null;
+  /**
+   * Aktivieren, wenn das Bild (ganz oder teilweise) mit KI erstellt wurde. Im Frontend erscheint dann die Kennzeichnung „KI-Bild“.
+   */
+  isAiGenerated?: boolean | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -658,6 +662,7 @@ export interface MediaSelect<T extends boolean = true> {
   ariaLabel?: T;
   ariaDescription?: T;
   caption?: T;
+  isAiGenerated?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

@@ -1,17 +1,80 @@
 (function () {
   'use strict';
 
-  var AI_SRC =
-    /team-raketenstart|angebote-teaser-astronaut|inklusive-raketenstart|(?:^|\/)Raketenstart\.|mobile-hero|technologien-hero|kontakt-cosmos|team-rocketory/i;
   var markedHosts = new WeakSet();
+  var aiMatchers = null;
+  var fetchPromise = null;
 
-  function isAiImage(img) {
-    if (img.closest('[data-rk-ai-image="false"]')) return false;
-    if (img.hasAttribute('data-rk-ai-image') || img.closest('[data-rk-ai-image]:not([data-rk-ai-image="false"])')) {
-      return true;
+  function normalizeSrc(src) {
+    return String(src || '').split('?')[0];
+  }
+
+  function basename(src) {
+    var parts = normalizeSrc(src).split('/');
+    return parts[parts.length - 1] || '';
+  }
+
+  function readInlineMatchers() {
+    var list = window.__RK_AI_IMAGES;
+    return Array.isArray(list) ? list.filter(Boolean) : [];
+  }
+
+  function fetchMatchers() {
+    if (fetchPromise) return fetchPromise;
+
+    fetchPromise = fetch('/api/ai-images', { credentials: 'same-origin' })
+      .then(function (response) {
+        if (!response.ok) throw new Error('ai-images request failed');
+        return response.json();
+      })
+      .then(function (payload) {
+        return Array.isArray(payload.images) ? payload.images.filter(Boolean) : [];
+      })
+      .catch(function () {
+        return [];
+      });
+
+    return fetchPromise;
+  }
+
+  function getMatchers() {
+    if (aiMatchers) return Promise.resolve(aiMatchers);
+
+    var inline = readInlineMatchers();
+    if (inline.length) {
+      aiMatchers = inline;
+      return Promise.resolve(aiMatchers);
     }
+
+    return fetchMatchers().then(function (list) {
+      aiMatchers = list;
+      return aiMatchers;
+    });
+  }
+
+  function srcMatchesList(src, list) {
+    if (!src || !list || !list.length) return false;
+
+    var normalized = normalizeSrc(src);
+    var file = basename(src);
+
+    for (var i = 0; i < list.length; i++) {
+      var token = normalizeSrc(list[i]);
+      if (!token) continue;
+      if (normalized === token || file === token || file === basename(token)) return true;
+      if (normalized.endsWith(token) || token.endsWith('/' + file)) return true;
+    }
+
+    return false;
+  }
+
+  function isAiImage(img, list) {
+    if (img.closest('[data-rk-ai-image="false"]')) return false;
+    if (img.getAttribute('data-rk-ai-image') === 'true') return true;
+    if (img.closest('[data-rk-ai-image="true"]')) return true;
+
     var src = img.currentSrc || img.getAttribute('src') || '';
-    return AI_SRC.test(src);
+    return srcMatchesList(src, list);
   }
 
   function resolveVariant(host) {
@@ -29,7 +92,7 @@
   }
 
   function resolveHost(img) {
-    var explicit = img.closest('[data-rk-ai-image]:not([data-rk-ai-image="false"])');
+    var explicit = img.closest('[data-rk-ai-image="true"]');
     if (explicit) return explicit;
 
     if (img.closest('.rk-hero-bg')) return img.closest('.rk-hero');
@@ -72,21 +135,23 @@
     markedHosts.add(host);
   }
 
-  function init() {
+  function init(list) {
     document.querySelectorAll('img').forEach(function (img) {
-      if (!isAiImage(img)) return;
+      if (!isAiImage(img, list)) return;
       var host = resolveHost(img);
       if (!host) return;
       mountBadge(host, resolveVariant(host));
     });
 
-    document.querySelectorAll('[data-rk-ai-image]:not([data-rk-ai-image="false"])').forEach(function (host) {
+    document.querySelectorAll('[data-rk-ai-image="true"]').forEach(function (host) {
       mountBadge(host, resolveVariant(host));
     });
   }
 
   function boot() {
-    init();
+    getMatchers().then(function (list) {
+      init(list);
+    });
   }
 
   if (document.readyState === 'loading') {

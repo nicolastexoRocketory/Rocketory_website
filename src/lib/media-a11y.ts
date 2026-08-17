@@ -5,6 +5,7 @@ import { buildOptimizedImgTag } from './optimized-image'
 export type MediaA11yFields = {
   alt?: string | null
   isDecorative?: boolean | null
+  isAiGenerated?: boolean | null
   ariaLabel?: string | null
   ariaDescription?: string | null
   caption?: string | null
@@ -56,6 +57,10 @@ export function buildAccessibleImageMarkup({
 
   if (!isDecorative && media?.ariaDescription?.trim()) {
     extraAttrs['aria-describedby'] = descriptionId
+  }
+
+  if (media?.isAiGenerated) {
+    extraAttrs['data-rk-ai-image'] = 'true'
   }
 
   const img = buildOptimizedImgTag({
