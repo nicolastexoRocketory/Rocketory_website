@@ -25,6 +25,7 @@
   function applyHeroParallax() {
     var vh = window.innerHeight;
     var i;
+    var mobile = window.innerWidth < 769;
 
     for (i = 0; i < heroes.length; i++) {
       var hero = heroes[i];
@@ -38,7 +39,9 @@
 
       var progress = Math.max(0, -rect.top);
       var heroH = hero._rkHeroH || hero.offsetHeight;
-      var bgY = progress * 0.5;
+      var bgFactor = mobile ? 0.35 : 0.5;
+      var contentFactor = mobile ? -0.12 : -0.2;
+      var bgY = progress * bgFactor;
       var bgS = Math.max(0.95, 1 - (progress / heroH) * 0.05);
 
       if (hero._rkBg) {
@@ -48,7 +51,7 @@
 
       if (hero._rkContent) {
         hero._rkContent.style.transform =
-          'translate3d(0,' + progress * -0.2 + 'px,0)';
+          'translate3d(0,' + progress * contentFactor + 'px,0)';
       }
     }
   }
@@ -92,21 +95,15 @@
     resetTransforms();
   }
 
-  function checkBreakpoint() {
+  function boot() {
     destroy();
     queryElements();
-    if (window.innerWidth >= 769) {
-      init();
-    }
-  }
-
-  function boot() {
-    checkBreakpoint();
+    init();
     scheduleUpdate();
   }
 
   window.addEventListener('resize', function () {
-    checkBreakpoint();
+    cacheElements();
     scheduleUpdate();
   }, { passive: true });
 

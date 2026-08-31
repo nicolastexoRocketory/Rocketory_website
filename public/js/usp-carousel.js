@@ -5,7 +5,6 @@
     '#leistungen .rk-usp-grid',
     '#angebote-leistungen .rk-usp-grid',
     '#kernvorteile .rk-bento-grid',
-    '#werte .rk-trust-grid',
   ]
 
   function clamp(n, min, max) {

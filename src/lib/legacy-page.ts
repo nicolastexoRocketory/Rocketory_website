@@ -32,16 +32,21 @@ function extractPageClass(html: string): string | undefined {
   return extra || undefined
 }
 
-export function extractLegacyLead(html: string): string | undefined {
-  const match = html.match(/<p class="rk-page-lead[^"]*">([\s\S]*?)<\/p>/i)
-  if (!match) return undefined
-
-  return match[1]
-    .replace(/<[^>]+>/g, '')
+function decodeHtmlEntities(value: string): string {
+  return value
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+}
+
+export function extractLegacyLead(html: string): string | undefined {
+  const match = html.match(/<p class="rk-page-lead[^"]*">([\s\S]*?)<\/p>/i)
+  if (!match) return undefined
+
+  return decodeHtmlEntities(match[1].replace(/<[^>]+>/g, ''))
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -58,7 +63,7 @@ export function getLegacyPage(relativePath: string): LegacyPageData {
   const html = fs.readFileSync(filePath, 'utf-8')
 
   const titleMatch = html.match(/<title>([^<]*)<\/title>/i)
-  const title = titleMatch?.[1]?.trim() || 'Rocketory'
+  const title = decodeHtmlEntities(titleMatch?.[1]?.trim() || 'Rocketory')
 
   const navMarker = '<div id="rk-nav-mount"></div>'
   const footerMarker = '<div id="rk-footer-mount"></div>'

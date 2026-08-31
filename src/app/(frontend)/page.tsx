@@ -4,7 +4,10 @@ import { getFeaturedPostSection, injectFeaturedPostSection } from '@/lib/homepag
 import { getLegacyPage } from '@/lib/legacy-page'
 import { buildPageMetadata, HOME_PAGE_DESCRIPTION, HOME_PAGE_TITLE } from '@/lib/metadata'
 import { getPublishedPosts, injectPostsIntoHomepage } from '@/lib/posts'
+import { getPublishedProjects, injectProjectsIntoAgentur } from '@/lib/projects'
 import { buildHomePageSchema } from '@/lib/schema-org'
+
+import '@/styles/agentur.css'
 
 export const revalidate = 3600
 
@@ -17,8 +20,13 @@ export const metadata = buildPageMetadata({
 
 export default async function LandingPage() {
   const page = getLegacyPage('index.html')
-  const [posts, featuredSection] = await Promise.all([getPublishedPosts(), getFeaturedPostSection()])
-  const content = injectFeaturedPostSection(injectPostsIntoHomepage(page.content, posts), featuredSection)
+  const [posts, featuredSection, projects] = await Promise.all([
+    getPublishedPosts(),
+    getFeaturedPostSection(),
+    getPublishedProjects(),
+  ])
+  const withPosts = injectFeaturedPostSection(injectPostsIntoHomepage(page.content, posts), featuredSection)
+  const content = injectProjectsIntoAgentur(withPosts, projects)
 
   return (
     <>
