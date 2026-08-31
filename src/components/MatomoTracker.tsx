@@ -20,32 +20,15 @@ function pageKey(): string {
   return `${window.location.pathname}${window.location.search}`
 }
 
-function loadMatomo(url: string, siteId: string): void {
-  if (typeof window === 'undefined') return
-  if (document.querySelector('script[data-rk-matomo]')) return
-
-  const base = url.replace(/\/+$/, '')
-  const _paq = (window._paq = window._paq || [])
-
-  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['setTrackerUrl', `${base}/matomo.php`])
-  _paq.push(['setSiteId', siteId])
-  _paq.push(['setSecureCookie', window.location.protocol === 'https:'])
-  _paq.push(['trackPageView'])
-  _paq.push(['enableLinkTracking'])
-
-  const script = document.createElement('script')
-  script.async = true
-  script.src = `${base}/matomo.js`
-  script.dataset.rkMatomo = '1'
-  const firstScript = document.getElementsByTagName('script')[0]
-  firstScript?.parentNode?.insertBefore(script, firstScript)
+function grantMatomoConsent(): void {
+  if (typeof window === 'undefined' || !window._paq) return
+  window._paq.push(['setConsentGiven'])
+  window._paq.push(['trackPageView'])
 }
 
-function unloadMatomo(): void {
-  document.querySelectorAll('script[data-rk-matomo]').forEach((node) => node.remove())
-  delete window._paq
-  document.documentElement.dataset.rkMatomoConsent = '0'
+function revokeMatomoConsent(): void {
+  if (typeof window === 'undefined' || !window._paq) return
+  window._paq.push(['forgetConsentGiven'])
 }
 
 function trackSpaPageView(): void {
@@ -55,7 +38,7 @@ function trackSpaPageView(): void {
   window._paq.push(['trackPageView'])
 }
 
-export function MatomoTracker({ url, siteId }: MatomoTrackerProps) {
+export function MatomoTracker({ url: _url, siteId: _siteId }: MatomoTrackerProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const lastTrackedKey = useRef<string | null>(null)
@@ -67,13 +50,15 @@ export function MatomoTracker({ url, siteId }: MatomoTrackerProps) {
       document.documentElement.dataset.rkMatomoConsent = enabled ? '1' : '0'
 
       if (enabled) {
-        const alreadyLoaded = Boolean(document.querySelector('script[data-rk-matomo]'))
-        loadMatomo(url, siteId)
-        if (!alreadyLoaded) {
+        const alreadyConsented = document.documentElement.dataset.rkMatomoActive === '1'
+        grantMatomoConsent()
+        if (!alreadyConsented) {
           lastTrackedKey.current = pageKey()
+          document.documentElement.dataset.rkMatomoActive = '1'
         }
       } else {
-        unloadMatomo()
+        revokeMatomoConsent()
+        document.documentElement.dataset.rkMatomoActive = '0'
         lastTrackedKey.current = null
       }
     }
@@ -86,7 +71,7 @@ export function MatomoTracker({ url, siteId }: MatomoTrackerProps) {
       window.removeEventListener(CONSENT_CHANGED_EVENT, syncFromStore)
       document.removeEventListener('rk:ready', syncFromStore)
     }
-  }, [url, siteId])
+  }, [])
 
   useEffect(() => {
     if (document.documentElement.dataset.rkMatomoConsent !== '1') return

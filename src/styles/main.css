@@ -1781,6 +1781,10 @@ button.rk-dot-cta{cursor:pointer;}
   .rk-hero{
     min-height:90svh;min-height:90dvh;
   }
+  .rk-hero:has(+ .rk-marquee-wrap){
+    min-height:calc(100svh - var(--rk-marquee-band));
+    min-height:calc(100dvh - var(--rk-marquee-band));
+  }
 }
 .rk-hero-bg{
   position:absolute;inset:0;z-index:0;overflow:hidden;
@@ -5252,9 +5256,17 @@ a.rk-footer-link:hover::after{width:100%;}
     min-height:80vh;min-height:80dvh;
     padding-bottom:clamp(16px,2vw,24px);
   }
+  .rk-hero:has(+ .rk-marquee-wrap){
+    min-height:calc(100svh - var(--rk-marquee-band));
+    min-height:calc(100dvh - var(--rk-marquee-band));
+  }
   .rk-hero>.rk-inner{
     min-height:calc(80vh - var(--rk-nav-h));
     min-height:calc(80dvh - var(--rk-nav-h));
+  }
+  .rk-hero:has(+ .rk-marquee-wrap) > .rk-inner{
+    min-height:calc(100svh - var(--rk-marquee-band) - var(--rk-nav-h));
+    min-height:calc(100dvh - var(--rk-marquee-band) - var(--rk-nav-h));
   }
   .rk-h1{font-size:clamp(2.5rem,1.5rem + 5vw,4.5rem);}
   .rk-hero .rk-h1{max-width:100%;font-size:clamp(2.125rem,1.35rem + 4.25vw,3.875rem);}

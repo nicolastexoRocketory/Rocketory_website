@@ -4,6 +4,7 @@ import React, { Suspense } from 'react'
 
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/metadata'
 import { isMatomoTrackingConfigured } from '@/lib/matomo'
+import { buildMatomoHeadScript } from '@/lib/matomo/tracking-snippet'
 import { AiImageRegistry } from '@/components/AiImageRegistry'
 import { SiteSchema } from '@/components/SiteSchema'
 import { CookieBanner } from '@/components/CookieBanner'
@@ -75,6 +76,13 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
           type="font/otf"
           crossOrigin="anonymous"
         />
+        {matomoEnabled ? (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: buildMatomoHeadScript(matomoUrl!, matomoSiteId!),
+            }}
+          />
+        ) : null}
       </head>
       <body>
         <AiImageRegistry />
