@@ -9,7 +9,7 @@ function normalizeTrackerBase(raw: string): string {
   return trimmed.replace(/^https?:\/\//, '//')
 }
 
-/** Inline head snippet — Matomo lädt sofort, trackt erst nach Cookie-Einwilligung. */
+/** Matomo-Standardsnippet fürs Head — Cookie-Consent erst nach Banner-Einwilligung. */
 export function buildMatomoHeadScript(publicUrl: string, siteId: string): string {
   const base = normalizeTrackerBase(publicUrl)
   const safeSiteId = siteId.replace(/[^0-9]/g, '') || '1'
@@ -17,12 +17,14 @@ export function buildMatomoHeadScript(publicUrl: string, siteId: string): string
 
   return [
     'var _paq = window._paq = window._paq || [];',
-    '_paq.push([\'requireConsent\']);',
-    `_paq.push(['setTrackerUrl', '${safeBase}/matomo.php']);`,
-    `_paq.push(['setSiteId', '${safeSiteId}']);`,
+    '_paq.push([\'requireCookieConsent\']);',
+    '/* tracker methods like "setCustomDimension" should be called before "trackPageView" */',
+    '_paq.push([\'trackPageView\']);',
     '_paq.push([\'enableLinkTracking\']);',
     '(function() {',
     `  var u='${safeBase}/';`,
+    `  _paq.push(['setTrackerUrl', u+'matomo.php']);`,
+    `  _paq.push(['setSiteId', '${safeSiteId}']);`,
     '  var d=document, g=d.createElement(\'script\'), s=d.getElementsByTagName(\'script\')[0];',
     '  g.async=true; g.src=u+\'matomo.js\'; s.parentNode.insertBefore(g,s);',
     '})();',

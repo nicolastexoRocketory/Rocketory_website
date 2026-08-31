@@ -22,13 +22,12 @@ function pageKey(): string {
 
 function grantMatomoConsent(): void {
   if (typeof window === 'undefined' || !window._paq) return
-  window._paq.push(['setConsentGiven'])
-  window._paq.push(['trackPageView'])
+  window._paq.push(['setCookieConsentGiven'])
 }
 
 function revokeMatomoConsent(): void {
   if (typeof window === 'undefined' || !window._paq) return
-  window._paq.push(['forgetConsentGiven'])
+  window._paq.push(['forgetCookieConsentGiven'])
 }
 
 function trackSpaPageView(): void {
@@ -50,12 +49,8 @@ export function MatomoTracker({ url: _url, siteId: _siteId }: MatomoTrackerProps
       document.documentElement.dataset.rkMatomoConsent = enabled ? '1' : '0'
 
       if (enabled) {
-        const alreadyConsented = document.documentElement.dataset.rkMatomoActive === '1'
         grantMatomoConsent()
-        if (!alreadyConsented) {
-          lastTrackedKey.current = pageKey()
-          document.documentElement.dataset.rkMatomoActive = '1'
-        }
+        document.documentElement.dataset.rkMatomoActive = '1'
       } else {
         revokeMatomoConsent()
         document.documentElement.dataset.rkMatomoActive = '0'
