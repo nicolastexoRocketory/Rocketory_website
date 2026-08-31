@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { DM_Sans, Instrument_Serif, Inter } from 'next/font/google'
-import Script from 'next/script'
 import React, { Suspense } from 'react'
 
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/metadata'
@@ -77,21 +76,15 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
           type="font/otf"
           crossOrigin="anonymous"
         />
+        {matomoEnabled ? (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: buildMatomoHeadScript(matomoUrl!, matomoSiteId!),
+            }}
+          />
+        ) : null}
       </head>
       <body>
-        {matomoEnabled ? (
-          <>
-            {/* Matomo */}
-            <Script
-              id="matomo-tracker"
-              strategy="beforeInteractive"
-              dangerouslySetInnerHTML={{
-                __html: buildMatomoHeadScript(matomoUrl!, matomoSiteId!),
-              }}
-            />
-            {/* End Matomo Code */}
-          </>
-        ) : null}
         <AiImageRegistry />
         <SiteSchema />
         {children}
