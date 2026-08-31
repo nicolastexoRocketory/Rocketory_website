@@ -7,7 +7,7 @@ async function main() {
   const payload = await getPayload({ config })
   const result = await syncWebsiteMedia(payload)
   console.log(
-    `Fertig: ${result.created} neu importiert, ${result.skipped} bereits vorhanden (${result.total} Bilder im Projektordner).`,
+    `Fertig: ${result.created} neu importiert, ${result.updated} aktualisiert, ${result.skipped} unverändert (${result.total} Bilder im Projektordner).`,
   )
   process.exit(0)
 }

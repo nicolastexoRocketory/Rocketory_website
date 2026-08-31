@@ -185,6 +185,10 @@ export interface Media {
    */
   caption?: string | null;
   /**
+   * Automatisch gesetzt: Pfad auf der Webseite (z. B. /assets/images/team-raketenstart.webp). Bilder mit diesem Pfad werden im Frontend aus dem CMS geladen.
+   */
+  sitePath?: string | null;
+  /**
    * Aktivieren, wenn das Bild (ganz oder teilweise) mit KI erstellt wurde. Im Frontend erscheint dann die Kennzeichnung „KI-Bild“.
    */
   isAiGenerated?: boolean | null;
@@ -546,6 +550,7 @@ export interface ContactInquiry {
   festpreisTech?: string | null;
   seoLaufzeit?: string | null;
   redesignTyp?: string | null;
+  budget?: string | null;
   ipAddress?: string | null;
   userAgent?: string | null;
   updatedAt: string;
@@ -662,6 +667,7 @@ export interface MediaSelect<T extends boolean = true> {
   ariaLabel?: T;
   ariaDescription?: T;
   caption?: T;
+  sitePath?: T;
   isAiGenerated?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -893,6 +899,7 @@ export interface ContactInquiriesSelect<T extends boolean = true> {
   festpreisTech?: T;
   seoLaufzeit?: T;
   redesignTyp?: T;
+  budget?: T;
   ipAddress?: T;
   userAgent?: T;
   updatedAt?: T;
@@ -947,7 +954,7 @@ export interface Homepage {
      */
     intro?: string | null;
     /**
-     * Nur veröffentlichte Beiträge werden auf der Website angezeigt.
+     * Nur veröffentlichte Beiträge werden auf der Webseite angezeigt.
      */
     post?: (number | null) | Post;
   };

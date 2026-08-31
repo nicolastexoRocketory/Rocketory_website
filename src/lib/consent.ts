@@ -1,6 +1,6 @@
 export const CONSENT_COOKIE = 'rk_consent'
 export const CONSENT_STORAGE_KEY = 'rk_consent_v1'
-export const CONSENT_VERSION = 1
+export const CONSENT_VERSION = 2
 export const CONSENT_MAX_AGE_DAYS = 365
 export const CONSENT_CHANGED_EVENT = 'rk:consent-changed'
 export const CONSENT_OPEN_EVENT = 'rk:consent-open'
@@ -8,6 +8,7 @@ export const CONSENT_OPEN_EVENT = 'rk:consent-open'
 export type ConsentCategories = {
   necessary: true
   external: boolean
+  statistics: boolean
 }
 
 export type ConsentState = {
@@ -22,18 +23,31 @@ export const DEFAULT_CONSENT: ConsentState = {
   categories: {
     necessary: true,
     external: false,
+    statistics: false,
   },
 }
 
-export function createConsentState(external: boolean): ConsentState {
+export function createConsentState(categories: {
+  external: boolean
+  statistics: boolean
+}): ConsentState {
   return {
     version: CONSENT_VERSION,
     decidedAt: new Date().toISOString(),
     categories: {
       necessary: true,
-      external,
+      external: categories.external,
+      statistics: categories.statistics,
     },
   }
+}
+
+export function createFullConsentState(): ConsentState {
+  return createConsentState({ external: true, statistics: true })
+}
+
+export function createMinimalConsentState(): ConsentState {
+  return createConsentState({ external: false, statistics: false })
 }
 
 export function parseConsent(raw: string | null | undefined): ConsentState | null {
@@ -49,6 +63,7 @@ export function parseConsent(raw: string | null | undefined): ConsentState | nul
       categories: {
         necessary: true,
         external: Boolean(data.categories.external),
+        statistics: Boolean(data.categories.statistics),
       },
     }
   } catch {
@@ -121,4 +136,14 @@ export function applyExternalConsent(enabled: boolean): void {
   document.querySelectorAll<HTMLElement>('[data-rk-consent-gate="external"]').forEach((gate) => {
     gate.hidden = enabled
   })
+}
+
+export function applyStatisticsConsent(enabled: boolean): void {
+  if (typeof document === 'undefined') return
+  document.documentElement.dataset.rkStatisticsConsent = enabled ? '1' : '0'
+}
+
+export function applyConsent(state: ConsentState): void {
+  applyExternalConsent(state.categories.external)
+  applyStatisticsConsent(state.categories.statistics)
 }

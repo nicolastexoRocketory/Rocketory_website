@@ -6,37 +6,37 @@ export type MainNavItem = {
   description: string
 }
 
-/** Hauptnavigation – entspricht der Sitelink-Struktur für Markensuchen. */
+/** Hauptnavigation, entspricht der Sitelink-Struktur für Markensuchen. */
 export const MAIN_SITE_NAV: MainNavItem[] = [
   {
     name: 'Angebote',
     path: '/angebote',
     description:
-      'Maßgeschneiderte Websites als statisches HTML, WordPress oder CMS mit Next.js & Payload – transparent kalkuliert und langfristig betreut.',
+      'Maßgeschneiderte Webseiten als statisches HTML, WordPress oder CMS mit Next.js & Payload, transparent kalkuliert und langfristig betreut.',
   },
   {
     name: 'Technologien',
     path: '/technologien',
     description:
-      'Statisches HTML, WordPress oder CMS mit Next.js & Payload – wir empfehlen ehrlich, was zu deinem Business passt.',
+      'Statisches HTML, WordPress oder CMS mit Next.js & Payload, wir empfehlen ehrlich, was zu deinem Business passt.',
   },
   {
     name: 'Agentur',
     path: '/agentur',
     description:
-      'Webdesign-Team aus Bünde mit festem Standort in Ostwestfalen-Lippe – persönlich, ehrlich, ohne Verkaufsdruck.',
+      'Webdesign-Team aus Bünde mit festem Standort in Ostwestfalen-Lippe, persönlich, ehrlich, ohne Verkaufsdruck.',
   },
   {
     name: 'Blog',
     path: '/blog',
     description:
-      'Praxiswissen zu Webdesign, SEO und digitalem Auftritt – aus echten Projekten, ehrlich erzählt.',
+      'Praxiswissen zu Webdesign, SEO und digitalem Auftritt, aus echten Projekten, ehrlich erzählt.',
   },
   {
     name: 'Projekte',
     path: '/projekte',
     description:
-      'Konkrete Referenzen mit Zielen, Umsetzung und Ergebnissen – ehrlich erzählt, ohne Agentur-Blabla.',
+      'Konkrete Referenzen mit Zielen, Umsetzung und Ergebnissen, ehrlich erzählt, ohne Agentur-Blabla.',
   },
 ]
 

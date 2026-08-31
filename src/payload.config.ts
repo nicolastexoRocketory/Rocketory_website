@@ -30,6 +30,14 @@ export default buildConfig({
         Logo: '@/components/admin/RocketoryLogo',
         Icon: '@/components/admin/RocketoryIcon',
       },
+      beforeNavLinks: ['@/components/admin/MatomoAnalyticsNavLink#MatomoAnalyticsNavLink'],
+      views: {
+        statistik: {
+          Component: '@/components/admin/MatomoAnalyticsView#MatomoAnalyticsView',
+          path: '/statistik',
+          exact: true,
+        },
+      },
     },
   },
   collections: [Users, Media, Categories, Posts, ProjectCategories, Projects, ContactInquiries],

@@ -1,7 +1,7 @@
 import type { Project, ProjectCategory } from '@/payload-types'
 
 const FALLBACK_SLUG = 'website'
-const FALLBACK_LABEL = 'Website'
+const FALLBACK_LABEL = 'Webseite'
 
 export function resolveProjectCategory(project: Project): { slug: string; label: string } {
   const category = project.category

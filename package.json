@@ -15,12 +15,16 @@
     "sync:media": "cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env src/scripts/sync-media.ts",
     "cleanup:media": "cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env src/scripts/cleanup-unused-media.ts",
     "compress:images": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/compress-images.ts",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "remotion": "remotion studio remotion/index.ts",
+    "remotion:render": "remotion render remotion/index.ts RocketoryShowreel public/assets/videos/rocketory-showreel.mp4 --jpeg-quality 92 --crf 16"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "3.49.1",
     "@payloadcms/next": "3.49.1",
     "@payloadcms/richtext-lexical": "3.49.1",
+    "@remotion/cli": "4.0.513",
+    "@remotion/google-fonts": "4.0.513",
     "@types/nodemailer": "^8.0.1",
     "cross-env": "^7.0.3",
     "graphql": "^16.10.0",
@@ -29,6 +33,7 @@
     "payload": "3.49.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "remotion": "4.0.513",
     "sharp": "^0.34.2"
   },
   "devDependencies": {

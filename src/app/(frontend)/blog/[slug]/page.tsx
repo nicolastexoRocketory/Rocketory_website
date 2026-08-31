@@ -10,6 +10,7 @@ import { getBlogLegacyPage, getLegacyPageLead } from '@/lib/legacy-page'
 import { buildLegacyBlogMetadata, buildPostMetadata } from '@/lib/metadata'
 import {
   getBlogPostPageData,
+  getPublishedPosts,
   getPublishedPostBySlug,
   getPublishedPostSlugs,
 } from '@/lib/posts'
@@ -46,7 +47,10 @@ export default async function BlogPostPage({ params }: PageProps) {
   const post = await getPublishedPostBySlug(slug)
 
   if (post) {
-    const page = getBlogPostPageData(post)
+    // Needed for internal cross-linking between blog posts.
+    const allPosts = await getPublishedPosts()
+
+    const page = getBlogPostPageData(post, allPosts)
     return (
       <>
         <PageSchema nodes={buildBlogPostPageSchema(post)} />

@@ -22,11 +22,11 @@ Die wichtigsten Seiten für Marken-, Local- und Commercial-Intent. Ohne diese is
 
 | URL | Primäre Keywords (Intent) | Rolle |
 |-----|---------------------------|-------|
-| `/` | Webdesign Bünde, Webdesign OWL, Website Agentur Bünde | Marken-Hub, Leistungsüberblick, Trust |
+| `/` | Webdesign Bünde, Webdesign OWL, Webseite Agentur Bünde | Marken-Hub, Leistungsüberblick, Trust |
 | `/agentur/buende` | Webdesign Agentur Bünde, Webdesigner Bünde, Webagentur Bünde | **HQ-Entity-Seite** – Stadt, NAP, Geo, FAQ |
 | `/standorte` | Webdesign OWL, Webdesign Herford/Bielefeld/Enger … | **Einsatzgebiet-Hub** – 1 Standort, viele Orte |
-| `/angebote` | Website erstellen lassen, Webdesign Preise, Website Pakete | Commercial – Leistungen & Pakete |
-| `/kontakt` | Webdesign Anfrage, Website Beratung Bünde | Conversion – Formular, NAP, WhatsApp |
+| `/angebote` | Webseite erstellen lassen, Webdesign Preise, Webseite Pakete | Commercial – Leistungen & Pakete |
+| `/kontakt` | Webdesign Anfrage, Webseite Beratung Bünde | Conversion – Formular, NAP, WhatsApp |
 
 ### Mindestanforderungen (Prio A)
 
@@ -97,9 +97,9 @@ Alt-Texte beschreiben **zuerst das Bild**, Keyword **natürlich** einbauen – k
 | **Startseite** | `Rocketory Team Webdesign Bünde`, `Webdesign Agentur Ostwestfalen` |
 | **Bünde-Standort** | `Bünde Ostwestfalen`, `Zigarrenstadt Bünde`, `Rathaus Bünde`, `Webdesign Agentur Bünde` (nur bei Team/Firmenfoto) |
 | **Standorte-Hub** | `Einsatzgebiet OWL`, `Webdesign Region Herford` |
-| **Angebote** | `Website erstellen`, `Webdesign Paket`, `SEO Betreuung` (passend zum Bildinhalt) |
+| **Angebote** | `Webseite erstellen`, `Webdesign Paket`, `SEO Betreuung` (passend zum Bildinhalt) |
 | **Kontakt** | dekorativ: `alt=""` · Ansprechpartner: Name + Rolle |
-| **Blog/Projekte** | `{Projektname} Website`, `{Branche} Referenz {Ort}` |
+| **Blog/Projekte** | `{Projektname} Webseite`, `{Branche} Referenz {Ort}` |
 
 **Regeln:** Max. ~125 Zeichen · Ort nur wenn bildlich relevant · Kein „Bild von …“ · Personen: Name + Funktion.
 
@@ -124,11 +124,11 @@ Seiten abseits der Kern-URLs, die **Topical Authority**, **E-E-A-T** und **Brand
 | URL | Keyword-Typ | Beispiel-Keywords |
 |-----|-------------|-------------------|
 | `/agentur` | Brand + About + Local (Teaser) | Rocketory Agentur, Webdesign Team Bünde, FairFlock |
-| `/technologien` | Tech-Stack + Entscheidungshilfe | WordPress Agentur, Next.js Website, statisches HTML |
+| `/technologien` | Tech-Stack + Entscheidungshilfe | WordPress Agentur, Next.js Webseite, statisches HTML |
 | `/blog` | Informational, Long-tail | Webdesign Tipps, lokale SEO, WordPress 2026 |
-| `/blog/[slug]` | Long-tail, Problem-Solution | „lokale Website mehr Anfragen“, „WordPress schlank“ |
-| `/projekte` | Proof, Branche + Ergebnis | Webdesign Referenzen, Website Projekte OWL |
-| `/projekte/[slug]` | Case-Study, Branche + Ort | `{Kunde} Website`, `{Branche} Webdesign` |
+| `/blog/[slug]` | Long-tail, Problem-Solution | „lokale Webseite mehr Anfragen“, „WordPress schlank“ |
+| `/projekte` | Proof, Branche + Ergebnis | Webdesign Referenzen, Webseite Projekte OWL |
+| `/projekte/[slug]` | Case-Study, Branche + Ort | `{Kunde} Webseite`, `{Branche} Webdesign` |
 
 ### Mindestanforderungen (Prio B)
 
@@ -154,9 +154,9 @@ Seiten abseits der Kern-URLs, die **Topical Authority**, **E-E-A-T** und **Brand
 
 ### Geplante Blog-Themen (Keyword-Cluster)
 
-- **Local SEO:** lokale Website, Google Maps, NAP, OWL-Sichtbarkeit
+- **Local SEO:** lokale Webseite, Google Maps, NAP, OWL-Sichtbarkeit
 - **Technologie:** WordPress vs. Headless, Performance, statisches HTML
-- **Business:** Website Kosten, Relaunch, Zusammenarbeit
+- **Business:** Webseite Kosten, Relaunch, Zusammenarbeit
 - **Design:** Limbic Map, Farben, UX für KMU
 
 ---
@@ -169,8 +169,8 @@ Erweiterung entlang konkreter **Service-Intents** – ohne Doorway-Risiko.
 
 | URL (Vorschlag) | Keyword-Typ | Inhalt |
 |-----------------|-------------|--------|
-| `/angebote#wartung` → `/wartung` (Redirect) | Service | Website-Wartung, Updates, Sicherheit |
-| `/leistungen/webdesign` | Service + Local | Webdesign Bünde/OWL (wenn eigene URL sinnvoll) |
+| `/angebote#wartung` → `/wartung` (Redirect) | Service | Webseite-Wartung, Updates, Sicherheit |
+| `/webdesign` (Redirect `/leistungen/webdesign`) | Service + Local | Webdesign Bünde/OWL, maßgeschneiderte Webseite |
 | `/leistungen/seo` | Service + Local | SEO Agentur OWL, lokale Sichtbarkeit |
 | `/leistungen/hosting` | Service | Hosting & Betreuung nach Launch |
 | Blog-Serie „Branche × Web“ | Long-tail | Webdesign Handwerk, Gastronomie, Arztpraxis OWL |
@@ -188,9 +188,9 @@ Erweiterung entlang konkreter **Service-Intents** – ohne Doorway-Risiko.
 
 ### Keyword-Arten Prio C
 
-- **Transactional long-tail:** „Website Wartung Bünde“, „SEO Betreuung OWL“
-- **Branchen-Informational:** „Website für Handwerker“, „Webdesign Friseur“
-- **Vergleich:** „WordPress oder statische Website KMU“
+- **Transactional long-tail:** „Webseite Wartung Bünde“, „SEO Betreuung OWL“
+- **Branchen-Informational:** „Webseite für Handwerker“, „Webdesign Friseur“
+- **Vergleich:** „WordPress oder statische Webseite KMU“
 
 ---
 
@@ -252,7 +252,7 @@ flowchart TB
   subgraph prioC ["Prio C – Leistungstiefe"]
     WARTUNG["/angebote#wartung"]
     SVC_SEO["/leistungen/seo · geplant"]
-    SVC_WEB["/leistungen/webdesign · geplant"]
+    SVC_WEB["/webdesign"]
   end
 
   subgraph prioD ["Prio D – Expansion"]
@@ -271,7 +271,7 @@ flowchart TB
   AGENTUR --> BUENDE
   BLOG --> BLOGPOST
   PROJEKTE --> PROJEKT
-  ANGEBOTE --> WARTUNG
+  ANGEBOTE --> WARTUNG & SVC_WEB
   STANDORTE -.-> CITY
   HOME --> AGENTUR & TECH & BLOG & PROJEKTE
 ```
@@ -292,7 +292,8 @@ flowchart TB
 | **B** | `/projekte` | weekly | 0.8 | Projekt-Liste (Payload) | ✅ Live |
 | **B** | `/projekte/[slug]` | monthly | 0.7 | Payload | ✅ Live |
 | **C** | `/angebote#wartung` | weekly | 0.75 | — (Redirect `/wartung` → Anker) | ✅ Live |
-| **C** | `/leistungen/*` | monthly | 0.65 | Geplant | 🔲 Offen |
+| **C** | `/webdesign` | weekly | 0.7 | — (Redirect `/leistungen/webdesign`) | ✅ Live |
+| **C** | `/leistungen/seo`, `/leistungen/hosting` | monthly | 0.65 | Geplant | 🔲 Offen |
 | **D** | `/standorte/[stadt]` | monthly | 0.6 | Geplant | 🔲 Offen |
 | **D** | `/branchen/[slug]` | monthly | 0.6 | Geplant | 🔲 Offen |
 | **D** | `/llms.txt` | yearly | 0.3 | Geplant | 🔲 Offen |

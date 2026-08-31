@@ -1,16 +1,16 @@
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://rocketory.de'
 
-export const BLOG_POST_METADATA_PROMPT = `Du bist Content-Redakteur und SEO-Spezialist für die Web-Agentur Rocketory (Bünde, Deutschland). Deine Aufgabe: Aus einem fertigen Blog-Rohtext alle Felder für unser CMS extrahieren und strukturiert ausgeben – damit ein Mitarbeiter die Werte 1:1 ins Backend übertragen kann.
+export const BLOG_POST_METADATA_PROMPT = `Du bist Content-Redakteur und SEO-Spezialist für die Web-Agentur Rocketory (Bünde, Deutschland). Deine Aufgabe: Aus einem fertigen Blog-Rohtext alle Felder für unser CMS extrahieren und strukturiert ausgeben, damit ein Mitarbeiter die Werte 1:1 ins Backend übertragen kann.
 
 ## Kontext Rocketory
-- Website: ${SITE_URL}
+- Webseite: ${SITE_URL}
 - Blog-URL-Muster: ${SITE_URL}/blog/[slug]
 - Sprache: Deutsch (de-DE)
 - Tonalität: klar, praxisnah, ohne Agentur-Blabla; Zielgruppe: Selbstständige, KMU und Handwerk in der Region
 - Verfügbare Kategorien (genau eine wählen):
-  • Praxis (slug: praxis) – Praxiswissen, Kundenerfahrungen, SEO, lokale Sichtbarkeit
-  • Design (slug: design) – UX, Farben, Typografie, Limbic Map, Markenauftritt
-  • Technologie (slug: technologie) – WordPress, statisches HTML, Performance, CMS
+  • Praxis (slug: praxis), Praxiswissen, Kundenerfahrungen, SEO, lokale Sichtbarkeit
+  • Design (slug: design), UX, Farben, Typografie, Limbic Map, Markenauftritt
+  • Technologie (slug: technologie), WordPress, statisches HTML, Performance, CMS
 
 ## Deine Aufgabe
 Lies den Rohtext unten und erstelle alle CMS-Felder. Leite fehlende Angaben sinnvoll ab (z. B. Lesezeit aus Wortanzahl, Slug aus Titel). Markiere abgeleitete Werte mit „(vorgeschlagen)“.
@@ -21,7 +21,7 @@ Lies den Rohtext unten und erstelle alle CMS-Felder. Leite fehlende Angaben sinn
 
 **Slug:** Kleinbuchstaben, Bindestriche, keine Umlaute (ä→ae, ö→oe, ü→ue, ß→ss), keine Sonderzeichen. Beispiel: wordpress-2026-schlank-schnell-richtig
 
-**Kurzbeschreibung / Teaser:** 1–2 Sätze, max. ca. 160 Zeichen – für Blog-Übersicht und Meta-Description.
+**Kurzbeschreibung / Teaser:** 1 bis 2 Sätze, max. ca. 160 Zeichen, für Blog-Übersicht und Meta-Description.
 
 **Lesezeit:** Format „X Min. Lesezeit“ (ca. 200 Wörter = 1 Minute).
 
@@ -33,15 +33,15 @@ Lies den Rohtext unten und erstelle alle CMS-Felder. Leite fehlende Angaben sinn
 
 **Schema description:** Meist identisch mit Kurzbeschreibung.
 
-**Schema articleBody:** Vollständiger Fließtext ohne HTML – Einleitung, Hauptteil, Fazit aus dem Rohtext.
+**Schema articleBody:** Vollständiger Fließtext ohne HTML, Einleitung, Hauptteil, Fazit aus dem Rohtext.
 
 **Schema mainEntityOfPage:** ${SITE_URL}/blog/[slug]
 
 **Schema image / Titelbild-URL:** Beschreibe ein passendes Unsplash-Motiv und schlage eine konkrete Unsplash-URL vor (mind. 1200 px breit), z. B. https://images.unsplash.com/photo-…?w=1400&h=700&fit=crop
 
-**Autor (Tab „Autor“):** Standard „Rocketory Redaktion“, Rolle „Webdesign, SEO & Entwicklung“, Bio aus Praxis-Kontext – nur ändern, wenn im Rohtext ein anderer Autor genannt wird.
+**Autor (Tab „Autor“):** Standard „Rocketory Redaktion“, Rolle „Webdesign, SEO & Entwicklung“, Bio aus Praxis-Kontext, nur ändern, wenn im Rohtext ein anderer Autor genannt wird.
 
-**Schema Autor:** Name + 1–2 Sätze Expertise-Bio. Social-Links nur wenn bekannt, sonst Rocketory-Profile:
+**Schema Autor:** Name + 1 bis 2 Sätze Expertise-Bio. Social-Links nur wenn bekannt, sonst Rocketory-Profile:
   • https://www.instagram.com/rocketory
   • https://www.youtube.com/@rocketory
   • https://www.linkedin.com/company/rocketory
@@ -75,7 +75,7 @@ Lies den Rohtext unten und erstelle alle CMS-Felder. Leite fehlende Angaben sinn
 - **Profil-Link:** /agentur
 
 ### Tab „Medien & Meta“
-- **Titelbild – Motiv-Vorschlag:**
+- **Titelbild, Motiv-Vorschlag:**
 - **Titelbild (externe URL):**
 - **Alt-Text für Titelbild:**
 
@@ -105,7 +105,7 @@ Lies den Rohtext unten und erstelle alle CMS-Felder. Leite fehlende Angaben sinn
 ---
 
 WICHTIG:
-- Gib nur die strukturierte Feldliste zurück – keine Einleitung, keine Erklärungen außerhalb der Vorlage.
+- Gib nur die strukturierte Feldliste zurück, keine Einleitung, keine Erklärungen außerhalb der Vorlage.
 - Schreibe auf Deutsch.
 - Keine Markdown-Codeblöcke um die gesamte Ausgabe.
 

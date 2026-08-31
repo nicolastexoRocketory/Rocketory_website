@@ -32,7 +32,7 @@ function adaptLandmarkHtml(html: string): string {
     .replace(/<\/footer>\s*$/, '</div>')
 }
 
-/** Nav-Leiste und Mobile-Menü getrennt — Legacy-Skripte dürfen nur #main-content mutieren. */
+/** Nav-Leiste und Mobile-Menü getrennt, Legacy-Skripte dürfen nur #main-content mutieren. */
 export function getNavParts(): { bar: string; menuPanel: string } {
   const full = getStaticComponentHtml('nav.html')
   const splitAt = full.indexOf(MENU_PANEL_MARKER)

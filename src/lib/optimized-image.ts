@@ -84,15 +84,3 @@ export function buildOptimizedImgTag({
 
   return `<img ${attrs.join(' ')}>`
 }
-
-function buildHomeHeroBackgroundHtml(): string {
-  return `<img src="/assets/images/team-raketenstart.webp" alt="" width="1024" height="682" id="rkHeroBg" class="rk-hero-img" fetchpriority="high" decoding="async" aria-hidden="true">`
-}
-
-/** Hero-Bilder direkt einbinden (ohne Next-Image-Optimierung / Komprimierung). */
-export function injectHomeHeroImages(html: string): string {
-  return html.replace(
-    /<div class="rk-hero-bg" aria-hidden="true">[\s\S]*?<\/div>/,
-    `<div class="rk-hero-bg" aria-hidden="true">${buildHomeHeroBackgroundHtml()}</div>`,
-  )
-}

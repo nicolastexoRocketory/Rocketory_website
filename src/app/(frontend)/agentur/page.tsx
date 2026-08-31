@@ -3,6 +3,7 @@ import { PageSchema } from '@/components/PageSchema'
 import { getLegacyPage } from '@/lib/legacy-page'
 import { getPayloadClient } from '@/lib/payload'
 import { buildLegacyPageMetadata } from '@/lib/metadata'
+import { getPublishedProjects, injectProjectsIntoAgentur } from '@/lib/projects'
 import { buildAgenturPageSchema } from '@/lib/schema-org'
 
 import '@/styles/references.css'
@@ -52,7 +53,11 @@ async function applyGoogleMapsSettings(content: string): Promise<string> {
 
 export default async function AgenturPage() {
   const page = getLegacyPage('agentur.html')
-  const content = await applyGoogleMapsSettings(page.content)
+  const [withMaps, projects] = await Promise.all([
+    applyGoogleMapsSettings(page.content),
+    getPublishedProjects(),
+  ])
+  const content = injectProjectsIntoAgentur(withMaps, projects)
 
   return (
     <>

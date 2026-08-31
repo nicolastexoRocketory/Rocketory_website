@@ -3,16 +3,15 @@ import { PageSchema } from '@/components/PageSchema'
 import { getFeaturedPostSection, injectFeaturedPostSection } from '@/lib/homepage'
 import { getLegacyPage } from '@/lib/legacy-page'
 import { buildPageMetadata } from '@/lib/metadata'
-import { injectHomeHeroImages } from '@/lib/optimized-image'
 import { getPublishedPosts, injectPostsIntoHomepage } from '@/lib/posts'
 import { buildHomePageSchema } from '@/lib/schema-org'
 
 export const revalidate = 3600
 
 export const metadata = buildPageMetadata({
-  title: 'Rocketory – All in One Webdesign und SEO aus Bünde',
+  title: 'Rocketory: All in One Webdesign und SEO aus Bünde',
   description:
-    'Design, Technik, Texte, Hosting – Webdesign, SEO und Betreuung aus Bünde. Persönlich gebaut, fair kalkuliert, langfristig betreut.',
+    'Design, Technik, Texte, Hosting, Webdesign, SEO und Betreuung aus Bünde. Persönlich gebaut, fair kalkuliert, langfristig betreut.',
   path: '/',
   image: '/assets/images/team-raketenstart.webp',
 })
@@ -20,9 +19,7 @@ export const metadata = buildPageMetadata({
 export default async function LandingPage() {
   const page = getLegacyPage('index.html')
   const [posts, featuredSection] = await Promise.all([getPublishedPosts(), getFeaturedPostSection()])
-  const content = injectHomeHeroImages(
-    injectFeaturedPostSection(injectPostsIntoHomepage(page.content, posts), featuredSection),
-  )
+  const content = injectFeaturedPostSection(injectPostsIntoHomepage(page.content, posts), featuredSection)
 
   return (
     <>

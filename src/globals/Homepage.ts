@@ -6,7 +6,7 @@ export const Homepage: GlobalConfig = {
   slug: 'homepage',
   label: 'Startseite',
   admin: {
-    group: 'Website',
+    group: 'Webseite',
   },
   hooks: {
     afterChange: [revalidateHomepageAfterChange],
@@ -52,7 +52,7 @@ export const Homepage: GlobalConfig = {
           label: 'Beitrag',
           required: false,
           admin: {
-            description: 'Nur veröffentlichte Beiträge werden auf der Website angezeigt.',
+            description: 'Nur veröffentlichte Beiträge werden auf der Webseite angezeigt.',
           },
           filterOptions: {
             status: { equals: 'published' },

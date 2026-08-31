@@ -7,9 +7,9 @@ import { buildKontaktPageSchema } from '@/lib/schema-org'
 import '@/styles/contact.css'
 
 export const metadata = buildPageMetadata({
-  title: 'Kontakt – Rocketory',
+  title: 'Kontakt, Rocketory',
   description:
-    'Projekt anfragen bei Rocketory in Bünde – Webdesign, SEO und Betreuung aus einer Hand. Unverbindlich in wenigen Schritten.',
+    'Projekt anfragen bei Rocketory in Bünde, Webdesign, SEO und Betreuung aus einer Hand. Unverbindlich in wenigen Schritten.',
   path: '/kontakt',
 })
 

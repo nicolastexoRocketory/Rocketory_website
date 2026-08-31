@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react'
 
 import {
-  applyExternalConsent,
+  applyConsent,
   CONSENT_CHANGED_EVENT,
   CONSENT_OPEN_EVENT,
   createConsentState,
+  createFullConsentState,
+  createMinimalConsentState,
   readStoredConsent,
   type ConsentState,
   writeConsent,
@@ -19,6 +21,7 @@ type View = 'banner' | 'settings' | 'hidden'
 export function CookieBanner() {
   const [view, setView] = useState<View>('hidden')
   const [external, setExternal] = useState(false)
+  const [statistics, setStatistics] = useState(false)
   const [hydrated, setHydrated] = useState(false)
   const [visible, setVisible] = useState(false)
 
@@ -26,11 +29,12 @@ export function CookieBanner() {
     const existing = readStoredConsent()
     if (existing) {
       setExternal(existing.categories.external)
-      applyExternalConsent(existing.categories.external)
+      setStatistics(existing.categories.statistics)
+      applyConsent(existing)
       setView('hidden')
       setVisible(false)
     } else {
-      applyExternalConsent(false)
+      applyConsent(createMinimalConsentState())
       setView('banner')
     }
     setHydrated(true)
@@ -38,6 +42,7 @@ export function CookieBanner() {
     function onOpen() {
       const current = readStoredConsent()
       setExternal(current?.categories.external ?? false)
+      setStatistics(current?.categories.statistics ?? false)
       setView('settings')
       requestAnimationFrame(() => setVisible(true))
     }
@@ -53,17 +58,18 @@ export function CookieBanner() {
       const target = (event.target as Element | null)?.closest?.('[data-rk-consent-accept-external]')
       if (!target) return
       event.preventDefault()
-      const state = createConsentState(true)
+      const state = createFullConsentState()
       writeConsent(state)
-      applyExternalConsent(true)
+      applyConsent(state)
       setExternal(true)
+      setStatistics(true)
       setVisible(false)
       setView('hidden')
     }
 
     function reapplyFromStore() {
       const current = readStoredConsent()
-      applyExternalConsent(current?.categories.external ?? false)
+      if (current) applyConsent(current)
     }
 
     window.addEventListener(CONSENT_OPEN_EVENT, onOpen)
@@ -92,11 +98,15 @@ export function CookieBanner() {
     return () => cancelAnimationFrame(frame)
   }, [hydrated, view])
 
-  function persist(nextExternal: boolean) {
-    const state: ConsentState = createConsentState(nextExternal)
+  function persist(nextExternal: boolean, nextStatistics: boolean) {
+    const state: ConsentState = createConsentState({
+      external: nextExternal,
+      statistics: nextStatistics,
+    })
     writeConsent(state)
-    applyExternalConsent(nextExternal)
+    applyConsent(state)
     setExternal(nextExternal)
+    setStatistics(nextStatistics)
     setVisible(false)
     window.setTimeout(() => setView('hidden'), 320)
   }
@@ -120,17 +130,25 @@ export function CookieBanner() {
                   Deine Wahl für rocketory.de
                 </h2>
                 <p className="rk-consent-text">
-                  Wir nutzen technisch notwendige Cookies. Externe Inhalte wie Google Maps laden wir
-                  erst nach deiner Einwilligung. Details in der{' '}
+                  Wir nutzen technisch notwendige Cookies. Statistik (Matomo, self-hosted) und externe
+                  Inhalte wie Google Maps laden wir erst nach deiner Einwilligung. Details in der{' '}
                   <a href="/datenschutz#cookies">Datenschutzerklärung</a>.
                 </p>
               </div>
               <div className="rk-consent-actions">
-                <button type="button" className="rk-consent-btn rk-consent-btn--primary" onClick={() => persist(true)}>
+                <button
+                  type="button"
+                  className="rk-consent-btn rk-consent-btn--primary"
+                  onClick={() => persist(true, true)}
+                >
                   Alle akzeptieren
                 </button>
                 <div className="rk-consent-btn-row">
-                  <button type="button" className="rk-consent-btn rk-consent-btn--ghost" onClick={() => persist(false)}>
+                  <button
+                    type="button"
+                    className="rk-consent-btn rk-consent-btn--ghost"
+                    onClick={() => persist(false, false)}
+                  >
                     Nur notwendige
                   </button>
                   <button type="button" className="rk-consent-btn rk-consent-btn--ghost" onClick={() => setView('settings')}>
@@ -147,7 +165,8 @@ export function CookieBanner() {
                   Cookie-Einstellungen
                 </h2>
                 <p className="rk-consent-text">
-                  Du kannst externe Inhalte jederzeit erlauben oder ablehnen. Notwendig bleibt immer aktiv.
+                  Du kannst Statistik und externe Inhalte jederzeit erlauben oder ablehnen. Notwendig
+                  bleibt immer aktiv.
                 </p>
               </div>
 
@@ -158,6 +177,21 @@ export function CookieBanner() {
                     <span>Erforderlich für Betrieb, Sicherheit und Speicherung deiner Auswahl.</span>
                   </span>
                   <input type="checkbox" checked disabled aria-label="Notwendige Cookies immer aktiv" />
+                </label>
+
+                <label className="rk-consent-option">
+                  <span className="rk-consent-option-copy">
+                    <strong>Statistik</strong>
+                    <span>
+                      Besucherstatistik mit self-hosted Matomo (First-Party, EU). Keine Daten an Google.
+                    </span>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={statistics}
+                    onChange={(event) => setStatistics(event.target.checked)}
+                    aria-label="Statistik erlauben"
+                  />
                 </label>
 
                 <label className="rk-consent-option">
@@ -178,11 +212,11 @@ export function CookieBanner() {
                 <button
                   type="button"
                   className="rk-consent-btn rk-consent-btn--primary"
-                  onClick={() => persist(external)}
+                  onClick={() => persist(external, statistics)}
                 >
                   Auswahl speichern
                 </button>
-                <button type="button" className="rk-consent-btn rk-consent-btn--ghost" onClick={() => persist(false)}>
+                <button type="button" className="rk-consent-btn rk-consent-btn--ghost" onClick={() => persist(false, false)}>
                   Ablehnen
                 </button>
               </div>

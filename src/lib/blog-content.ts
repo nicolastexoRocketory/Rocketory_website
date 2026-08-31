@@ -27,7 +27,7 @@ export function extractBlogBodyHtml(html: string): string {
 function normalizeExtractedBody(html: string): string {
   let content = html.trim()
 
-  // Legacy-Markup schließt rk-blog-content oft vor dem Footer – nicht ins Template übernehmen
+  // Legacy-Markup schließt rk-blog-content oft vor dem Footer, nicht ins Template übernehmen
   if (content.endsWith('</div>')) {
     const opens = (content.match(/<div\b/gi) || []).length
     const closes = (content.match(/<\/div>/gi) || []).length

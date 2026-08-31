@@ -33,7 +33,7 @@
 
   function fixLinksForContact(container) {
     if (!isContactPage()) return;
-    container.querySelectorAll('.rk-nav-cta[href="kontakt.html"]').forEach(function (a) {
+    container.querySelectorAll('.rk-nav-cta[href="kontakt.html"], .rk-nav-actions .rk-btn-solid[href="kontakt.html"]').forEach(function (a) {
       a.setAttribute('href', '#kontakt-form');
     });
   }

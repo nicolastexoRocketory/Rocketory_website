@@ -9,7 +9,7 @@ import { getProjectHeroImage } from './projects'
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://rocketory.de'
 export const SITE_NAME = 'Rocketory'
 export const DEFAULT_DESCRIPTION =
-  'Webdesign, SEO und Betreuung aus Bünde – persönlich gebaut, fair kalkuliert, langfristig betreut.'
+  'Webseiten mit Raketenantrieb: Webdesign, SEO und Betreuung aus Bünde – persönlich gebaut, fair kalkuliert, langfristig betreut.'
 export const DEFAULT_OG_IMAGE = '/assets/images/logo_1.png'
 
 type ContentEntity = Post | Project
@@ -145,7 +145,7 @@ export function buildLegacyPageMetadata(
 
 export function buildPostMetadata(post: Post): Metadata {
   return buildContentMetadata(post, {
-    defaultTitle: `${post.title} – Rocketory`,
+    defaultTitle: `${post.title}, Rocketory`,
     path: resolveCanonicalPath(post.schema?.blogPosting?.mainEntityOfPage, `/blog/${post.slug}`),
     defaultImage: getPostHeroImage(post),
     type: 'article',
@@ -158,7 +158,7 @@ export function buildPostMetadata(post: Post): Metadata {
 
 export function buildProjectMetadata(project: Project): Metadata {
   return buildContentMetadata(project, {
-    defaultTitle: `${project.title} – Rocketory`,
+    defaultTitle: `${project.title}, Rocketory`,
     path: resolveCanonicalPath(
       project.schema?.blogPosting?.mainEntityOfPage,
       `/projekte/${project.slug}`,

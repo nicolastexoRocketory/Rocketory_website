@@ -352,7 +352,7 @@ export const BLOG_PAGE_SCRIPTS = ['/js/scroll.js', '/js/readmore.js']
 
 export function getBlogPostPageData(post: Post) {
   return {
-    title: `${post.title} – Rocketory`,
+    title: `${post.title}, Rocketory`,
     content: buildBlogPostPageContent(post),
     scripts: BLOG_PAGE_SCRIPTS,
     styles: [] as string[],

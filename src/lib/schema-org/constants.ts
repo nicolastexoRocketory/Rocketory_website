@@ -61,10 +61,22 @@ export const MAPS_URL =
 export const LOCATION_OG_IMAGE = '/assets/images/buende/buende-a30.webp'
 
 export const META_AGENTUR_BUENDE =
-  'Webdesign-Agentur in Bünde (OWL): Büro Zimmerstr. 16, Kreis Herford. Rocketory – persönliche Betreuung für KMU & Handwerk, lokal statt Remote.'
+  'Webdesign-Agentur in Bünde (OWL): Büro Zimmerstr. 16, Kreis Herford. Rocketory, persönliche Betreuung für KMU & Handwerk, lokal statt Remote.'
 
 export const META_STANDORTE =
   'Ein Standort in Bünde, Einsatzgebiet OWL: Herford, Enger, Löhne, Bad Oeynhausen, Bielefeld. Keine Fake-Büros.'
+
+export const META_VORTEILE =
+  'Mehr Qualität bei gleichem Budget: weniger Abstimmung, ein Auftritt der zu dir passt, Nähe in OWL und Betreuung nach dem Launch, Webdesign aus Bünde.'
+
+export const META_WEBDESIGN =
+  'Webseiten mit Raketenantrieb: maßgeschneidertes Webdesign aus Bünde für KMU in OWL. Design, Texte, Technik aus einer Hand, kein Baukasten. Erstgespräch in 24 h.'
+
+export const META_SEO =
+  'SEO & Reichweite aus Bünde: optionale 6- oder 12-Monats-Pakete für lokale Sichtbarkeit und messbare Anfragen. Ehrlich eingeschätzt, individuell kalkuliert.'
+
+export const META_WARTUNG =
+  'Wartung & Sicherheit für deine Webseite: Hosting, Backups, Updates und persönlicher Support aus Bünde, passend zu HTML, WordPress oder Next.js & Payload.'
 
 export const ORG_SAME_AS = [
   'https://www.instagram.com/rocketory',
@@ -77,14 +89,14 @@ export const SITE_DESCRIPTION = DEFAULT_DESCRIPTION
 export const CORE_SERVICES = [
   {
     name: 'Webdesign',
-    description: 'Maßgeschneiderte Websites – Design, Technik und Texte aus einer Hand.',
+    description: 'Maßgeschneiderte Webseiten, Design, Technik und Texte aus einer Hand.',
   },
   {
     name: 'SEO & Reichweite',
     description: 'Suchmaschinenoptimierung und lokale Sichtbarkeit für nachhaltige Anfragen.',
   },
   {
-    name: 'Website-Betreuung',
+    name: 'Webseiten-Betreuung',
     description: 'Hosting, Updates und langfristige Betreuung nach dem Launch.',
   },
 ] as const

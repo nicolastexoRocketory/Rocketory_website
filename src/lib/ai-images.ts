@@ -27,6 +27,10 @@ function collectMediaMatchers(doc: Media): string[] {
   const tokens = new Set<string>()
 
   if (doc.filename) tokens.add(doc.filename)
+  if (doc.sitePath) {
+    tokens.add(doc.sitePath)
+    tokens.add(doc.sitePath.split('?')[0])
+  }
   addUrlTokens(tokens, doc.url)
   addUrlTokens(tokens, doc.thumbnailURL)
 

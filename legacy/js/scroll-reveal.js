@@ -10,6 +10,10 @@
     'main .rk-card-grid-2 > *',
     'main .rk-card-grid-3 > *',
     'main .rk-usp-grid > *',
+    'main .rk-vt-stack > .rk-vt-pin',
+    'main .rk-vt-hero-inner > *',
+    'main .rk-vt-system-axiom',
+    'main .rk-vt-journey-head > *',
     'main .rk-pillars > *',
     'main .rk-featured-grid > *',
     'main .rk-featured-layout > *',
@@ -60,7 +64,7 @@
   var MEDIA_SELECTOR = '.rk-split-media, .rk-blog-cover-wrap, .rk-featured-media, .rk-split-photo-mask';
 
   var CARD_PARENT_SELECTOR =
-    '.rk-card-grid, .rk-card-grid-2, .rk-card-grid-3, .rk-usp-grid, .rk-trust-grid, .rk-pillars, .rk-featured-grid, .rk-tech-grid, .rk-process-steps';
+    '.rk-card-grid, .rk-card-grid-2, .rk-card-grid-3, .rk-usp-grid, .rk-trust-grid, .rk-pillars, .rk-featured-grid, .rk-tech-grid, .rk-process-steps, .rk-vt-stack';
 
   var CARD_SELECTOR =
     '.rk-plan-card, .rk-pricing-card, .rk-post-card, .rk-featured-card, .rk-about-card, .rk-faq-item';

@@ -1,0 +1,116 @@
+.rk-matomo-analytics {
+  padding: calc(var(--gutter-h, 1.5rem) + 0.5rem) var(--gutter-h, 1.5rem) 3rem;
+  max-width: 1200px;
+}
+
+.rk-matomo-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.rk-matomo-kicker {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-500, #666);
+}
+
+.rk-matomo-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.1;
+}
+
+.rk-matomo-subtitle {
+  margin: 0.5rem 0 0;
+  color: var(--theme-elevation-600, #555);
+}
+
+.rk-matomo-external {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--theme-elevation-150, #ddd);
+  text-decoration: none;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.rk-matomo-external:hover {
+  background: var(--theme-elevation-50, #f5f5f5);
+}
+
+.rk-matomo-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.rk-matomo-kpi {
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--theme-elevation-150, #e5e5e5);
+  background: var(--theme-elevation-0, #fff);
+}
+
+.rk-matomo-kpi-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--theme-elevation-500, #777);
+}
+
+.rk-matomo-kpi-value {
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.rk-matomo-dashboard-title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.rk-matomo-iframe {
+  width: 100%;
+  min-height: 720px;
+  border: 1px solid var(--theme-elevation-150, #e5e5e5);
+  border-radius: 12px;
+  background: var(--theme-elevation-0, #fff);
+}
+
+.rk-matomo-error,
+.rk-matomo-empty {
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid var(--theme-error-250, #f5c2c7);
+  background: var(--theme-error-50, #fff5f5);
+  color: var(--theme-text, #111);
+}
+
+.rk-matomo-empty code {
+  font-size: 0.85em;
+}
+
+.rk-matomo-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-right: 0.75rem;
+  text-decoration: none;
+  font-size: 0.875rem;
+  color: var(--theme-elevation-800, #222);
+}
+
+.rk-matomo-nav-link:hover {
+  color: var(--theme-elevation-1000, #000);
+}
+
+.rk-matomo-nav-link[aria-current='page'] {
+  font-weight: 600;
+}

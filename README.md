@@ -64,4 +64,4 @@ src/globals/Homepage.ts    Featured-Artikel-Konfiguration
 
 - Blog-Links im Slider führen zu `/blog/[slug]` (Beitragsdetailseiten aus Payload).
 - Navigation und Footer verlinken auf Anker der Landingpage (`/#leistungen`, `/#kontakt`, …).
-- Keine Abhängigkeit zum Hauptprojekt „Rocketory Website“.
+- Keine Abhängigkeit zum Hauptprojekt „Rocketory Webseite“.

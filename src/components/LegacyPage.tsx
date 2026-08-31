@@ -1,5 +1,6 @@
 import type { LegacyPageData } from '@/lib/legacy-page'
 import { injectBlogSidebar } from '@/lib/blog-content'
+import { applySiteMedia } from '@/lib/site-media'
 import { getStaticComponentHtml } from '@/lib/static-html'
 
 import { LegacyContentEvents } from './LegacyContentEvents'
@@ -10,13 +11,16 @@ type LegacyPageProps = Pick<LegacyPageData, 'content' | 'scripts' | 'pageClass'>
   withBlogSidebar?: boolean
 }
 
-export function LegacyPage({ content, scripts, pageClass, withBlogSidebar }: LegacyPageProps) {
+export async function LegacyPage({ content, scripts, pageClass, withBlogSidebar }: LegacyPageProps) {
   const rootClass = pageClass ? `rk ${pageClass}` : 'rk'
   const pageContent = withBlogSidebar ? injectBlogSidebar(content) : content
+  const [navHtml, mainHtml, footerHtml] = await Promise.all([
+    applySiteMedia(getStaticComponentHtml('nav.html')),
+    applySiteMedia(pageContent),
+    applySiteMedia(getStaticComponentHtml('footer.html')),
+  ])
   const html =
-    getStaticComponentHtml('nav.html') +
-    `<main id="main-content">${pageContent}</main>` +
-    getStaticComponentHtml('footer.html')
+    navHtml + `<main id="main-content">${mainHtml}</main>` + footerHtml
 
   return (
     <>

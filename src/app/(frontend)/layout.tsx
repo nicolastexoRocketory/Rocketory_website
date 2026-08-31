@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { DM_Sans, Instrument_Serif, Inter } from 'next/font/google'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/metadata'
+import { isMatomoTrackingConfigured } from '@/lib/matomo'
 import { AiImageRegistry } from '@/components/AiImageRegistry'
 import { SiteSchema } from '@/components/SiteSchema'
 import { CookieBanner } from '@/components/CookieBanner'
+import { MatomoTracker } from '@/components/MatomoTracker'
 import { ContactFloat } from '@/components/ContactFloat'
 import '@/styles/main.css'
 
@@ -34,7 +36,7 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Rocketory – All in One Webdesign und SEO aus Bünde',
+    default: 'Rocketory, All in One Webdesign und SEO aus Bünde',
     template: '%s',
   },
   description: DEFAULT_DESCRIPTION,
@@ -56,6 +58,10 @@ export const metadata: Metadata = {
 }
 
 export default function FrontendLayout({ children }: { children: React.ReactNode }) {
+  const matomoUrl = process.env.NEXT_PUBLIC_MATOMO_URL?.trim()
+  const matomoSiteId = process.env.NEXT_PUBLIC_MATOMO_SITE_ID?.trim()
+  const matomoEnabled = isMatomoTrackingConfigured() && Boolean(matomoUrl && matomoSiteId)
+
   return (
     <html
       lang="de"
@@ -76,6 +82,11 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
         {children}
         <ContactFloat />
         <CookieBanner />
+        {matomoEnabled ? (
+          <Suspense fallback={null}>
+            <MatomoTracker url={matomoUrl!} siteId={matomoSiteId!} />
+          </Suspense>
+        ) : null}
       </body>
     </html>
   )

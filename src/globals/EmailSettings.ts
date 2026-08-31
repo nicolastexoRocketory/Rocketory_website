@@ -84,7 +84,7 @@ export const EmailSettings: GlobalConfig = {
           name: 'fromName',
           type: 'text',
           label: 'Absender-Name',
-          defaultValue: 'Rocketory Website',
+          defaultValue: 'Rocketory Webseite',
         },
         {
           name: 'fromEmail',

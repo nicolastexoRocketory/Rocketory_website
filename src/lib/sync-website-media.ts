@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { createHash } from 'crypto'
 
 import type { Payload } from 'payload'
 
@@ -72,6 +73,45 @@ export function collectWebsiteImagePaths(cwd = process.cwd()): string[] {
   return unique.sort();
 }
 
+function sitePathFromFilePath(filePath: string, cwd: string): string {
+  const key = normalizeAssetKey(filePath, cwd)
+  return `/${key}`
+}
+
+function hashFile(filePath: string): string | null {
+  if (!fs.existsSync(filePath)) return null
+  return createHash('sha256').update(fs.readFileSync(filePath)).digest('hex')
+}
+
+function storedMediaFilePath(filename?: string | null): string | null {
+  if (!filename?.trim()) return null
+  const filePath = path.join(process.cwd(), 'media', filename)
+  return fs.existsSync(filePath) ? filePath : null
+}
+
+function removeStoredMediaVariants(filename?: string | null) {
+  if (!filename?.trim()) return
+
+  const mediaDir = path.join(process.cwd(), 'media')
+  if (!fs.existsSync(mediaDir)) return
+
+  const stem = path.parse(filename).name
+  for (const entry of fs.readdirSync(mediaDir)) {
+    if (entry === filename || entry.startsWith(`${stem}-`)) {
+      fs.unlinkSync(path.join(mediaDir, entry))
+    }
+  }
+}
+
+function sourceMatchesStoredMedia(sourcePath: string, filename?: string | null): boolean {
+  const storedPath = storedMediaFilePath(filename)
+  if (!storedPath) return false
+
+  const sourceHash = hashFile(sourcePath)
+  const storedHash = hashFile(storedPath)
+  return Boolean(sourceHash && storedHash && sourceHash === storedHash)
+}
+
 export async function syncWebsiteMedia(payload: Payload) {
   const files = collectWebsiteImagePaths();
   const existing = await payload.find({
@@ -81,40 +121,98 @@ export async function syncWebsiteMedia(payload: Payload) {
   });
 
   const byFilename = new Map(existing.docs.map((doc) => [doc.filename, doc]));
+  const bySitePath = new Map(
+    existing.docs
+      .filter((doc) => doc.sitePath)
+      .map((doc) => [doc.sitePath as string, doc]),
+  );
   let created = 0;
   let skipped = 0;
+  let updated = 0;
 
   for (const filePath of files) {
     const filename = path.basename(filePath);
     const title = humanizeFilename(filename);
+    const sitePath = sitePathFromFilePath(filePath, process.cwd());
+
+    const currentByPath = bySitePath.get(sitePath);
+    if (currentByPath) {
+      const patch: { title?: string; alt?: string } = {}
+      let refreshedFile = false
+
+      if (!sourceMatchesStoredMedia(filePath, currentByPath.filename)) {
+        removeStoredMediaVariants(currentByPath.filename)
+        removeStoredMediaVariants(filename)
+
+        await payload.update({
+          collection: 'media',
+          id: currentByPath.id,
+          data: {
+            title,
+            alt: title,
+          },
+          filePath,
+        })
+        refreshedFile = true
+        updated += 1
+        console.log(`Media-Datei aktualisiert: ${filename} (${sitePath})`)
+      }
+
+      if (!refreshedFile && !currentByPath.title?.trim()) {
+        patch.title = title
+        patch.alt = title
+      }
+
+      if (!refreshedFile && Object.keys(patch).length > 0) {
+        await payload.update({
+          collection: 'media',
+          id: currentByPath.id,
+          data: patch,
+        });
+        updated += 1;
+        console.log(`Media-Titel ergänzt: ${title}`);
+      } else if (!refreshedFile) {
+        skipped += 1;
+      }
+      continue;
+    }
 
     if (byFilename.has(filename)) {
       const current = byFilename.get(filename)!;
-      if (!current.title?.trim()) {
+      const patch: { title?: string; sitePath?: string } = {};
+
+      if (!current.sitePath) patch.sitePath = sitePath;
+      if (!current.title?.trim()) patch.title = title;
+
+      if (Object.keys(patch).length > 0) {
         await payload.update({
           collection: 'media',
           id: current.id,
-          data: { title },
+          data: patch,
         });
-        console.log(`Media-Titel ergänzt: ${title}`);
+        updated += 1;
+        console.log(`Media verknüpft: ${filename} → ${sitePath}`);
       } else {
         skipped += 1;
       }
       continue;
     }
 
-    await payload.create({
+    const createdDoc = await payload.create({
       collection: 'media',
       data: {
         title,
         alt: title,
+        sitePath,
       },
       filePath,
     });
 
+    byFilename.set(filename, createdDoc);
+    bySitePath.set(sitePath, createdDoc);
     created += 1;
-    console.log(`Media importiert: ${filename}`);
+    console.log(`Media importiert: ${filename} (${sitePath})`);
   }
 
-  return { created, skipped, total: files.length };
+  return { created, skipped, updated, total: files.length };
 }

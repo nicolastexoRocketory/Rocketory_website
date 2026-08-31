@@ -32,7 +32,7 @@
     var track = banner.querySelector('.rk-town-banner-track');
     if (!viewport || !track) return;
 
-    // Include loop clones (aria-hidden) – they are often the ones visually centered.
+    // Include loop clones (aria-hidden), they are often the ones visually centered.
     var items = Array.prototype.slice.call(track.querySelectorAll('.rk-town-banner-item'));
     if (!items.length) return;
 
@@ -52,7 +52,7 @@
 
     function updateFocus() {
       var vpRect = viewport.getBoundingClientRect();
-      // Below mid: words scroll up, so focus earlier (lower) — feels less laggy once they enlarge.
+      // Below mid: words scroll up, so focus earlier (lower), feels less laggy once they enlarge.
       var focusY =
         vpRect.height >= 1
           ? vpRect.top + vpRect.height * 0.55

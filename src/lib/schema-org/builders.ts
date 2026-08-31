@@ -14,6 +14,10 @@ import {
   MAPS_URL,
   META_AGENTUR_BUENDE,
   META_STANDORTE,
+  META_VORTEILE,
+  META_WEBDESIGN,
+  META_SEO,
+  META_WARTUNG,
   ORG_ADDRESS,
   ORG_BRAND,
   ORG_EMAIL,
@@ -161,7 +165,7 @@ export function buildGlobalSchemaNodes(): SchemaNode[] {
       '@type': ['LocalBusiness', 'ProfessionalService'],
       '@id': LOCAL_BUSINESS_ID,
       name: ORG_BRAND,
-      alternateName: 'Rocketory – Webdesign Bünde',
+      alternateName: 'Rocketory, Webdesign Bünde',
       legalName: ORG_LEGAL_NAME,
       url: SITE_URL,
       image: [
@@ -243,11 +247,11 @@ export function buildGlobalSchemaScript(): string {
 
 export function buildHomePageSchema(): SchemaNode[] {
   const description =
-    'Design, Technik, Texte, Hosting – Webdesign, SEO und Betreuung aus Bünde. Persönlich gebaut, fair kalkuliert, langfristig betreut.'
+    'Design, Technik, Texte, Hosting, Webdesign, SEO und Betreuung aus Bünde. Persönlich gebaut, fair kalkuliert, langfristig betreut.'
 
   return [
     {
-      ...baseWebPage('/', 'Rocketory – All in One Webdesign und SEO aus Bünde', description),
+      ...baseWebPage('/', 'Rocketory, All in One Webdesign und SEO aus Bünde', description),
       '@type': 'WebPage',
       primaryImageOfPage: {
         '@type': 'ImageObject',
@@ -261,11 +265,11 @@ export function buildHomePageSchema(): SchemaNode[] {
 
 export function buildAgenturPageSchema(): SchemaNode[] {
   const description =
-    'Webdesign-Team aus Bünde mit festem Standort in Ostwestfalen-Lippe – persönlich, ehrlich, ohne Verkaufsdruck.'
+    'Webdesign-Team aus Bünde mit festem Standort in Ostwestfalen-Lippe, persönlich, ehrlich, ohne Verkaufsdruck.'
 
   return [
     {
-      ...baseWebPage('/agentur', 'Agentur – Rocketory', description, 'AboutPage'),
+      ...baseWebPage('/agentur', 'Agentur, Rocketory', description, 'AboutPage'),
       mainEntity: { '@id': ORGANIZATION_ID },
     },
     buildBreadcrumb('/agentur', 'Agentur'),
@@ -280,32 +284,32 @@ export function buildAgenturBuendePageSchema(): SchemaNode[] {
     {
       question: 'Wie schnell meldet sich Rocketory zurück?',
       answer:
-        'In der Regel innerhalb von 24 Stunden – persönlich, nicht automatisiert. Du sprichst direkt mit Menschen, die dein Projekt kennen. Kontakt: https://rocketory.de/kontakt',
+        'In der Regel innerhalb von 24 Stunden, persönlich, nicht automatisiert. Du sprichst direkt mit Menschen, die dein Projekt kennen. Kontakt: https://rocketory.de/kontakt',
     },
     {
       question: 'Arbeitet Rocketory nur regional?',
       answer:
-        'Unser Herz schlägt in Bünde – wir kennen den Markt vor Ort. Projekte begleiten wir aber auch per Video und digital, wenn das für dich passt. Beispiele: https://rocketory.de/projekte',
+        'Unser Herz schlägt in Bünde, wir kennen den Markt vor Ort. Projekte begleiten wir aber auch per Video und digital, wenn das für dich passt. Beispiele: https://rocketory.de/projekte',
     },
     {
       question: 'Was passiert nach dem Launch?',
       answer:
-        'Wir bleiben an deiner Seite: Wartung, Updates und persönlicher Support sorgen dafür, dass deine Website zuverlässig läuft – während du dein Business führst.',
+        'Wir bleiben an deiner Seite: Wartung, Updates und persönlicher Support sorgen dafür, dass deine Webseite zuverlässig läuft, während du dein Business führst.',
     },
     {
       question: 'Wie lange läuft ein Monats-Abo?',
       answer:
-        'Alle monatlichen Pakete – inklusive Wartung & Sicherheit – haben eine Mindestlaufzeit von 24 Monaten. Danach ist monatlich kündbar. Details im Erstgespräch: https://rocketory.de/kontakt',
+        'Alle monatlichen Pakete, inklusive Wartung & Sicherheit, haben eine Mindestlaufzeit von 24 Monaten. Danach ist monatlich kündbar. Details im Erstgespräch: https://rocketory.de/kontakt',
     },
     {
       question: 'Gibt es versteckte Kosten?',
       answer:
-        'Nein. Klare Angebote, nachvollziehbare Preise und ehrliche Empfehlungen – alles inklusive, keine versteckten Extras.',
+        'Nein. Klare Angebote, nachvollziehbare Preise und ehrliche Empfehlungen, alles inklusive, keine versteckten Extras.',
     },
     {
       question: 'Bin ich an eine anonyme Agentur gebunden?',
       answer:
-        'Rocketory ist eine Unit der FairFlock GmbH – Marketing über unsere Schwester-Agentur Viralista. Kein Ein-Mann-Setup ohne Rückhalt. Du arbeitest mit einer Struktur, die Verantwortung trägt.',
+        'Rocketory ist eine Unit der FairFlock GmbH, Marketing über unsere Schwester-Agentur Viralista. Kein Ein-Mann-Setup ohne Rückhalt. Du arbeitest mit einer Struktur, die Verantwortung trägt.',
     },
   ]
 
@@ -313,7 +317,7 @@ export function buildAgenturBuendePageSchema(): SchemaNode[] {
     {
       ...baseWebPage(
         '/agentur/buende',
-        'Webdesign-Agentur in Bünde (OWL) – Rocketory',
+        'Webdesign-Agentur in Bünde (OWL), Rocketory',
         description,
         'AboutPage',
       ),
@@ -342,15 +346,15 @@ export function buildStandortePageSchema(): SchemaNode[] {
     {
       question: 'Wie viele Standorte hat Rocketory?',
       answer:
-        'Einen: das Büro in Bünde (Zimmerstraße 16). Die Orte auf der Standorte-Seite beschreiben das Einsatzgebiet – keine weiteren Büros. Details: https://rocketory.de/agentur/buende',
+        'Einen: das Büro in Bünde (Zimmerstraße 16). Die Orte auf der Standorte-Seite beschreiben das Einsatzgebiet, keine weiteren Büros. Details: https://rocketory.de/agentur/buende',
     },
     {
       question: 'Betreut ihr auch Kunden außerhalb von Bünde?',
       answer:
-        'Ja. Schwerpunkt ist OWL (unter anderem Herford, Enger, Löhne, Bad Oeynhausen, Bielefeld). Zusammenarbeit funktioniert online und – wenn sinnvoll – vor Ort.',
+        'Ja. Schwerpunkt ist OWL (unter anderem Herford, Enger, Löhne, Bad Oeynhausen, Bielefeld). Zusammenarbeit funktioniert online und, wenn sinnvoll, vor Ort.',
     },
     {
-      question: 'Warum steht „Standorte“ auf der Website?',
+      question: 'Warum steht „Standorte“ auf der Webseite?',
       answer:
         'Damit klar ist, wo wir sitzen und wo wir arbeiten: ein physischer Standort in Bünde und ein definiertes Einsatzgebiet in Ostwestfalen-Lippe. Details: https://rocketory.de/agentur/buende',
     },
@@ -362,13 +366,13 @@ export function buildStandortePageSchema(): SchemaNode[] {
     {
       question: 'Seid ihr eine Remote-Agentur?',
       answer:
-        'Nein. Wir sind lokal verankert in Bünde und nutzen digitale Tools für effiziente Zusammenarbeit – ohne anonyme Callcenter-Struktur.',
+        'Nein. Wir sind lokal verankert in Bünde und nutzen digitale Tools für effiziente Zusammenarbeit, ohne anonyme Callcenter-Struktur.',
     },
   ]
 
   return [
     {
-      ...baseWebPage('/standorte', 'Standorte & Einsatzgebiet OWL – Rocketory', description),
+      ...baseWebPage('/standorte', 'Standorte & Einsatzgebiet OWL, Rocketory', description),
       mainEntity: { '@id': LOCAL_BUSINESS_ID },
       about: { '@id': PLACE_BUNDE_ID },
       primaryImageOfPage: {
@@ -384,7 +388,7 @@ export function buildStandortePageSchema(): SchemaNode[] {
       '@id': `${SITE_URL}/standorte#service-area`,
       name: 'Einsatzgebiet Rocketory',
       description:
-        'Städte und Gemeinden im Einsatzgebiet von Rocketory – betreut vom Standort Bünde, ohne Zweitbüros.',
+        'Städte und Gemeinden im Einsatzgebiet von Rocketory, betreut vom Standort Bünde, ohne Zweitbüros.',
       itemListElement: SERVICE_AREA_CITIES.map((name, index) => ({
         '@type': 'ListItem',
         position: index + 1,
@@ -401,10 +405,10 @@ export function buildStandortePageSchema(): SchemaNode[] {
 
 export function buildAngebotePageSchema(): SchemaNode[] {
   const description =
-    'Maßgeschneiderte Websites als statisches HTML, WordPress oder CMS mit Next.js & Payload – transparent kalkuliert und langfristig betreut.'
+    'Maßgeschneiderte Webseiten als statisches HTML, WordPress oder CMS mit Next.js & Payload, transparent kalkuliert und langfristig betreut.'
 
   return [
-    baseWebPage('/angebote', 'Angebote – Rocketory', description),
+    baseWebPage('/angebote', 'Angebote, Rocketory', description),
     buildBreadcrumb('/angebote', 'Angebote'),
     {
       '@type': 'OfferCatalog',
@@ -424,12 +428,248 @@ export function buildAngebotePageSchema(): SchemaNode[] {
   ]
 }
 
-export function buildTechnologienPageSchema(): SchemaNode[] {
-  const description =
-    'Statisches HTML, WordPress oder CMS mit Next.js & Payload – wir empfehlen ehrlich, was zu deinem Business passt.'
+export function buildVorteilePageSchema(): SchemaNode[] {
+  const description = META_VORTEILE
+  const faqs = [
+    {
+      question: 'Mehr Qualität. Gleiches Budget. Wie geht das?',
+      answer:
+        'Weil Design, Texte und Technik in einem Prozess laufen und wir mit Konzept starten: weniger Übergaben, weniger Nacharbeit, weniger Theme-Ballast. Scope und Preis stehen vor dem Start. Du zahlst nicht „weniger“, du bekommst mehr Ergebnis für denselben Rahmen.',
+    },
+    {
+      question: 'Eigene Bausteine. Ist das ein Baukasten?',
+      answer:
+        'Nein. „Kein Baukasten“ heißt: kein fertiges Kunden-Theme mit ausgetauschtem Logo. Jede Webseite ist ein komplexes System, eigene Bausteine und Codebasis sind unser Fundament, damit dieses System sauber und wartbar bleibt. Dein Auftritt entsteht individuell aus dem Konzept, damit die Qualität im Sichtbaren landet, nicht im Ballast.',
+    },
+  ]
 
   return [
-    baseWebPage('/technologien', 'Technologien – Rocketory', description),
+    {
+      ...baseWebPage('/vorteile', 'Vorteile: Mehr Qualität. Gleiches Budget. | Rocketory', description),
+      significantLink: [
+        `${SITE_URL}/webdesign`,
+        `${SITE_URL}/angebote`,
+        `${SITE_URL}/agentur/buende`,
+        `${SITE_URL}/kontakt`,
+      ],
+    },
+    buildBreadcrumb('/vorteile', 'Vorteile'),
+    buildFaqPage('/vorteile', faqs),
+  ]
+}
+
+export function buildWebdesignPageSchema(): SchemaNode[] {
+  const description = META_WEBDESIGN
+  const faqs = [
+    {
+      question: 'Was kostet eine maßgeschneiderte Webseite?',
+      answer:
+        'Den Preis legen wir nach Umfang fest: Seiten, Funktionen, Texte, Technik. Es gibt kein verstecktes Kleingedrucktes und keine Standardpakete. Orientierung im Erstgespräch: https://rocketory.de/kontakt',
+    },
+    {
+      question: 'Wie lange dauert ein Webdesign-Projekt?',
+      answer:
+        'Abhängig von Freigaben und Inhalt. Ein klarer Auftritt ohne CMS geht schneller als ein umfangreiches Backend. Den Zeitplan sprechen wir vor dem Kick-off ab.',
+    },
+    {
+      question: 'Ist das ein Baukasten oder individuelles Design?',
+      answer:
+        'Individuell. Wir verkaufen keine Themes mit ausgetauschtem Logo. Layout, Typo und Bildwelt entstehen für dein Angebot.',
+    },
+    {
+      question: 'Welche Technologie empfehlt ihr?',
+      answer:
+        'Die, die zu Pflege und Tempo passt: statisches HTML, WordPress oder Next.js & Payload. Entscheidungshilfe: https://rocketory.de/technologien',
+    },
+    {
+      question: 'Arbeitet ihr nur für Unternehmen aus Bünde?',
+      answer:
+        'Unser Büro ist in Bünde. Betreuung gibt es im gesamten Einsatzgebiet OWL und digital, wenn die Wege weiter sind. Kein zweites Büro. https://rocketory.de/agentur/buende',
+    },
+    {
+      question: 'Was passiert nach dem Launch mit der Webseite?',
+      answer:
+        'Du kannst die Seite selbst weiterbetreiben oder Rocketory für Wartung, Hosting und Updates beauftragen. SEO: https://rocketory.de/seo · Wartung: https://rocketory.de/wartung',
+    },
+  ]
+
+  return [
+    {
+      ...baseWebPage(
+        '/webdesign',
+        'Webdesign Bünde: maßgeschneiderte Webseite | Rocketory',
+        description,
+      ),
+      mainEntity: { '@id': `${SITE_URL}/webdesign#service` },
+      significantLink: [
+        `${SITE_URL}/angebote`,
+        `${SITE_URL}/agentur/buende`,
+        `${SITE_URL}/kontakt`,
+        `${SITE_URL}/technologien`,
+      ],
+    },
+    buildBreadcrumbTrail([
+      { name: 'Startseite', path: '/' },
+      { name: 'Angebote', path: '/angebote' },
+      { name: 'Webdesign', path: '/webdesign' },
+    ]),
+    {
+      '@type': 'Service',
+      '@id': `${SITE_URL}/webdesign#service`,
+      name: 'Webdesign: maßgeschneiderte Webseite',
+      serviceType: 'Webdesign',
+      description,
+      url: `${SITE_URL}/webdesign`,
+      provider: { '@id': LOCAL_BUSINESS_ID },
+      areaServed: serviceAreaNodes(),
+      offers: {
+        '@type': 'Offer',
+        url: `${SITE_URL}/kontakt`,
+        availability: 'https://schema.org/InStock',
+        description: 'Individuell kalkuliert nach Erstgespräch, kein Standardpaket.',
+      },
+    },
+    buildFaqPage('/webdesign', faqs),
+  ]
+}
+
+export function buildSeoPageSchema(): SchemaNode[] {
+  const description = META_SEO
+  const faqs = [
+    {
+      question: 'Ist SEO im Webdesign schon enthalten?',
+      answer:
+        'Ja, die On-Page-Basis gehört zum Webdesign. Der Reichweite-Service ist die fortlaufende Erweiterung danach: https://rocketory.de/webdesign',
+    },
+    {
+      question: 'Wann lohnt sich 6 Monate, wann 12?',
+      answer:
+        '6 Monate für Einstieg und Quick Wins. 12 Monate, wenn Content, lokale Präsenz und nachhaltige Rankings im Fokus stehen.',
+    },
+    {
+      question: 'Wie wird der Preis ermittelt?',
+      answer:
+        'Individuell nach Branche, Wettbewerb und Ausgangslage. Einschätzung im Erstgespräch: https://rocketory.de/kontakt',
+    },
+    {
+      question: 'Brauche ich SEO ohne neue Webseite?',
+      answer:
+        'Oft ja, wenn die bestehende Seite technisch und inhaltlich tragfähig ist. Fehlen Struktur oder Tempo, lohnt sich zuerst ein Relaunch.',
+    },
+    {
+      question: 'Was messt ihr konkret?',
+      answer:
+        'Rankings zu abgestimmten Keywords, organischen Traffic und, wo zuordenbar, Anfragen. Monatliches Reporting in verständlicher Sprache.',
+    },
+    {
+      question: 'Passt SEO zu Wartung & Hosting?',
+      answer:
+        'Ja. Viele Kunden kombinieren beides. Wartung hält Technik stabil, Reichweite baut Sichtbarkeit aus: https://rocketory.de/wartung',
+    },
+  ]
+
+  return [
+    {
+      ...baseWebPage('/seo', 'SEO & Reichweite Bünde | Rocketory', description),
+      mainEntity: { '@id': `${SITE_URL}/seo#service` },
+      significantLink: [`${SITE_URL}/webdesign`, `${SITE_URL}/wartung`, `${SITE_URL}/kontakt`],
+    },
+    buildBreadcrumbTrail([
+      { name: 'Startseite', path: '/' },
+      { name: 'Angebote', path: '/angebote' },
+      { name: 'SEO & Reichweite', path: '/seo' },
+    ]),
+    {
+      '@type': 'Service',
+      '@id': `${SITE_URL}/seo#service`,
+      name: 'SEO & Reichweite',
+      serviceType: 'Search Engine Optimization',
+      description,
+      url: `${SITE_URL}/seo`,
+      provider: { '@id': LOCAL_BUSINESS_ID },
+      areaServed: serviceAreaNodes(),
+      offers: {
+        '@type': 'Offer',
+        url: `${SITE_URL}/kontakt`,
+        availability: 'https://schema.org/InStock',
+        description: 'Optional, 6 oder 12 Monate, individuell kalkuliert.',
+      },
+    },
+    buildFaqPage('/seo', faqs),
+  ]
+}
+
+export function buildWartungPageSchema(): SchemaNode[] {
+  const description = META_WARTUNG
+  const faqs = [
+    {
+      question: 'Ist Wartung in jedem Projekt Pflicht?',
+      answer:
+        'Bei Monats-Paketen typischerweise fest eingeplant. Nach Festpreis-Projekten optional buchbar oder Eigenbetrieb möglich.',
+    },
+    {
+      question: 'Für welche Technologien gilt das?',
+      answer:
+        'Für statisches HTML, WordPress und Next.js & Payload: https://rocketory.de/technologien',
+    },
+    {
+      question: 'Wie schnell bekomme ich Support?',
+      answer:
+        'Derselbe Ansprechpartner wie im Projekt. Rückmeldung in der Regel innerhalb von 24 Stunden an Werktagen.',
+    },
+    {
+      question: 'Was passiert bei einem Ausfall?',
+      answer:
+        'Monitoring und Backups greifen zuerst. Wir stellen wieder her, prüfen die Ursache und dokumentieren den Vorfall.',
+    },
+    {
+      question: 'Kann ich später SEO dazu buchen?',
+      answer: 'Ja, über den optionalen Reichweite-Service: https://rocketory.de/seo',
+    },
+    {
+      question: 'Betreut ihr auch fremde Webseiten?',
+      answer:
+        'Oft ja, nach einem kurzen Technik-Check. Wenn die Basis unsicher oder unwartbar ist, sagen wir das vor Vertragsbeginn klar.',
+    },
+  ]
+
+  return [
+    {
+      ...baseWebPage('/wartung', 'Wartung & Sicherheit Bünde | Rocketory', description),
+      mainEntity: { '@id': `${SITE_URL}/wartung#service` },
+      significantLink: [`${SITE_URL}/webdesign`, `${SITE_URL}/seo`, `${SITE_URL}/kontakt`],
+    },
+    buildBreadcrumbTrail([
+      { name: 'Startseite', path: '/' },
+      { name: 'Angebote', path: '/angebote' },
+      { name: 'Wartung & Sicherheit', path: '/wartung' },
+    ]),
+    {
+      '@type': 'Service',
+      '@id': `${SITE_URL}/wartung#service`,
+      name: 'Wartung & Sicherheit',
+      serviceType: 'Website Maintenance',
+      description,
+      url: `${SITE_URL}/wartung`,
+      provider: { '@id': LOCAL_BUSINESS_ID },
+      areaServed: serviceAreaNodes(),
+      offers: {
+        '@type': 'Offer',
+        url: `${SITE_URL}/kontakt`,
+        availability: 'https://schema.org/InStock',
+        description: 'Hosting, Backups, Updates und Support, stackabhängig.',
+      },
+    },
+    buildFaqPage('/wartung', faqs),
+  ]
+}
+
+export function buildTechnologienPageSchema(): SchemaNode[] {
+  const description =
+    'Statisches HTML, WordPress oder CMS mit Next.js & Payload, wir empfehlen ehrlich, was zu deinem Business passt.'
+
+  return [
+    baseWebPage('/technologien', 'Technologien, Rocketory', description),
     buildBreadcrumb('/technologien', 'Technologien'),
     {
       '@type': 'ItemList',
@@ -448,11 +688,11 @@ export function buildBlogListingSchema(
   posts: Array<{ title: string; slug: string; excerpt?: string | null }>,
 ): SchemaNode[] {
   const description =
-    'Praxiswissen zu Webdesign, SEO und digitalem Auftritt – aus echten Projekten, ehrlich erzählt.'
+    'Praxiswissen zu Webdesign, SEO und digitalem Auftritt, aus echten Projekten, ehrlich erzählt.'
 
   return [
     {
-      ...baseWebPage('/blog', 'Blog – Rocketory', description, 'CollectionPage'),
+      ...baseWebPage('/blog', 'Blog, Rocketory', description, 'CollectionPage'),
       '@type': ['CollectionPage', 'Blog'],
       blogPost: posts.slice(0, 12).map((post) => ({
         '@type': 'BlogPosting',
@@ -479,11 +719,11 @@ export function buildProjekteListingSchema(
   projects: Array<{ title: string; slug: string; excerpt?: string | null }>,
 ): SchemaNode[] {
   const description =
-    'Konkrete Referenzen mit Zielen, Umsetzung und Ergebnissen – ehrlich erzählt, ohne Agentur-Blabla.'
+    'Konkrete Referenzen mit Zielen, Umsetzung und Ergebnissen, ehrlich erzählt, ohne Agentur-Blabla.'
 
   return [
     {
-      ...baseWebPage('/projekte', 'Projekte – Rocketory', description, 'CollectionPage'),
+      ...baseWebPage('/projekte', 'Projekte, Rocketory', description, 'CollectionPage'),
       hasPart: projects.slice(0, 12).map((project) => ({
         '@type': 'CreativeWork',
         name: project.title,
@@ -507,11 +747,11 @@ export function buildProjekteListingSchema(
 
 export function buildKontaktPageSchema(): SchemaNode[] {
   const description =
-    'Projekt anfragen bei Rocketory in Bünde – Webdesign, SEO und Betreuung aus einer Hand. Unverbindlich in wenigen Schritten.'
+    'Projekt anfragen bei Rocketory in Bünde, Webdesign, SEO und Betreuung aus einer Hand. Unverbindlich in wenigen Schritten.'
 
   return [
     {
-      ...baseWebPage('/kontakt', 'Kontakt – Rocketory', description, 'ContactPage'),
+      ...baseWebPage('/kontakt', 'Kontakt, Rocketory', description, 'ContactPage'),
       mainEntity: { '@id': LOCAL_BUSINESS_ID },
     },
     buildBreadcrumb('/kontakt', 'Kontakt'),
@@ -531,8 +771,8 @@ export function buildImpressumPageSchema(): SchemaNode[] {
   return [
     baseWebPage(
       '/impressum',
-      'Impressum – Rocketory',
-      'Impressum von Rocketory / FairFlock GmbH – Anbieterkennzeichnung gemäß DDG.',
+      'Impressum, Rocketory',
+      'Impressum von Rocketory / FairFlock GmbH, Anbieterkennzeichnung gemäß DDG.',
     ),
     buildBreadcrumb('/impressum', 'Impressum'),
   ]
@@ -542,8 +782,8 @@ export function buildDatenschutzPageSchema(): SchemaNode[] {
   return [
     baseWebPage(
       '/datenschutz',
-      'Datenschutzerklärung – Rocketory',
-      'Datenschutzerklärung von Rocketory – Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO.',
+      'Datenschutzerklärung, Rocketory',
+      'Datenschutzerklärung von Rocketory, Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO.',
     ),
     buildBreadcrumb('/datenschutz', 'Datenschutz'),
   ]
@@ -589,7 +829,7 @@ export function buildBlogPostPageSchema(post: Post): SchemaNode[] {
       '@type': 'WebPage',
       '@id': `${SITE_URL}/blog/${post.slug}#webpage`,
       url: `${SITE_URL}/blog/${post.slug}`,
-      name: `${post.title} – Rocketory`,
+      name: `${post.title}, Rocketory`,
       isPartOf: { '@id': WEBSITE_ID },
     },
     buildContentBreadcrumb('/blog', 'Blog', post.title, post.slug),
@@ -625,7 +865,7 @@ export function buildProjectPageSchema(project: Project): SchemaNode[] {
       '@type': 'WebPage',
       '@id': `${SITE_URL}/projekte/${project.slug}#webpage`,
       url: `${SITE_URL}/projekte/${project.slug}`,
-      name: `${project.title} – Rocketory`,
+      name: `${project.title}, Rocketory`,
       isPartOf: { '@id': WEBSITE_ID },
     },
     buildContentBreadcrumb('/projekte', 'Projekte', project.title, project.slug),

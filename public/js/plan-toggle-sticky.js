@@ -54,7 +54,7 @@
     if (!section) return;
     var toggle =
       section.querySelector('.rk-pricing-switchers') ||
-      section.querySelector('.rk-plan-toggle, .rk-tu-mode-toggle');
+      section.querySelector('.rk-plan-toggle');
     if (!toggle) return;
 
     var anchor = document.createElement('div');

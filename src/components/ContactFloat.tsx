@@ -1,27 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-
 import { WHATSAPP_HREF } from '@/lib/whatsapp'
 
 import '@/styles/contact-float.css'
-
-const STORAGE_KEY = 'rk-contact-float-collapsed'
-const LEGACY_STORAGE_KEY = 'rk-whatsapp-collapsed'
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden="true">
-      <path
-        d="M4 4l8 8M12 4l-8 8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
 
 function WhatsAppIcon() {
   return (
@@ -31,109 +12,17 @@ function WhatsAppIcon() {
   )
 }
 
-function readCollapsedState(): boolean {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored !== null) return stored === '1'
-    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY)
-    if (legacy !== null) return legacy === '1'
-    return true
-  } catch {
-    return true
-  }
-}
-
 export function ContactFloat() {
-  const [collapsed, setCollapsed] = useState(true)
-  const wrapRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    setCollapsed(readCollapsedState())
-  }, [])
-
-  useEffect(() => {
-    if (collapsed) return
-
-    function onPointerDown(event: MouseEvent | TouchEvent) {
-      const target = event.target
-      if (!(target instanceof Node) || !wrapRef.current?.contains(target)) {
-        setCollapsedState(true)
-      }
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setCollapsedState(true)
-    }
-
-    document.addEventListener('mousedown', onPointerDown)
-    document.addEventListener('touchstart', onPointerDown)
-    document.addEventListener('keydown', onKeyDown)
-
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown)
-      document.removeEventListener('touchstart', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [collapsed])
-
-  function setCollapsedState(next: boolean) {
-    setCollapsed(next)
-    try {
-      localStorage.setItem(STORAGE_KEY, next ? '1' : '0')
-    } catch {
-      // ignore storage errors
-    }
-  }
-
   return (
-    <div
-      ref={wrapRef}
-      className={`rk-contact-float-wrap${collapsed ? ' is-collapsed' : ' is-open'}`}
+    <a
+      className="rk-whatsapp-float"
+      href={WHATSAPP_HREF}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Per WhatsApp schreiben"
     >
-      <div className="rk-contact-float-panel" role="dialog" aria-label="Kontakt">
-        <button
-          type="button"
-          className="rk-contact-float__dismiss"
-          onClick={() => setCollapsedState(true)}
-          aria-label="Kontakt schließen"
-        >
-          <CloseIcon />
-        </button>
-
-        <div className="rk-contact-float__inner">
-          <p className="rk-contact-float__note">Kostenlos · Antwort in 24&nbsp;h</p>
-
-          <a href="/kontakt" className="rk-dot-cta rk-contact-float__primary">
-            <span className="rk-dot-cta-label">Projekt anfragen</span>
-            <span className="dot-ring" aria-hidden="true">
-              <span />
-            </span>
-          </a>
-
-          <a
-            className="rk-contact-float__whatsapp"
-            href={WHATSAPP_HREF}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <WhatsAppIcon />
-            <span>WhatsApp</span>
-          </a>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        className="rk-contact-float__trigger"
-        onClick={() => setCollapsedState(!collapsed)}
-        aria-expanded={!collapsed}
-        aria-label={collapsed ? 'Kontakt anzeigen' : 'Kontakt schließen'}
-      >
-        <span className="rk-dot-cta-label">Kontakt</span>
-        <span className="dot-ring" aria-hidden="true">
-          <span />
-        </span>
-      </button>
-    </div>
+      <WhatsAppIcon />
+      <span>WhatsApp</span>
+    </a>
   )
 }

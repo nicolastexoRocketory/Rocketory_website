@@ -27,7 +27,7 @@
     return value.toLocaleString('de-DE') + ' €';
   }
 
-  function monthlyWebsite(einmal) {
+  function monthlyWebseite(einmal) {
     return Math.round(einmal / MINIMUM_MONTHS);
   }
 
@@ -82,8 +82,8 @@
       completeOnceCompare(data.gross, wartungOnce),
     );
 
-    var kleinMonthlyNet = monthlyWebsite(data.klein);
-    var grossMonthlyNet = monthlyWebsite(data.gross);
+    var kleinMonthlyNet = monthlyWebseite(data.klein);
+    var grossMonthlyNet = monthlyWebseite(data.gross);
 
     setPriceHtml(list.querySelector('[data-rk-price-klein-monthly-net]'), kleinMonthlyNet, '/ Monat');
     setPriceHtml(

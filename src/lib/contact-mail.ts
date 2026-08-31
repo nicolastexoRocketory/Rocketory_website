@@ -7,7 +7,7 @@ function buildAdminEmailBody(doc: ContactInquiry, settings?: EmailSetting): stri
   const lines = [
     'Neue Kontaktanfrage über rocketory.de',
     '',
-    `Anliegen: ${doc.intentLabel || doc.intent || '–'}`,
+    `Anliegen: ${doc.intentLabel || doc.intent || '-'}`,
     doc.detailSummary ? `Details: ${doc.detailSummary}` : '',
     `Name: ${doc.name}`,
     doc.company ? `Unternehmen: ${doc.company}` : '',
@@ -18,7 +18,7 @@ function buildAdminEmailBody(doc: ContactInquiry, settings?: EmailSetting): stri
     doc.message,
     doc.referral ? `Von uns erfahren über: ${doc.referral}` : '',
     '',
-    '—',
+    '-',
     'Diese Anfrage wurde im Rocketory CMS gespeichert.',
   ].filter(Boolean)
 
@@ -102,7 +102,7 @@ export async function sendContactInquiryNotification(
     return
   }
 
-  const fromName = settings.fromName?.trim() || 'Rocketory Website'
+  const fromName = settings.fromName?.trim() || 'Rocketory Webseite'
   const fromEmail = settings.fromEmail?.trim()
   if (!fromEmail) return
 
@@ -118,7 +118,7 @@ export async function sendContactInquiryNotification(
       from: `"${fromName}" <${fromEmail}>`,
       to: recipients.join(', '),
       replyTo: doc.email,
-      subject: `${prefix}: ${intentLabel} – ${doc.name}`,
+      subject: `${prefix}: ${intentLabel}, ${doc.name}`,
       text: buildAdminEmailBody(doc, settings),
       ...(cc.length ? { cc: cc.join(', ') } : {}),
       ...(bcc.length ? { bcc: bcc.join(', ') } : {}),

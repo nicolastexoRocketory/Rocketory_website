@@ -6,8 +6,8 @@
     '<div class="rk-inner rk-footer-grid">' +
     '<div class="rk-footer-brand">' +
     '<a href="index.html" class="rk-logo rk-footer-logo" aria-label="Rocketory"><span class="rk-logo-lockup"><span class="rk-logo-word">ROCKET</span><img class="rk-logo-icon" src="assets/images/rocketory-o-icon.webp?v=4" alt="" width="226" height="150" decoding="async" aria-hidden="true"><span class="rk-logo-word">RY</span></span></a>' +
-    '<p class="rk-footer-tagline">Websites aus Bünde – persönlich gebaut, fair kalkuliert, langfristig betreut.</p>' +
-    '<p class="rk-footer-meta">Eine Unit der FairFlock GmbH · Marketing über Viralista</p>' +
+    '<p class="rk-footer-tagline">Webseiten mit Raketenantrieb – aus Bünde, persönlich gebaut, fair kalkuliert, langfristig betreut.</p>' +
+    '<p class="rk-footer-meta">Eine Unit der FairFlock GmbH · Schwesteragentur von Viralista</p>' +
     '</div>' +
     '<nav class="rk-footer-col" aria-label="Agentur">' +
     '<h5>Agentur</h5>' +
@@ -22,10 +22,11 @@
     '<h5>Leistungen</h5>' +
     '<ul class="rk-footer-links">' +
     '<li><a class="rk-footer-link" href="angebote.html">Angebote</a></li>' +
+    '<li><a class="rk-footer-link" href="vorteile.html">Vorteile</a></li>' +
     '<li><a class="rk-footer-link" href="index.html#inklusive">Alles inklusive</a></li>' +
     '<li><a class="rk-footer-link" href="technologien.html">Technologien</a></li>' +
-    '<li><a class="rk-footer-link" href="angebote.html#paket-bedarfsbezogen">Individuelle Projekte</a></li>' +
-    '<li><a class="rk-footer-link" href="angebote.html#wartung">Wartung &amp; Sicherheit</a></li>' +
+    '<li><a class="rk-footer-link" href="webdesign.html">Individuelle Projekte</a></li>' +
+    '<li><a class="rk-footer-link" href="wartung.html">Wartung &amp; Sicherheit</a></li>' +
     '<li><a class="rk-footer-link" href="index.html#vertrauen">Häufige Fragen</a></li>' +
     '</ul></nav>' +
     '<nav class="rk-footer-col rk-footer-contact" aria-label="Kontakt">' +
@@ -36,7 +37,7 @@
     '<li><a class="rk-footer-link" href="mailto:beratung@rocketory.de">beratung@rocketory.de</a></li>' +
     '<li><a class="rk-footer-link" href="agentur/buende.html">Bünde · Zimmerstr. 16</a></li>' +
     '</ul>' +
-    '<p class="rk-footer-note">Persönliche Beratung – in der Regel Rückmeldung innerhalb von 24&nbsp;Stunden.</p>' +
+    '<p class="rk-footer-note">Persönliche Beratung, in der Regel Rückmeldung innerhalb von 24&nbsp;Stunden.</p>' +
     '</nav></div></div>' +
     '<div class="rk-footer-bar">' +
     '<div class="rk-inner rk-footer-bar-inner">' +

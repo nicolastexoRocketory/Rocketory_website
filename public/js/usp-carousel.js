@@ -1,7 +1,12 @@
 (function () {
   var MOBILE_QUERY = '(max-width: 768px)'
 
-  var SELECTORS = ['#leistungen .rk-usp-grid', '#angebote-leistungen .rk-usp-grid']
+  var SELECTORS = [
+    '#leistungen .rk-usp-grid',
+    '#angebote-leistungen .rk-usp-grid',
+    '#kernvorteile .rk-bento-grid',
+    '#werte .rk-trust-grid',
+  ]
 
   function clamp(n, min, max) {
     return Math.max(min, Math.min(max, n))
@@ -55,7 +60,11 @@
 
     if (grid.dataset.rkUspCarouselInit) return
 
-    var slides = Array.prototype.slice.call(grid.querySelectorAll(':scope > .rk-usp-cell'))
+    var slides = Array.prototype.slice.call(
+      grid.querySelectorAll(
+        ':scope > .rk-usp-cell, :scope > .rk-bento-cell, :scope > .rk-vt-pin, :scope > .rk-trust-item'
+      )
+    )
     if (slides.length <= 1) return
 
     grid.dataset.rkUspCarouselInit = '1'

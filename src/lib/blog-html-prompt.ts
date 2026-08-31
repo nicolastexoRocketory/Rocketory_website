@@ -42,7 +42,7 @@ Wenn im Text tiefergehende Erklärungen, SEO-Texte oder "Mehr lesen"-Bereiche vo
 
 6. Zitate:
 Nutze für Kundenfeedback oder hervorgehobene Aussagen den <blockquote> Tag.
-Beispiel: <blockquote>„Das ist ein Zitat." – Kunde</blockquote>
+Beispiel: <blockquote>„Das ist ein Zitat.", Kunde</blockquote>
 
 7. Fließtext & Formatierung:
 Normale Textabsätze kommen in einfache <p> Tags. Wichtige Wörter werden mit <strong> gefettet (nicht mit Markdown **).

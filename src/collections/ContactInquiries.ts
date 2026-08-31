@@ -72,7 +72,7 @@ export const ContactInquiries: CollectionConfig = {
       type: 'select',
       defaultValue: 'website',
       options: [
-        { label: 'Website-Formular', value: 'website' },
+        { label: 'Webseiten-Formular', value: 'website' },
         { label: 'Manuell', value: 'manual' },
       ],
       admin: { position: 'sidebar' },
@@ -184,6 +184,12 @@ export const ContactInquiries: CollectionConfig = {
               name: 'redesignTyp',
               type: 'text',
               label: 'ReDesign / ReLaunch',
+              admin: { readOnly: true },
+            },
+            {
+              name: 'budget',
+              type: 'text',
+              label: 'Budget',
               admin: { readOnly: true },
             },
           ],

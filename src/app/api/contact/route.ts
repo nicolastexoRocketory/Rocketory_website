@@ -21,6 +21,7 @@ type ContactPayload = {
   festpreisTech?: string
   seoLaufzeit?: string
   redesignTyp?: string
+  budget?: string
 }
 
 function clean(value: unknown, maxLength = 5000): string {
@@ -81,6 +82,7 @@ export async function POST(request: Request) {
         festpreisTech: clean(body.festpreisTech, 80),
         seoLaufzeit: clean(body.seoLaufzeit, 80),
         redesignTyp: clean(body.redesignTyp, 80),
+        budget: clean(body.budget, 80),
         ipAddress:
           request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
           request.headers.get('x-real-ip') ||

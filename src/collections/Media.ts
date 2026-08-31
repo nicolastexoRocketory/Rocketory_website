@@ -1,6 +1,15 @@
 import type { CollectionConfig } from 'payload'
 import { revalidateTag } from 'next/cache'
 
+function revalidateMediaTags() {
+  try {
+    revalidateTag('ai-images')
+    revalidateTag('site-media')
+  } catch {
+    // Sync-Skripte und CLI laufen außerhalb des Next.js-Request-Kontexts.
+  }
+}
+
 function humanizeFilename(filename: string): string {
   return filename
     .replace(/\.[^.]+$/, '')
@@ -35,12 +44,12 @@ export const Media: CollectionConfig = {
     ],
     afterChange: [
       () => {
-        revalidateTag('ai-images')
+        revalidateMediaTags()
       },
     ],
     afterDelete: [
       () => {
-        revalidateTag('ai-images')
+        revalidateMediaTags()
       },
     ],
   },
@@ -117,6 +126,18 @@ export const Media: CollectionConfig = {
           },
         },
       ],
+    },
+    {
+      name: 'sitePath',
+      type: 'text',
+      label: 'Webseite-Pfad',
+      unique: true,
+      index: true,
+      admin: {
+        readOnly: true,
+        description:
+          'Automatisch gesetzt: Pfad auf der Webseite (z. B. /assets/images/team-raketenstart.webp). Bilder mit diesem Pfad werden im Frontend aus dem CMS geladen.',
+      },
     },
     {
       type: 'collapsible',

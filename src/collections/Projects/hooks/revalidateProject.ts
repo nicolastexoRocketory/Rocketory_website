@@ -1,15 +1,24 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 import { revalidatePath } from 'next/cache'
 
+function safeRevalidate(path: string) {
+  try {
+    revalidatePath(path)
+  } catch {
+    // Außerhalb eines Next-Request-Kontexts (z. B. Seed-Skripte) nicht verfügbar
+  }
+}
+
 function revalidateProjectPaths(slug?: string | null, previousSlug?: string | null) {
-  revalidatePath('/projekte')
+  safeRevalidate('/projekte')
+  safeRevalidate('/agentur')
 
   if (slug) {
-    revalidatePath(`/projekte/${slug}`)
+    safeRevalidate(`/projekte/${slug}`)
   }
 
   if (previousSlug && previousSlug !== slug) {
-    revalidatePath(`/projekte/${previousSlug}`)
+    safeRevalidate(`/projekte/${previousSlug}`)
   }
 }
 

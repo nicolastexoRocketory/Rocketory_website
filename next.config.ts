@@ -5,8 +5,18 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/wartung',
-        destination: '/angebote#wartung',
+        source: '/leistungen/webdesign',
+        destination: '/webdesign',
+        permanent: true,
+      },
+      {
+        source: '/leistungen/seo',
+        destination: '/seo',
+        permanent: true,
+      },
+      {
+        source: '/leistungen/wartung',
+        destination: '/wartung',
         permanent: true,
       },
     ]

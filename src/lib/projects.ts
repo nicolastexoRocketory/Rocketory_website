@@ -142,6 +142,85 @@ export function injectProjectsIntoProjekte(
   return injectContentListing(html, cards, categories, 'Projekte filtern')
 }
 
+export function buildProjectFeaturedSlideHtml(project: Project): string {
+  const date = formatGermanDate(project.publishedAt)
+  const image = getProjectHeroImage(project)
+  const heroMedia = getPostHeroMedia(project)
+  const excerpt = project.excerpt || project.schema?.blogPosting?.description || ''
+  const { label: categoryLabel } = resolveProjectCategory(project)
+  const readTime = project.readTime
+    ? `<span class="rk-featured-read">${escapeHtml(project.readTime)}</span>`
+    : ''
+
+  const dateHtml = date.iso
+    ? `<time datetime="${escapeHtml(date.iso)}">${escapeHtml(date.label)}</time>`
+    : ''
+
+  const imageMarkup = buildAccessibleImageMarkup({
+    src: image,
+    width: 1200,
+    height: 800,
+    sizes: '(max-width: 768px) 100vw, 50vw',
+    media: heroMedia,
+    fallbackAlt: project.title,
+    idSuffix: `project-featured-${project.id}`,
+    standaloneFigure: false,
+  })
+
+  return `
+              <article class="rk-featured-card rk-featured-slide" data-rk-blog-slide>
+                <a class="rk-featured-link" href="/projekte/${escapeHtml(project.slug)}">
+                  <figure class="rk-featured-media">
+                    ${imageMarkup}
+                  </figure>
+                  <div class="rk-featured-body">
+                    <div class="rk-featured-meta">
+                      <span class="rk-featured-cat">${escapeHtml(categoryLabel)}</span>
+                      ${dateHtml}
+                      ${readTime}
+                    </div>
+                    <h3 class="rk-featured-title">${escapeHtml(project.title)}</h3>
+                    <p class="rk-featured-excerpt">${escapeHtml(excerpt)}</p>
+                    <span class="rk-featured-more">
+                      <span>Projekt ansehen</span>
+                      <span class="dot-ring" aria-hidden="true"><span></span></span>
+                    </span>
+                  </div>
+                </a>
+              </article>`
+}
+
+const AGENTUR_PROJECTS_PREVIEW_LIMIT = 6
+
+export function injectProjectsIntoAgentur(html: string, projects: Project[]): string {
+  const preview = projects.slice(0, AGENTUR_PROJECTS_PREVIEW_LIMIT)
+  const pageCount = Math.max(1, Math.ceil(preview.length / 3))
+
+  if (preview.length === 0) {
+    const placeholder = `<div class="rk-ref-placeholder">
+            <p class="rk-ref-placeholder-title">Bald mehr Referenzen</p>
+            <p class="rk-ref-placeholder-text">Wir arbeiten an weiteren Projektberichten. Bis dahin: sprich uns direkt an.</p>
+            <a href="/kontakt" class="rk-dot-cta"><span class="rk-dot-cta-label">Erstgespräch anfragen</span><div class="dot-ring" aria-hidden="true"><span></span></div></a>
+          </div>`
+    return html.replace(
+      /(<div class="rk-featured-slider-track"[^>]*data-rk-ag-projects-track[^>]*>)[\s\S]*?(<\/div>)/,
+      `$1\n${placeholder}\n            $2`,
+    )
+  }
+
+  const slides = preview.map(buildProjectFeaturedSlideHtml).join('\n')
+
+  return html
+    .replace(
+      /(<div class="rk-featured-slider-track"[^>]*data-rk-ag-projects-track[^>]*>)[\s\S]*?(<\/div>\s*\n\s*<\/div>\s*\n\s*<div class="rk-featured-slider-nav">)/,
+      `$1\n${slides}\n          $2`,
+    )
+    .replace(
+      /(id="projekte-preview"[\s\S]*?<span class="rk-featured-slider-count" data-rk-blog-slider-count[^>]*>)[^<]*/,
+      `$11 / ${pageCount}`,
+    )
+}
+
 export function buildProjectPageContent(project: Project): string {
   const date = formatGermanDate(project.publishedAt)
   const { label: categoryLabel } = resolveProjectCategory(project)
@@ -153,9 +232,9 @@ export function buildProjectPageContent(project: Project): string {
 
   const coverImage = buildAccessibleImageMarkup({
     src: image,
-    width: 1400,
-    height: 700,
-    sizes: '(max-width: 768px) 100vw, 1200px',
+    width: 1200,
+    height: 900,
+    sizes: '(max-width: 900px) 100vw, 48vw',
     loading: 'eager',
     media: heroMedia,
     fallbackAlt: project.title,
@@ -168,26 +247,27 @@ export function buildProjectPageContent(project: Project): string {
     : ''
 
   const html = `
-    <header class="rk-page-hero rk-page-hero--dark rk-blog-header">
+    <header class="rk-page-hero rk-page-hero--dark rk-blog-header rk-project-hero">
       <div class="rk-inner">
-        <a class="rk-blog-back" href="/projekte">← Zurück zu Projekten</a>
-        <div class="rk-blog-meta">
-          <span class="rk-blog-tag">${escapeHtml(categoryLabel)}</span>
-          ${dateMeta}
-          ${readTime}
+        <div class="rk-project-hero-grid">
+          <div class="rk-project-hero-copy">
+            <a class="rk-blog-back" href="/projekte">← Zurück zu Projekten</a>
+            <div class="rk-blog-meta">
+              <span class="rk-blog-tag">${escapeHtml(categoryLabel)}</span>
+              ${dateMeta}
+              ${readTime}
+            </div>
+            <h1 class="rk-page-title rk-blog-title">${escapeHtml(project.title)}</h1>
+            ${lead ? `<p class="rk-page-lead rk-blog-lead">${escapeHtml(lead)}</p>` : ''}
+          </div>
+          <figure class="rk-project-hero-media">
+            <div class="rk-blog-cover rk-project-hero-cover">
+              ${coverImage}
+            </div>
+          </figure>
         </div>
-        <h1 class="rk-page-title rk-blog-title">${escapeHtml(project.title)}</h1>
-        ${lead ? `<p class="rk-page-lead rk-blog-lead">${escapeHtml(lead)}</p>` : ''}
       </div>
     </header>
-
-    <figure class="rk-blog-cover-wrap">
-      <div class="rk-inner">
-        <div class="rk-blog-cover">
-          ${coverImage}
-        </div>
-      </div>
-    </figure>
 
     <article class="rk-blog-article rk-tone-a">
       <div class="rk-inner">
@@ -223,7 +303,7 @@ export const PROJECT_PAGE_SCRIPTS = ['/js/scroll.js', '/js/readmore.js']
 
 export function getProjectPageData(project: Project) {
   return {
-    title: `${project.title} – Rocketory`,
+    title: `${project.title}, Rocketory`,
     content: buildProjectPageContent(project),
     scripts: PROJECT_PAGE_SCRIPTS,
     styles: [] as string[],

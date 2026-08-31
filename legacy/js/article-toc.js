@@ -11,13 +11,21 @@
   var allEntries = [];
 
   function navOffset() {
-    var nav = document.querySelector('.rk-nav');
+    var nav = document.querySelector('.rk-nav')
+    var navH = 56
     if (nav) {
-      var h = nav.getBoundingClientRect().height;
-      if (h > 0 && h < 200) return h + 24;
+      var h = nav.getBoundingClientRect().height
+      if (h > 0 && h < 200) navH = h
+    } else {
+      var raw = getComputedStyle(document.documentElement).getPropertyValue('--rk-nav-h').trim()
+      navH = parseFloat(raw) || 56
     }
-    var raw = getComputedStyle(document.documentElement).getPropertyValue('--rk-nav-h').trim();
-    return (parseFloat(raw) || 56) + 24;
+    var toc = document.querySelector('.rk-article-sidebar .rk-article-toc')
+    var tocH = 0
+    if (toc && window.matchMedia('(max-width: 1023px)').matches) {
+      tocH = toc.getBoundingClientRect().height || 56
+    }
+    return navH + tocH + 12
   }
 
   function hashId(href) {

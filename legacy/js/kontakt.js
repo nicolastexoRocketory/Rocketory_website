@@ -18,7 +18,7 @@
     if (!form || form.dataset.rkKontaktBound === '1') return;
     form.dataset.rkKontaktBound = '1';
 
-  var TOTAL_STEPS = 5;
+  var TOTAL_STEPS = 6;
   var currentStep = 1;
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -34,7 +34,7 @@
     individuell: 'Individuelles Projekt',
     festpreis: 'Festpreiswebsite',
     seo: 'Suchmaschinenoptimierung (SEO)',
-    redesign: 'Website ReDesign oder ReLaunch',
+    redesign: 'Webseite ReDesign oder ReLaunch',
     beratung: 'Hierzu brauche ich Beratung'
   };
 
@@ -56,6 +56,7 @@
     festpreisTech: document.getElementById('rkFestpreisTechError'),
     seo: document.getElementById('rkSeoError'),
     redesign: document.getElementById('rkRedesignError'),
+    budget: document.getElementById('rkBudgetError'),
     projectBrief: document.getElementById('rkProjectBriefError'),
     name: document.getElementById('rkNameError'),
     email: document.getElementById('rkEmailError'),
@@ -245,6 +246,18 @@
       return true;
     }
     if (step === 3) {
+      if (!getCheckedValue('budget')) {
+        if (errors.budget) {
+          errors.budget.textContent = 'Bitte wähle einen Budgetrahmen.';
+          errors.budget.classList.add('is-visible');
+        }
+        var firstBudget = form.querySelector('input[name="budget"]');
+        if (firstBudget) firstBudget.focus();
+        return false;
+      }
+      return true;
+    }
+    if (step === 4) {
       if (!fields.name.value.trim()) {
         showError('name', 'Bitte gib deinen Namen ein.');
         fields.name.focus();
@@ -252,7 +265,7 @@
       }
       return true;
     }
-    if (step === 4) {
+    if (step === 5) {
       var email = fields.email.value.trim();
       if (!email) {
         showError('email', 'Bitte gib deine E-Mail-Adresse ein.');
@@ -266,7 +279,7 @@
       }
       return true;
     }
-    if (step === 5) {
+    if (step === 6) {
       if (!fields.message.value.trim()) {
         showError('message', 'Bitte beschreibe kurz dein Anliegen.');
         fields.message.focus();
@@ -281,11 +294,13 @@
     if (!summaryEl) return;
     var intentLabel = getIntentLabel();
     var detail = getDetailSummary();
+    var budget = getCheckedValue('budget');
     var phone = fields.phone.value.trim();
     summaryEl.innerHTML =
       '<dl>' +
       '<dt>Anliegen</dt><dd><strong>' + escapeHtml(intentLabel) + '</strong></dd>' +
       (detail ? '<dt>Details</dt><dd>' + escapeHtml(detail) + '</dd>' : '') +
+      (budget ? '<dt>Budget</dt><dd>' + escapeHtml(budget) + '</dd>' : '') +
       '<dt>Name</dt><dd>' + escapeHtml(fields.name.value.trim()) + '</dd>' +
       (fields.company.value.trim()
         ? '<dt>Unternehmen</dt><dd>' + escapeHtml(fields.company.value.trim()) + '</dd>'
@@ -469,6 +484,23 @@
     });
   });
 
+  form.querySelectorAll('input[name="budget"]').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      if (errors.budget) {
+        errors.budget.textContent = '';
+        errors.budget.classList.remove('is-visible');
+      }
+    });
+    radio.addEventListener('click', function () {
+      if (errors.budget) {
+        errors.budget.textContent = '';
+        errors.budget.classList.remove('is-visible');
+      }
+      if (currentStep !== 3 || !shouldAutoAdvance()) return;
+      scheduleAdvance(3);
+    });
+  });
+
   form.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter') return;
     if (e.target.tagName === 'TEXTAREA') return;
@@ -499,7 +531,7 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    if (!validateStep(5)) return;
+    if (!validateStep(6)) return;
 
     var name = fields.name.value.trim();
     var company = fields.company.value.trim();
@@ -507,6 +539,7 @@
     var phone = fields.phone.value.trim();
     var intentLabel = getIntentLabel();
     var detail = getDetailSummary();
+    var budget = getCheckedValue('budget');
     var message = fields.message.value.trim();
     var referral = fields.referral && fields.referral.value ? fields.referral.value : '';
 
@@ -521,6 +554,7 @@
         intent: getIntent(),
         intentLabel: intentLabel,
         detailSummary: detail,
+        budget: budget,
         message: message,
         name: name,
         company: company,
