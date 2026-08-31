@@ -2461,12 +2461,10 @@ button.rk-dot-cta{cursor:pointer;}
     --rk-marquee-band:clamp(56px,15vw,68px);
   }
   .rk-hero{
-    height:calc(100svh - var(--rk-marquee-band));
-    height:calc(100dvh - var(--rk-marquee-band));
-    min-height:calc(100svh - var(--rk-marquee-band));
-    min-height:calc(100dvh - var(--rk-marquee-band));
-    max-height:calc(100svh - var(--rk-marquee-band));
-    max-height:calc(100dvh - var(--rk-marquee-band));
+    /* --rk-app-h from visualViewport (iOS Safari); lvh fallback is taller than svh/dvh */
+    height:calc(var(--rk-app-h, 100lvh) - var(--rk-marquee-band));
+    min-height:calc(var(--rk-app-h, 100lvh) - var(--rk-marquee-band));
+    max-height:calc(var(--rk-app-h, 100lvh) - var(--rk-marquee-band));
     overflow:hidden;
     padding:var(--rk-nav-h) 0 0;
   }
@@ -2475,8 +2473,7 @@ button.rk-dot-cta{cursor:pointer;}
   }
   .rk-hero>.rk-inner{
     align-items:center;text-align:center;
-    min-height:calc(100svh - var(--rk-nav-h) - var(--rk-marquee-band));
-    min-height:calc(100dvh - var(--rk-nav-h) - var(--rk-marquee-band));
+    min-height:calc(var(--rk-app-h, 100lvh) - var(--rk-nav-h) - var(--rk-marquee-band));
     flex:1 1 auto;
     padding-top:clamp(20px,5vw,32px);
     padding-bottom:clamp(24px,6vw,36px);

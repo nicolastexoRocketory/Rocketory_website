@@ -1,8 +1,12 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import { WHATSAPP_HREF } from '@/lib/whatsapp'
 
 import '@/styles/contact-float.css'
+
+const SHOW_AFTER_PX = 120
 
 function WhatsAppIcon() {
   return (
@@ -13,13 +17,27 @@ function WhatsAppIcon() {
 }
 
 export function ContactFloat() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    function update() {
+      setVisible(window.scrollY > SHOW_AFTER_PX)
+    }
+
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    return () => window.removeEventListener('scroll', update)
+  }, [])
+
   return (
     <a
-      className="rk-whatsapp-float"
+      className={`rk-whatsapp-float${visible ? ' is-visible' : ''}`}
       href={WHATSAPP_HREF}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Per WhatsApp schreiben"
+      aria-hidden={!visible}
+      tabIndex={visible ? undefined : -1}
     >
       <WhatsAppIcon />
       <span>WhatsApp</span>
