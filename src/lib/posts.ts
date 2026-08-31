@@ -1,5 +1,6 @@
 import type { Post } from '@/payload-types'
 
+import { buildPostSchemaJsonLd } from './build-post-schema-jsonld'
 import { normalizeExternalUrl } from './normalize-external-url'
 import {
   getBlogSidebarHtml,
