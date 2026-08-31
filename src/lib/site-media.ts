@@ -55,15 +55,7 @@ function resolveMediaForPath(path: string, registry: SiteMediaRegistry): Media |
   const normalized = normalizeAssetSitePath(path)
   if (!normalized) return undefined
 
-  const byPath = registry.byPath[normalized]
-  if (byPath) return byPath
-
-  const filename = normalized.split('/').pop()
-  if (filename) {
-    return registry.byFilename[filename]
-  }
-
-  return undefined
+  return registry.byPath[normalized]
 }
 
 function replaceAssetUrls(value: string, registry: SiteMediaRegistry): string {

@@ -1,6 +1,6 @@
 import type { Post } from '@/payload-types'
 
-import { buildPostSchemaJsonLd } from './build-post-schema-jsonld'
+import { normalizeExternalUrl } from './normalize-external-url'
 import {
   getBlogSidebarHtml,
   normalizeBlogArticleHtml,
@@ -43,10 +43,11 @@ function normalizeArticleHtml(html: string): string {
 
 export function getPostHeroImage(post: Post): string {
   if (post.heroImage && typeof post.heroImage === 'object' && post.heroImage.url) {
-    return post.heroImage.url
+    return normalizeExternalUrl(post.heroImage.url)
   }
 
-  return post.heroImageUrl || post.schema?.blogPosting?.image || DEFAULT_HERO
+  const fallback = post.heroImageUrl || post.schema?.blogPosting?.image || DEFAULT_HERO
+  return normalizeExternalUrl(fallback)
 }
 
 export async function getPublishedPosts() {

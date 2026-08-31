@@ -7,6 +7,7 @@ import { buildDefaultSchema, parseLegacySchemaJson } from '../lib/build-default-
 import { type BlogCategorySlug } from '../lib/blog-categories'
 import { extractBlogBodyHtml } from '../lib/blog-content'
 import { BLOG_SLUGS } from '../lib/legacy-page'
+import { normalizeExternalUrl } from '../lib/normalize-external-url'
 import { backfillMediaTitles, seedBlogCategories } from '../lib/seed-categories'
 import config from '../payload.config'
 
@@ -59,7 +60,7 @@ function extractPostMeta(slug: string): SeedPost | null {
     const jsonMatch = html.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/)
     if (jsonMatch) {
       const schema = JSON.parse(jsonMatch[1]) as { image?: string }
-      heroImageUrl = schema.image
+      heroImageUrl = schema.image ? normalizeExternalUrl(schema.image) : undefined
     }
   } catch {
     heroImageUrl = undefined
