@@ -12,13 +12,33 @@
     <div id="rk-nav-mount"></div>
 <section class="rk-hero" id="top" data-rk-hero-parallax>
       <div class="rk-hero-bg" aria-hidden="true">
+        <video
+          class="rk-hero-video rk-hero-media--mobile"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster="/api/media/file/nasa-shuttle-launch.webp"
+          disablepictureinpicture
+        >
+          <source src="assets/videos/hero-mobile.mp4?v=2" type="video/mp4">
+        </video>
+        <img
+          src="/api/media/file/nasa-shuttle-launch.webp"
+          alt=""
+          width="1024"
+          height="589"
+          class="rk-hero-img rk-hero-media--mobile rk-hero-img--static"
+          decoding="async"
+          aria-hidden="true">
         <img
           src="assets/images/team-raketenstart.webp"
           alt=""
           width="1024"
           height="682"
           id="rkHeroBg"
-          class="rk-hero-img"
+          class="rk-hero-img rk-hero-media--desktop"
           fetchpriority="high"
           decoding="async"
           aria-hidden="true">
@@ -419,7 +439,7 @@
     <section class="rk-section rk-home-bento rk-tone-a" id="werte" aria-label="Ansatz, Technologie und Werte">
       <div class="rk-inner">
         <div class="rk-home-bento-grid">
-          <article class="rk-home-bento-cell rk-home-bento-cell--feature" id="paket-bedarfsbezogen">
+          <article class="rk-home-bento-cell rk-home-bento-cell--feature rk-home-bento-cell--photo" id="paket-bedarfsbezogen" style="--rk-bento-bg:url('/assets/images/webdesign-hero.jpg')">
             <h2 class="rk-h2">Kein Template.<br><em>Eine Webseite für dich.</em></h2>
             <p class="rk-home-bento-copy">Jede Webseite planen wir nach deinem Betrieb: Seiten, Funktionen und Technik, die du wirklich brauchst. Fair kalkuliert, ohne überdimensionierte Lösungen. Ablauf und Umfang stehen auf der <a href="webdesign.html" class="rk-text-link">Webdesign-Seite</a>. Unsicher? Ein <a href="kontakt.html" class="rk-text-link">Erstgespräch</a> klärt, was sinnvoll ist.</p>
             <a href="webdesign.html" class="rk-dot-cta">
@@ -446,7 +466,7 @@
             </a>
           </article>
 
-          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--accent rk-home-bento-cell--t1">
+          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t1 rk-home-bento-cell--photo" style="--rk-bento-bg:url('/assets/images/team-rocketory.webp')">
             <span class="rk-trust-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 9h.01"/><path d="M15 9h.01"/><path d="M9 13h.01"/><path d="M15 13h.01"/></svg>
             </span>
@@ -464,7 +484,7 @@
             <p>Klare Pakete, nachvollziehbare Preise und ehrliche Empfehlungen. Wenn etwas nicht zu deinem Vorhaben passt, sagen wir das, lieber im <a href="kontakt.html" class="rk-text-link">Gespräch</a> als im Kleingedruckten.</p>
           </article>
 
-          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t3">
+          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t3 rk-home-bento-cell--photo" style="--rk-bento-bg:url('/assets/images/nasa-shuttle-launch.png')">
             <span class="rk-trust-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
             </span>

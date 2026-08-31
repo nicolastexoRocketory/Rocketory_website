@@ -38,15 +38,13 @@
       }
 
       var progress = Math.max(0, -rect.top);
-      var heroH = hero._rkHeroH || hero.offsetHeight;
       var bgFactor = mobile ? 0.35 : 0.5;
       var contentFactor = mobile ? -0.12 : -0.2;
       var bgY = progress * bgFactor;
-      var bgS = Math.max(0.95, 1 - (progress / heroH) * 0.05);
 
+      // Translate only — never scale below 1 (shrink reveals hero edges as a "border").
       if (hero._rkBg) {
-        hero._rkBg.style.transform =
-          'translate3d(0,' + bgY + 'px,0) scale(' + bgS + ')';
+        hero._rkBg.style.transform = 'translate3d(0,' + bgY + 'px,0)';
       }
 
       if (hero._rkContent) {
