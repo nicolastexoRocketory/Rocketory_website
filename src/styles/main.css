@@ -117,6 +117,7 @@ html{
   background:#0A0F1E;backdrop-filter:blur(10px);
   border-bottom:1px solid rgba(255,255,255,0.1);
   overflow:visible;
+  transition:background-color .22s ease,border-color .22s ease,backdrop-filter .22s ease;
 }
 .rk-nav-inner{
   position:relative;z-index:2;
@@ -128,6 +129,7 @@ html{
   max-height:none;
   background:#0A0F1E;
   overflow:visible;
+  transition:background-color .22s ease;
 }
 /* Volle Nav-Breite deckt das Mega-Menü beim Einfahren ab */
 .rk-nav > .rk-nav-inner::before{
@@ -140,6 +142,40 @@ html{
   background:#0A0F1E;
   z-index:-1;
   pointer-events:none;
+  transition:background-color .22s ease,opacity .22s ease;
+}
+@media(max-width:768px){
+  .rk-nav.rk-nav--over-hero:not(.is-solid){
+    background:transparent;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+    border-bottom-color:transparent;
+  }
+  .rk-nav.rk-nav--over-hero:not(.is-solid) .rk-nav-inner{
+    background:transparent;
+  }
+  .rk-nav.rk-nav--over-hero:not(.is-solid) > .rk-nav-inner::before{
+    background:transparent;
+    opacity:0;
+  }
+  .rk-nav.rk-nav--over-hero.is-solid{
+    background:#0A0F1E;
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom-color:rgba(255,255,255,0.1);
+  }
+  .rk-nav.rk-nav--over-hero.is-solid .rk-nav-inner{
+    background:#0A0F1E;
+  }
+  .rk-nav.rk-nav--over-hero.is-solid > .rk-nav-inner::before{
+    background:#0A0F1E;
+    opacity:1;
+  }
+}
+@media(max-width:768px) and (prefers-reduced-motion:reduce){
+  .rk-nav,
+  .rk-nav-inner,
+  .rk-nav > .rk-nav-inner::before{transition:none;}
 }
 .rk-logo,.rk-footer-logo{
   display:inline-block;
@@ -1878,6 +1914,18 @@ button.rk-dot-cta{cursor:pointer;}
 }
 @media(min-width:769px) and (prefers-reduced-motion:reduce){
   .rk-hero-img--static.rk-hero-media--mobile{display:none!important;}
+}
+/* In-app browsers (IG/FB/WA): no autoplay video — keeps header visible */
+.rk-hero--static-bg .rk-hero-video{
+  display:none!important;
+}
+.rk-hero--static-bg .rk-hero-img--static.rk-hero-media--mobile{
+  display:block;
+}
+@media(min-width:769px){
+  .rk-hero--static-bg .rk-hero-img--static.rk-hero-media--mobile{
+    display:none!important;
+  }
 }
 .rk-interstitial-bg img{
   display:block;width:100%;height:100%;
