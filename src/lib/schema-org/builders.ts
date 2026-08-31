@@ -1,6 +1,6 @@
 import type { Post, Project } from '@/payload-types'
 
-import { SITE_URL } from '@/lib/metadata'
+import { HOME_PAGE_DESCRIPTION, HOME_PAGE_TITLE, SITE_URL } from '@/lib/metadata'
 import { getPostHeroImage } from '@/lib/posts'
 import { getProjectHeroImage } from '@/lib/projects'
 import { MAIN_SITE_NAV } from '@/lib/site-schema'
@@ -246,12 +246,9 @@ export function buildGlobalSchemaScript(): string {
 }
 
 export function buildHomePageSchema(): SchemaNode[] {
-  const description =
-    'Design, Technik, Texte, Hosting, Webdesign, SEO und Betreuung aus Bünde. Persönlich gebaut, fair kalkuliert, langfristig betreut.'
-
   return [
     {
-      ...baseWebPage('/', 'Rocketory, All in One Webdesign und SEO aus Bünde', description),
+      ...baseWebPage('/', HOME_PAGE_TITLE, HOME_PAGE_DESCRIPTION),
       '@type': 'WebPage',
       primaryImageOfPage: {
         '@type': 'ImageObject',

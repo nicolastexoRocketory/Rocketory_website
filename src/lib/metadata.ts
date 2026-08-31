@@ -8,8 +8,14 @@ import { getProjectHeroImage } from './projects'
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://rocketory.de'
 export const SITE_NAME = 'Rocketory'
-export const DEFAULT_DESCRIPTION =
-  'Webseiten mit Raketenantrieb: Webdesign, SEO und Betreuung aus Bünde – persönlich gebaut, fair kalkuliert, langfristig betreut.'
+
+/** Startseite & site-weiter Fallback (140–160 Zeichen, H1 bleibt eigenständig). */
+export const HOME_PAGE_TITLE =
+  'Rocketory: Webseiten mit Raketenantrieb – Webdesign & SEO aus Bünde'
+export const HOME_PAGE_DESCRIPTION =
+  'Webdesign aus Bünde für OWL: Webseiten mit Design, Texten, Technik und SEO für KMU und Handwerk. Fair kalkuliert, persönlich gebaut, langfristig betreut.'
+
+export const DEFAULT_DESCRIPTION = HOME_PAGE_DESCRIPTION
 export const DEFAULT_OG_IMAGE = '/assets/images/logo_1.png'
 
 type ContentEntity = Post | Project

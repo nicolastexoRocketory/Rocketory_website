@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { DM_Sans, Instrument_Serif, Inter } from 'next/font/google'
 import React, { Suspense } from 'react'
 
-import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/metadata'
+import { DEFAULT_DESCRIPTION, HOME_PAGE_TITLE, SITE_NAME, SITE_URL } from '@/lib/metadata'
 import { isMatomoTrackingConfigured } from '@/lib/matomo'
 import { buildMatomoHeadScript } from '@/lib/matomo/tracking-snippet'
 import { AiImageRegistry } from '@/components/AiImageRegistry'
@@ -37,7 +37,7 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Rocketory, All in One Webdesign und SEO aus Bünde',
+    default: HOME_PAGE_TITLE,
     template: '%s',
   },
   description: DEFAULT_DESCRIPTION,

@@ -3,12 +3,16 @@ import path from 'path'
 
 import { transformLinks } from './legacy-routes'
 
+import { normalizeLegacySpacedUrls } from './normalize-external-url'
+
 export { resolveLegacyHref, transformLinks } from './legacy-routes'
 
 export function transformAssets(html: string): string {
-  return html
-    .replace(/(\.\.\/)?assets\//g, '/assets/')
-    .replace(/srcset="(\.\.\/)?assets\//g, 'srcset="/assets/')
+  return normalizeLegacySpacedUrls(
+    html
+      .replace(/(^|[^/])(?:\.\.\/)?assets\//g, '$1/assets/')
+      .replace(/srcset="(?:\.\.\/)?assets\//g, 'srcset="/assets/'),
+  )
 }
 
 export function getStaticComponentHtml(filename: string): string {

@@ -2,16 +2,15 @@ import { LegacyPage } from '@/components/LegacyPage'
 import { PageSchema } from '@/components/PageSchema'
 import { getFeaturedPostSection, injectFeaturedPostSection } from '@/lib/homepage'
 import { getLegacyPage } from '@/lib/legacy-page'
-import { buildPageMetadata } from '@/lib/metadata'
+import { buildPageMetadata, HOME_PAGE_DESCRIPTION, HOME_PAGE_TITLE } from '@/lib/metadata'
 import { getPublishedPosts, injectPostsIntoHomepage } from '@/lib/posts'
 import { buildHomePageSchema } from '@/lib/schema-org'
 
 export const revalidate = 3600
 
 export const metadata = buildPageMetadata({
-  title: 'Rocketory: All in One Webdesign und SEO aus Bünde',
-  description:
-    'Design, Technik, Texte, Hosting, Webdesign, SEO und Betreuung aus Bünde. Persönlich gebaut, fair kalkuliert, langfristig betreut.',
+  title: HOME_PAGE_TITLE,
+  description: HOME_PAGE_DESCRIPTION,
   path: '/',
   image: '/assets/images/team-raketenstart.webp',
 })

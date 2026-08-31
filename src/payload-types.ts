@@ -298,7 +298,7 @@ export interface Post {
        */
       image?: string | null;
       /**
-       * Schema: mainEntityOfPage — Vollständiger Link zur Blog-Seite (z.B. http://localhost:3000/blog/artikel-name).
+       * Schema: mainEntityOfPage — Vollständiger Link zur Blog-Seite (z.B. https://mybeautypage.de/blog/artikel-name).
        */
       mainEntityOfPage?: string | null;
       /**
@@ -443,7 +443,7 @@ export interface Project {
        */
       image?: string | null;
       /**
-       * Schema: mainEntityOfPage — Vollständiger Link zur Blog-Seite (z.B. http://localhost:3000/blog/artikel-name).
+       * Schema: mainEntityOfPage — Vollständiger Link zur Blog-Seite (z.B. https://mybeautypage.de/blog/artikel-name).
        */
       mainEntityOfPage?: string | null;
       /**

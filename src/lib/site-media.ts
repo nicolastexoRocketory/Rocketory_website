@@ -27,6 +27,7 @@ export function normalizeAssetSitePath(href: string): string | null {
   const withoutQuery = trimmed.split('?')[0].split('#')[0]
   const normalized = withoutQuery
     .replace(/^(\.\.\/)+/, '/')
+    .replace(/^\/+(?=assets\/)/, '/')
     .replace(/^\/?assets\//, '/assets/')
 
   if (!normalized.startsWith('/assets/images/')) return null

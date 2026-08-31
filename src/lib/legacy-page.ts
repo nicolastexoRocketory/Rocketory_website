@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 import { transformAssets, transformLinks } from './static-html'
+import { normalizeLegacySpacedUrls } from './normalize-external-url'
 
 export type LegacyPageData = {
   title: string
@@ -72,7 +73,7 @@ export function getLegacyPage(relativePath: string): LegacyPageData {
     content = bodyMatch?.[1] || html
   }
 
-  content = transformAssets(transformLinks(content)).trim()
+  content = normalizeLegacySpacedUrls(transformAssets(transformLinks(content))).trim()
 
   const scripts = [...html.matchAll(/<script src="([^"]+)"/g)]
     .map((match) => normalizeScriptPath(match[1]))
