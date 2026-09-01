@@ -5,6 +5,7 @@
     '#leistungen .rk-usp-grid',
     '#angebote-leistungen .rk-usp-grid',
     '#kernvorteile .rk-bento-grid',
+    '#werte .rk-home-bento-grid',
   ]
 
   function clamp(n, min, max) {
@@ -61,7 +62,7 @@
 
     var slides = Array.prototype.slice.call(
       grid.querySelectorAll(
-        ':scope > .rk-usp-cell, :scope > .rk-bento-cell, :scope > .rk-vt-pin, :scope > .rk-trust-item'
+        ':scope > .rk-usp-cell, :scope > .rk-bento-cell, :scope > .rk-home-bento-cell, :scope > .rk-vt-pin, :scope > .rk-trust-item'
       )
     )
     if (slides.length <= 1) return

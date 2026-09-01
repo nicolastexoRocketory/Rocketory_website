@@ -1,9 +1,15 @@
 (function () {
   var IN_APP_RE =
-    /FBAN|FBAV|Facebook|Instagram|Line\/|WhatsApp|Twitter|LinkedInApp|Snapchat|Pinterest|TikTok|BytedanceWebview|MicroMessenger|GSA\//i
+    /WhatsApp\/|FBAN|FBAV|FB_IAB|Instagram|Line\/|Twitter|LinkedInApp|Snapchat|Pinterest|TikTok|BytedanceWebview|MicroMessenger|GSA\/|; wv\)/i
 
   function isInAppBrowser() {
-    return IN_APP_RE.test(navigator.userAgent || '')
+    if (document.documentElement.classList.contains('is-in-app-browser')) return true
+    var ua = navigator.userAgent || ''
+    var ref = document.referrer || ''
+    return (
+      IN_APP_RE.test(ua) ||
+      /whatsapp|instagram|facebook|fb\.com/i.test(ref)
+    )
   }
 
   function isMobileViewport() {
@@ -52,8 +58,7 @@
     })
   }
 
-  function useStatic(hero, video) {
-    hero.classList.add('rk-hero--static-bg')
+  function stripVideo(video) {
     video.pause()
     video.removeAttribute('autoplay')
     video.removeAttribute('src')
@@ -67,6 +72,14 @@
     }
   }
 
+  function useStatic(container, video, staticClass) {
+    if (isInAppBrowser()) {
+      document.documentElement.classList.add('is-in-app-browser')
+    }
+    container.classList.add(staticClass)
+    stripVideo(video)
+  }
+
   function tryPlay(video) {
     var playPromise = video.play()
     if (playPromise && typeof playPromise.catch === 'function') {
@@ -76,6 +89,14 @@
     }
   }
 
+  function primeVideo(video) {
+    if (video.querySelector('source[src]') && !video.getAttribute('src')) {
+      var source = video.querySelector('source[src]')
+      if (source) video.setAttribute('src', source.getAttribute('src'))
+    }
+    video.setAttribute('preload', 'metadata')
+  }
+
   function setupHero(hero) {
     var video = hero.querySelector('video.rk-hero-video')
     if (!video) return
@@ -83,15 +104,32 @@
     lockInline(video)
 
     if (!isMobileViewport() || preferStatic()) {
-      useStatic(hero, video)
+      useStatic(hero, video, 'rk-hero--static-bg')
       return
     }
 
+    primeVideo(video)
+    tryPlay(video)
+  }
+
+  function setupBentoVideo(cell) {
+    var video = cell.querySelector('video.rk-home-bento-video')
+    if (!video) return
+
+    lockInline(video)
+
+    if (preferStatic()) {
+      useStatic(cell, video, 'rk-home-bento--static-bg')
+      return
+    }
+
+    primeVideo(video)
     tryPlay(video)
   }
 
   function boot() {
     document.querySelectorAll('.rk-hero').forEach(setupHero)
+    document.querySelectorAll('.rk-home-bento-cell--video').forEach(setupBentoVideo)
   }
 
   if (document.readyState === 'loading') {

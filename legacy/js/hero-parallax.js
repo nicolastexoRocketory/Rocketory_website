@@ -1,139 +1,118 @@
 (function () {
-  function syncAppHeight() {
-    var h = window.visualViewport
-      ? Math.round(window.visualViewport.height)
-      : Math.round(window.innerHeight)
-    if (h > 0) {
-      document.documentElement.style.setProperty('--rk-app-h', h + 'px')
-    }
-  }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  syncAppHeight()
-  window.addEventListener('resize', syncAppHeight, { passive: true })
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', syncAppHeight, { passive: true })
-    window.visualViewport.addEventListener('scroll', syncAppHeight, { passive: true })
-  }
-
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-  var heroes = []
-  var enabled = false
-  var rafId = null
+  var heroes = [];
+  var enabled = false;
+  var rafId = null;
 
   function queryElements() {
     heroes = Array.prototype.slice.call(
-      document.querySelectorAll('.rk-hero[data-rk-hero-parallax]'),
-    )
+      document.querySelectorAll('.rk-hero[data-rk-hero-parallax]')
+    );
   }
 
   function cacheElements() {
-    var i
+    var i;
+
     for (i = 0; i < heroes.length; i++) {
-      var hero = heroes[i]
-      hero._rkBg = hero.querySelector('.rk-hero-bg')
-      hero._rkContent = hero.querySelector('.rk-hero-main')
-      hero._rkHeroH = hero.offsetHeight
+      var hero = heroes[i];
+      hero._rkBg = hero.querySelector('.rk-hero-bg');
+      hero._rkContent = hero.querySelector('.rk-hero-main');
+      hero._rkHeroH = hero.offsetHeight;
     }
   }
 
   function applyHeroParallax() {
-    var vh = window.visualViewport
-      ? window.visualViewport.height
-      : window.innerHeight
-    var i
-    var mobile = window.innerWidth < 769
+    var vh = window.innerHeight;
+    var i;
+    var mobile = window.innerWidth < 769;
 
     for (i = 0; i < heroes.length; i++) {
-      var hero = heroes[i]
-      var rect = hero.getBoundingClientRect()
+      var hero = heroes[i];
+      var rect = hero.getBoundingClientRect();
 
       if (rect.bottom <= 0 || rect.top >= vh) {
-        if (hero._rkBg) hero._rkBg.style.transform = ''
-        if (hero._rkContent) hero._rkContent.style.transform = ''
-        continue
+        if (hero._rkBg) hero._rkBg.style.transform = '';
+        if (hero._rkContent) hero._rkContent.style.transform = '';
+        continue;
       }
 
-      var progress = Math.max(0, -rect.top)
-      var bgFactor = mobile ? 0.35 : 0.5
-      var contentFactor = mobile ? -0.12 : -0.2
-      var bgY = progress * bgFactor
+      var progress = Math.max(0, -rect.top);
+      var bgFactor = mobile ? 0.35 : 0.5;
+      var contentFactor = mobile ? -0.12 : -0.2;
+      var bgY = progress * bgFactor;
 
       // Translate only — never scale below 1 (shrink reveals hero edges as a "border").
       if (hero._rkBg) {
-        hero._rkBg.style.transform = 'translate3d(0,' + bgY + 'px,0)'
+        hero._rkBg.style.transform = 'translate3d(0,' + bgY + 'px,0)';
       }
 
       if (hero._rkContent) {
         hero._rkContent.style.transform =
-          'translate3d(0,' + progress * contentFactor + 'px,0)'
+          'translate3d(0,' + progress * contentFactor + 'px,0)';
       }
     }
   }
 
   function onFrame() {
-    rafId = null
-    applyHeroParallax()
+    rafId = null;
+    applyHeroParallax();
   }
 
   function scheduleUpdate() {
-    if (!rafId) rafId = requestAnimationFrame(onFrame)
+    if (!rafId) rafId = requestAnimationFrame(onFrame);
   }
 
   function resetTransforms() {
-    var i
+    var i;
+
     for (i = 0; i < heroes.length; i++) {
-      if (heroes[i]._rkBg) heroes[i]._rkBg.style.transform = ''
-      if (heroes[i]._rkContent) heroes[i]._rkContent.style.transform = ''
+      if (heroes[i]._rkBg) heroes[i]._rkBg.style.transform = '';
+      if (heroes[i]._rkContent) heroes[i]._rkContent.style.transform = '';
     }
   }
 
   function init() {
-    if (enabled) return
-    if (!heroes.length) return
+    if (enabled) return;
+    if (!heroes.length) return;
 
-    enabled = true
-    cacheElements()
-    applyHeroParallax()
-    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    enabled = true;
+    cacheElements();
+    applyHeroParallax();
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
   }
 
   function destroy() {
-    if (!enabled) return
-    enabled = false
+    if (!enabled) return;
+    enabled = false;
     if (rafId) {
-      cancelAnimationFrame(rafId)
-      rafId = null
+      cancelAnimationFrame(rafId);
+      rafId = null;
     }
-    window.removeEventListener('scroll', scheduleUpdate)
-    resetTransforms()
+    window.removeEventListener('scroll', scheduleUpdate);
+    resetTransforms();
   }
 
   function boot() {
-    syncAppHeight()
-    destroy()
-    queryElements()
-    init()
-    scheduleUpdate()
+    destroy();
+    queryElements();
+    init();
+    scheduleUpdate();
   }
 
-  window.addEventListener(
-    'resize',
-    function () {
-      cacheElements()
-      scheduleUpdate()
-    },
-    { passive: true },
-  )
+  window.addEventListener('resize', function () {
+    cacheElements();
+    scheduleUpdate();
+  }, { passive: true });
 
-  window.__RK_BOOT_PARALLAX = boot
+  window.__RK_BOOT_PARALLAX = boot;
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot)
+    document.addEventListener('DOMContentLoaded', boot);
   } else {
-    boot()
+    boot();
   }
 
-  document.addEventListener('rk:legacy-content', boot)
-  document.addEventListener('rk:ready', boot)
-})()
+  document.addEventListener('rk:legacy-content', boot);
+  document.addEventListener('rk:ready', boot);
+})();

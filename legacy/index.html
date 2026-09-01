@@ -18,7 +18,7 @@
           loop
           playsinline
           webkit-playsinline
-          preload="metadata"
+          preload="none"
           poster="/api/media/file/nasa-shuttle-launch.webp"
           disablepictureinpicture
           controlslist="nofullscreen nodownload noremoteplayback"
@@ -178,13 +178,13 @@
               <div class="dot-ring" aria-hidden="true"><span></span></div>
             </a>
           </div>
-          <div class="rk-split-media rk-split-media--contain">
+          <div class="rk-split-media">
             <img
-              class="rk-split-photo rk-split-photo--contain"
-              src="assets/images/angebote-tech-stack.webp"
-              alt="Tech-Stack-Sticker: HTML, CSS, JavaScript, Payload CMS, Next.js, WordPress, PHP und Web"
+              class="rk-split-photo"
+              src="assets/images/angebote-team-office.webp"
+              alt="Team bei der Entwicklung von Webseiten am Schreibtisch"
               width="1024"
-              height="576"
+              height="682"
               loading="lazy">
             <p class="rk-split-caption">Solide Technik als Fundament, von HTML bis Next.js &amp; Payload.</p>
           </div>
@@ -233,13 +233,73 @@
             </a>
           </div>
           <div class="rk-split-media">
-            <img
-              class="rk-split-photo"
-              src="assets/images/team-rocketory.webp"
-              alt="Das Rocketory Team"
-              width="1024"
-              height="571"
-              loading="lazy">
+            <div class="rk-team-photo">
+              <img
+                class="rk-split-photo"
+                src="assets/images/team-rocketory.webp"
+                alt="Das Rocketory Team: Klaus, Giuliana, Nicolas und Artem"
+                width="1024"
+                height="571"
+                loading="lazy">
+              <div class="rk-team-hotspots" aria-label="Team-Mitglieder">
+                <button
+                  type="button"
+                  class="rk-team-hotspot rk-team-hotspot--card-right"
+                  style="--x:calc(16% - 16px);--y:40%;"
+                  aria-expanded="false"
+                  aria-controls="rk-team-card-klaus"
+                  aria-label="Klaus, Foto- und Videoproduktion">
+                  <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-card" id="rk-team-card-klaus" role="tooltip">
+                    <strong class="rk-team-hotspot-name">Klaus</strong>
+                    <span class="rk-team-hotspot-role">Foto- &amp; Videoproduktion</span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  class="rk-team-hotspot"
+                  style="--x:34%;--y:52%;"
+                  aria-expanded="false"
+                  aria-controls="rk-team-card-giuliana"
+                  aria-label="Giuliana, Grafikerstellung, Prompting, Kommunikation">
+                  <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-card" id="rk-team-card-giuliana" role="tooltip">
+                    <strong class="rk-team-hotspot-name">Giuliana</strong>
+                    <span class="rk-team-hotspot-role">Grafikerstellung, Prompting, Kommunikation</span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  class="rk-team-hotspot"
+                  style="--x:52%;--y:calc(40% + 8px);"
+                  aria-expanded="false"
+                  aria-controls="rk-team-card-nicolas"
+                  aria-label="Nicolas, Webentwicklung, Softwareprogrammierung, Kommunikation">
+                  <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-card" id="rk-team-card-nicolas" role="tooltip">
+                    <strong class="rk-team-hotspot-name">Nicolas</strong>
+                    <span class="rk-team-hotspot-role">Webentwicklung, Softwareprogrammierung, Kommunikation</span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  class="rk-team-hotspot rk-team-hotspot--card-left"
+                  style="--x:76%;--y:calc(40% + 8px);"
+                  aria-expanded="false"
+                  aria-controls="rk-team-card-artem"
+                  aria-label="Artem, UX, Konzeption">
+                  <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-card" id="rk-team-card-artem" role="tooltip">
+                    <strong class="rk-team-hotspot-name">Artem</strong>
+                    <span class="rk-team-hotspot-role">UX, Konzeption</span>
+                  </span>
+                </button>
+              </div>
+            </div>
             <p class="rk-split-caption">Persönlich, lokal, erreichbar, aus Bünde für die Region.</p>
           </div>
         </div>
@@ -442,32 +502,41 @@
 
     <section class="rk-section rk-home-bento rk-tone-a" id="werte" aria-label="Ansatz, Technologie und Werte">
       <div class="rk-inner">
+        <header class="rk-home-bento-intro" id="paket-bedarfsbezogen">
+          <h2 class="rk-h2">Kein Template.<br><em>Eine Webseite für dich.</em></h2>
+        </header>
         <div class="rk-home-bento-grid">
-          <article class="rk-home-bento-cell rk-home-bento-cell--feature rk-home-bento-cell--photo" id="paket-bedarfsbezogen" style="--rk-bento-bg:url('/assets/images/webdesign-hero.jpg')">
-            <h2 class="rk-h2">Kein Template.<br><em>Eine Webseite für dich.</em></h2>
-            <p class="rk-home-bento-copy">Jede Webseite planen wir nach deinem Betrieb: Seiten, Funktionen und Technik, die du wirklich brauchst. Fair kalkuliert, ohne überdimensionierte Lösungen. Ablauf und Umfang stehen auf der <a href="webdesign.html" class="rk-text-link">Webdesign-Seite</a>. Unsicher? Ein <a href="kontakt.html" class="rk-text-link">Erstgespräch</a> klärt, was sinnvoll ist.</p>
-            <a href="webdesign.html" class="rk-dot-cta">
-              <span class="rk-dot-cta-label">Zur Webdesign-Seite</span>
-              <div class="dot-ring" aria-hidden="true"><span></span></div>
-            </a>
-          </article>
-
-          <figure class="rk-home-bento-cell rk-home-bento-cell--media">
-            <img
-              src="assets/images/bedarfsbezogen.jpg"
-              alt="Erdblick aus dem Weltraum mit Satellit. Individuelle Webseite statt Baukasten."
-              width="1024"
-              height="681"
-              loading="lazy">
-          </figure>
-
-          <article class="rk-home-bento-cell rk-home-bento-cell--tech" id="technologien">
-            <h2 class="rk-h2">Die richtige Technologie<br><em>für dein Projekt.</em></h2>
-            <p class="rk-home-bento-copy">Statisches HTML, WordPress oder CMS mit Next.js &amp; Payload, wir setzen nicht auf eine Technologie, sondern auf das, was zu deinem Business passt. Du bekommst eine klare Empfehlung statt Tech-Buzzwords.</p>
-            <a href="technologien.html" class="rk-dot-cta">
-              <span class="rk-dot-cta-label">Technologien im Überblick</span>
-              <div class="dot-ring" aria-hidden="true"><span></span></div>
-            </a>
+          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--tech rk-home-bento-cell--photo rk-home-bento-cell--video" id="technologien">
+            <div class="rk-home-bento-bg" aria-hidden="true">
+              <video
+                class="rk-home-bento-video"
+                muted
+                loop
+                playsinline
+                webkit-playsinline
+                preload="none"
+                poster="/api/media/file/nasa-shuttle-launch.webp"
+                disablepictureinpicture
+                controlslist="nofullscreen nodownload noremoteplayback"
+                x5-playsinline
+                x5-video-player-type="h5"
+                x5-video-player-fullscreen="false">
+                <source src="assets/videos/hero-mobile.mp4?v=3" type="video/mp4">
+              </video>
+              <img
+                class="rk-home-bento-bg-fallback"
+                src="/api/media/file/nasa-shuttle-launch.webp"
+                alt=""
+                width="1024"
+                height="589"
+                decoding="async">
+            </div>
+            <span class="rk-trust-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </span>
+            <p class="rk-trust-label">Technologie</p>
+            <h3>Die richtige Technologie für dein Projekt</h3>
+            <p>Statisches HTML, WordPress oder CMS mit Next.js &amp; Payload, wir setzen nicht auf eine Technologie, sondern auf das, was zu deinem Business passt. Du bekommst eine klare Empfehlung statt Tech-Buzzwords. <a href="technologien.html" class="rk-text-link">Technologien im Überblick</a>.</p>
           </article>
 
           <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t1 rk-home-bento-cell--photo" style="--rk-bento-bg:url('/assets/images/team-rocketory.webp')">
@@ -479,7 +548,7 @@
             <p>Rocketory ist eine Unit der FairFlock GmbH und Schwesteragentur von Viralista. Kein Ein-Mann-Setup ohne Rückhalt. Du arbeitest mit einer Struktur, die Verantwortung trägt und langfristig denkt.</p>
           </article>
 
-          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t2">
+          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t2 rk-home-bento-cell--photo" style="--rk-bento-bg:url('/assets/images/bedarfsbezogen.jpg')">
             <span class="rk-trust-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
             </span>

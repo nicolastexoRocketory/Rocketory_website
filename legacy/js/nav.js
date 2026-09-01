@@ -72,6 +72,26 @@
       navEl.classList.toggle('is-solid', !!on);
     }
 
+    function readScrollY() {
+      return (
+        window.scrollY ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0
+      );
+    }
+
+    function isInAppBrowser() {
+      if (document.documentElement.classList.contains('is-in-app-browser')) return true;
+      var ua = navigator.userAgent || '';
+      var ref = document.referrer || '';
+      return (
+        /WhatsApp\/|FBAN|FBAV|FB_IAB|Instagram|Line\/|Twitter|LinkedInApp|Snapchat|Pinterest|TikTok|BytedanceWebview|MicroMessenger|GSA\/|; wv\)/i.test(
+          ua
+        ) || /whatsapp|instagram|facebook|fb\.com/i.test(ref)
+      );
+    }
+
     function syncNavSolid() {
       if (!navEl || !navOverHero) {
         setNavSolid(true);
@@ -80,7 +100,20 @@
       var menuOpen =
         (panel && panel.classList.contains('is-open')) ||
         (btn && btn.classList.contains('is-open'));
-      setNavSolid(menuOpen || window.scrollY > NAV_SOLID_AFTER);
+      setNavSolid(menuOpen || readScrollY() > NAV_SOLID_AFTER);
+    }
+
+    function syncNavSolidFromHero(entry) {
+      if (!navEl || !navOverHero) return;
+      var menuOpen =
+        (panel && panel.classList.contains('is-open')) ||
+        (btn && btn.classList.contains('is-open'));
+      if (menuOpen) {
+        setNavSolid(true);
+        return;
+      }
+      var top = entry.boundingClientRect.top;
+      setNavSolid(!entry.isIntersecting || top < -NAV_SOLID_AFTER);
     }
 
     if (navEl && navOverHero) {

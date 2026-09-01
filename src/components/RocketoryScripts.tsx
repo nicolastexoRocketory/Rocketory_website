@@ -8,7 +8,7 @@ type RocketoryScriptsProps = {
   withBlogSidebar?: boolean
 }
 
-const SCRIPT_VERSION = '61'
+const SCRIPT_VERSION = '66'
 
 function withVersion(src: string): string {
   if (src.includes('?')) return src
@@ -132,6 +132,7 @@ export function RocketoryScripts({ scripts, withBlogSidebar = false }: Rocketory
         loadScript('/js/usp-carousel.js'),
         loadScript('/js/ai-image-badge.js'),
         loadScript('/js/btn-poly-follow.js'),
+        loadScript('/js/team-hotspots.js'),
       ])
 
       if (withBlogSidebar) {
@@ -151,7 +152,8 @@ export function RocketoryScripts({ scripts, withBlogSidebar = false }: Rocketory
           !src.includes('inklusive-rows.js') &&
           !src.includes('usp-carousel.js') &&
           !src.includes('ai-image-badge.js') &&
-          !src.includes('btn-poly-follow.js'),
+          !src.includes('btn-poly-follow.js') &&
+          !src.includes('team-hotspots.js'),
       )
 
       if (pageScripts.length > 0) {

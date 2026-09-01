@@ -10,6 +10,7 @@ import { SiteSchema } from '@/components/SiteSchema'
 import { CookieBanner } from '@/components/CookieBanner'
 import { MatomoTracker } from '@/components/MatomoTracker'
 import { ContactFloat } from '@/components/ContactFloat'
+import { IN_APP_GUARD_HEAD_SCRIPT } from '@/lib/in-app-guard-snippet'
 import '@/styles/main.css'
 
 const dmSans = DM_Sans({
@@ -83,6 +84,11 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
             }}
           />
         ) : null}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: IN_APP_GUARD_HEAD_SCRIPT,
+          }}
+        />
       </head>
       <body>
         <AiImageRegistry />
