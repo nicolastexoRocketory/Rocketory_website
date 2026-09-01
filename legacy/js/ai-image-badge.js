@@ -4,6 +4,7 @@
   var markedHosts = new WeakSet();
   var aiMatchers = null;
   var fetchPromise = null;
+  var KI_VO_LINK = '/blog/eu-ai-act-ki-verordnung-webdesign';
 
   function normalizeSrc(src) {
     return String(src || '').split('?')[0];
@@ -77,9 +78,18 @@
     return srcMatchesList(src, list);
   }
 
+  function readBentoBgUrl(cell) {
+    var raw =
+      cell.style.getPropertyValue('--rk-bento-bg') ||
+      getComputedStyle(cell).getPropertyValue('--rk-bento-bg');
+    var match = String(raw || '').match(/url\(\s*["']?([^"')]+)["']?\s*\)/i);
+    return match ? match[1] : '';
+  }
+
   function resolveVariant(host) {
     var badge = host.dataset.rkAiBadge;
     if (badge === 'light' || badge === 'dark') return badge;
+    if (host.classList.contains('rk-home-bento-cell--photo')) return 'dark';
     if (
       host.closest('.rk-page-hero--dark, .rk-hero, .rk-interstitial, .rk-contact-main, .rk-blog-cover-wrap')
     ) {
@@ -115,14 +125,59 @@
     return node;
   }
 
+  var badgeIdCounter = 0;
+
   function createBadge(variant) {
-    var badge = document.createElement('span');
-    badge.className = 'rk-ai-badge' + (variant === 'light' ? ' rk-ai-badge--light' : '');
-    badge.setAttribute('role', 'note');
-    badge.setAttribute('aria-label', 'KI-generiertes Bild');
-    badge.innerHTML =
-      '<span class="rk-ai-badge-dot" aria-hidden="true"></span><span class="rk-ai-badge-label">KI-Bild</span>';
-    return badge;
+    badgeIdCounter += 1;
+    var tipId = 'rk-ai-badge-tip-' + badgeIdCounter;
+
+    var wrap = document.createElement('span');
+    wrap.className = 'rk-ai-badge' + (variant === 'light' ? ' rk-ai-badge--light' : '');
+
+    var trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'rk-ai-badge-trigger';
+    trigger.setAttribute('aria-label', 'KI-generiertes Bild. Hinweis zur EU-KI-Verordnung anzeigen.');
+    trigger.setAttribute('aria-describedby', tipId);
+    trigger.innerHTML =
+      '<span class="rk-ai-badge-dot" aria-hidden="true"></span>' +
+      '<span class="rk-ai-badge-label">KI-Bild</span>';
+
+    var tip = document.createElement('span');
+    tip.className = 'rk-ai-badge-tip';
+    tip.id = tipId;
+    tip.setAttribute('role', 'tooltip');
+    tip.innerHTML =
+      '<strong class="rk-ai-badge-tip-title">EU-KI-Verordnung</strong>' +
+      '<span class="rk-ai-badge-tip-copy">Gekennzeichnet gemäß KI-VO: KI-generierte Inhalte sind als solche erkennbar. Rocketory setzt Transparenzpflichten rechtssicher um.</span>' +
+      '<a href="' +
+      KI_VO_LINK +
+      '" class="rk-ai-badge-tip-link">Mehr zur KI-VO</a>';
+
+    wrap.appendChild(trigger);
+    wrap.appendChild(tip);
+    return wrap;
+  }
+
+  function bindBadgeInteractions(badge) {
+    var trigger = badge.querySelector('.rk-ai-badge-trigger');
+    if (!trigger) return;
+
+    trigger.addEventListener('click', function (event) {
+      if (!window.matchMedia('(hover: none)').matches) return;
+      event.preventDefault();
+      event.stopPropagation();
+      badge.classList.toggle('is-open');
+    });
+
+    trigger.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') badge.classList.remove('is-open');
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!badge.classList.contains('is-open')) return;
+      if (!badge.contains(event.target)) badge.classList.remove('is-open');
+    });
   }
 
   function mountBadge(host, variant) {
@@ -139,9 +194,36 @@
     if (host.classList.contains('rk-hero')) {
       host.classList.add('rk-ai-badge-host--hero');
     }
+    if (host.classList.contains('rk-home-bento-cell--photo')) {
+      host.classList.add('rk-ai-badge-host--bento');
+    }
 
-    host.appendChild(createBadge(variant));
+    var badge = createBadge(variant);
+    bindBadgeInteractions(badge);
+    host.appendChild(badge);
     markedHosts.add(host);
+  }
+
+  function initBentoBackgroundCells(list) {
+    document.querySelectorAll('.rk-home-bento-cell--photo').forEach(function (cell) {
+      if (cell.getAttribute('data-rk-ai-image') === 'true') {
+        mountBadge(cell, resolveVariant(cell));
+        return;
+      }
+
+      if (cell.classList.contains('rk-home-bento-cell--video')) {
+        var fallback = cell.querySelector('.rk-home-bento-bg-fallback, .rk-home-bento-bg img');
+        if (fallback && isAiImage(fallback, list)) {
+          mountBadge(cell, resolveVariant(cell));
+        }
+        return;
+      }
+
+      var bgUrl = readBentoBgUrl(cell);
+      if (srcMatchesList(bgUrl, list)) {
+        mountBadge(cell, resolveVariant(cell));
+      }
+    });
   }
 
   function init(list) {
@@ -157,6 +239,8 @@
       if (!mountHost) return;
       mountBadge(mountHost, resolveVariant(mountHost));
     });
+
+    initBentoBackgroundCells(list);
   }
 
   function boot() {

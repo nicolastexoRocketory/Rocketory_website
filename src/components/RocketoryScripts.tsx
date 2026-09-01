@@ -8,7 +8,7 @@ type RocketoryScriptsProps = {
   withBlogSidebar?: boolean
 }
 
-const SCRIPT_VERSION = '67'
+const SCRIPT_VERSION = '68'
 
 function withVersion(src: string): string {
   if (src.includes('?')) return src
