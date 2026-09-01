@@ -93,17 +93,26 @@
 
   function resolveHost(img) {
     var explicit = img.closest('[data-rk-ai-image="true"]');
-    if (explicit) return explicit;
+    if (explicit && explicit.tagName !== 'IMG') return explicit;
 
     if (img.closest('.rk-hero-bg')) return img.closest('.rk-hero');
     if (img.closest('.rk-interstitial-bg')) return img.closest('.rk-interstitial');
     if (img.closest('.rk-contact-bg')) return img.closest('.rk-contact-main');
 
-    return (
-      img.closest(
-        '.rk-page-hero-media, .rk-split-media, .rk-blog-cover, .rk-article-split-media, .rk-loc-figure',
-      ) || img.parentElement
+    var structural = img.closest(
+      '.rk-page-hero-media, .rk-split-media, .rk-team-photo, .rk-blog-cover, .rk-article-split-media, .rk-loc-figure, .rk-home-bento-cell--photo',
     );
+    if (structural) return structural;
+
+    if (explicit) return explicit.parentElement || explicit;
+
+    return img.parentElement;
+  }
+
+  function resolveHostFromMarkedNode(node) {
+    if (!node) return null;
+    if (node.tagName === 'IMG') return resolveHost(node);
+    return node;
   }
 
   function createBadge(variant) {
@@ -144,7 +153,9 @@
     });
 
     document.querySelectorAll('[data-rk-ai-image="true"]').forEach(function (host) {
-      mountBadge(host, resolveVariant(host));
+      var mountHost = resolveHostFromMarkedNode(host);
+      if (!mountHost) return;
+      mountBadge(mountHost, resolveVariant(mountHost));
     });
   }
 

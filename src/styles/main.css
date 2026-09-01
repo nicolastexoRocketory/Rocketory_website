@@ -6231,7 +6231,11 @@ a.rk-footer-link:hover::after{width:100%;}
 }
 .rk-ai-badge-host--hero .rk-ai-badge{
   bottom:clamp(20px,4vw,32px);left:clamp(20px,4vw,32px);
-  z-index:2;
+  z-index:3;
+}
+.rk-interstitial.rk-ai-badge-host .rk-ai-badge,
+.rk-home-bento-cell--photo.rk-ai-badge-host .rk-ai-badge{
+  z-index:3;
 }
 .rk-ai-badge-host--split .rk-ai-badge{
   bottom:clamp(2.75rem,6vw,3.25rem);
