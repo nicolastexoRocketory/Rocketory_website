@@ -126,6 +126,90 @@
   line-height:1.65;max-width:42ch;margin:0;
 }
 
+/* Blog listing: ein durchgängiger dunkler Inhaltsbereich */
+.rk-page-hero--blog{
+  border-bottom:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  min-height:clamp(280px,42vh,420px);
+  padding-top:calc(var(--rk-nav-h) + clamp(36px,6vw,56px));
+  padding-bottom:clamp(36px,6vw,56px);
+}
+.rk-page-hero--blog .rk-page-hero-blog-inner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  max-width:46rem;
+  margin-inline:auto;
+}
+.rk-page-hero--blog .rk-page-kicker,
+.rk-page-hero--blog .rk-page-title,
+.rk-page-hero--blog .rk-page-lead{
+  text-align:center;
+}
+.rk-page-hero--blog .rk-page-lead{
+  max-width:40rem;
+  margin-inline:auto;
+}
+.rk-page-hero--blog .rk-page-title{
+  white-space:normal;
+}
+.rk-page-hero--blog + .rk-ref-section--dark{
+  padding-top:clamp(8px,1.5vw,16px);
+}
+.rk-ref-section--dark{
+  background:var(--hero-bg,#0A0F1E);
+  color:var(--hero-text,#F5F4F0);
+  border-bottom-color:rgba(255,255,255,0.08);
+}
+.rk-ref-section--dark .rk-post-filter{
+  border-bottom-color:rgba(255,255,255,0.12);
+}
+.rk-ref-section--dark .rk-post-filter-btn{
+  color:rgba(245,244,240,0.62);
+  border-color:rgba(255,255,255,0.16);
+}
+.rk-ref-section--dark .rk-post-filter-btn:hover{
+  color:var(--hero-text,#F5F4F0);
+  border-color:rgba(255,255,255,0.32);
+}
+.rk-ref-section--dark .rk-post-filter-btn.is-active{
+  color:var(--ink,#0A0F1E);
+  background:var(--hero-text,#F5F4F0);
+  border-color:var(--hero-text,#F5F4F0);
+}
+.rk-ref-section--dark .rk-post-filter-empty{
+  color:rgba(245,244,240,0.58);
+}
+.rk-ref-section--dark .rk-post-card{
+  background:rgba(255,255,255,0.04);
+  border-color:rgba(255,255,255,0.12);
+}
+.rk-ref-section--dark .rk-post-card:hover{
+  border-color:rgba(255,92,0,0.45);
+  box-shadow:0 20px 48px rgba(0,0,0,0.28);
+}
+.rk-ref-section--dark .rk-post-card-media{
+  background:rgba(255,255,255,0.06);
+  border-bottom-color:rgba(255,255,255,0.1);
+}
+.rk-ref-section--dark .rk-post-card-meta time{
+  color:rgba(245,244,240,0.55);
+}
+.rk-ref-section--dark .rk-post-card-cat{
+  border-left-color:rgba(255,255,255,0.18);
+}
+.rk-ref-section--dark .rk-post-card-title{
+  color:var(--hero-text,#F5F4F0);
+}
+.rk-ref-section--dark .rk-post-card-excerpt{
+  color:rgba(245,244,240,0.62);
+}
+
 /* ── Blog taxonomy filter ── */
 .rk-post-filter{
   display:flex;flex-wrap:wrap;gap:10px;

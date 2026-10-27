@@ -1,0 +1,317 @@
+<?php
+/**
+ * Plugin Name: Fahrschule Delil – Elementor Fixed Background Mobile Fix
+ * Description: Elementor „Hintergrund fixiert“ auf Mobil: Bild sichtbar + optisch fixiert (JS-Polyfill, iOS-sicher). Kein background-attachment:fixed.
+ * Version: 1.2
+ * Author: Nicolas Zhigalov / Rocketory
+ * Text Domain: fdelil-fixed-bg
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+add_action( 'wp_enqueue_scripts', 'fdelil_fixed_bg_enqueue', 99 );
+function fdelil_fixed_bg_enqueue() {
+	if ( is_admin() ) {
+		return;
+	}
+
+	$css = <<<'CSS'
+.fdelil-fixed-bg-host {
+	position: relative !important;
+	overflow: hidden !important;
+	background-image: none !important;
+	background-attachment: scroll !important;
+	isolation: isolate;
+}
+
+.fdelil-fixed-bg-host > .fdelil-fixed-bg-layer {
+	position: absolute !important;
+	left: 0 !important;
+	top: 0 !important;
+	width: 100% !important;
+	height: 100vh !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	pointer-events: none !important;
+	z-index: 0 !important;
+	background-repeat: no-repeat !important;
+	background-size: cover !important;
+	background-position: center center !important;
+	background-attachment: scroll !important;
+	will-change: transform;
+	transform: translate3d(0, 0, 0);
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+
+.fdelil-fixed-bg-host > .elementor-background-overlay,
+.fdelil-fixed-bg-host > .e-con-inner,
+.fdelil-fixed-bg-host > .elementor-container,
+.fdelil-fixed-bg-host > .elementor-motion-effects-container {
+	position: relative;
+	z-index: 1;
+}
+
+/* Fallback: wenn noch kein Layer da ist, Bild trotzdem zeigen */
+@media (max-width: 1024px) {
+	.elementor-element:not(.fdelil-fixed-bg-host),
+	.e-con:not(.fdelil-fixed-bg-host) {
+		background-attachment: scroll !important;
+	}
+}
+CSS;
+
+	wp_register_style( 'fdelil-fixed-bg-fix', false, array(), '1.2' );
+	wp_enqueue_style( 'fdelil-fixed-bg-fix' );
+	wp_add_inline_style( 'fdelil-fixed-bg-fix', $css );
+}
+
+add_action( 'wp_footer', 'fdelil_fixed_bg_footer_script', 99 );
+function fdelil_fixed_bg_footer_script() {
+	if ( is_admin() ) {
+		return;
+	}
+	?>
+	<script id="fdelil-fixed-bg-fix">
+	(function () {
+		var MQ = '(max-width: 1024px), (hover: none) and (pointer: coarse)';
+		var hosts = [];
+		var ticking = false;
+
+		function isMobile() {
+			try { return window.matchMedia(MQ).matches; }
+			catch (e) { return window.innerWidth <= 1024; }
+		}
+
+		function parseSettings(el) {
+			var raw = el.getAttribute('data-settings');
+			if (!raw) return null;
+			try { return JSON.parse(raw); }
+			catch (e) {
+				try { return JSON.parse(raw.replace(/&quot;/g, '"')); }
+				catch (e2) { return null; }
+			}
+		}
+
+		function settingsWantFixed(el) {
+			var s = parseSettings(el);
+			if (!s) return false;
+			return s.background_attachment === 'fixed' ||
+				s.background_attachment_mobile === 'fixed' ||
+				s.background_attachment_tablet === 'fixed';
+		}
+
+		function extractUrl(bgImage) {
+			if (!bgImage || bgImage === 'none') return '';
+			var m = bgImage.match(/url\((['"]?)(.*?)\1\)/i);
+			return m ? m[2] : '';
+		}
+
+		function getBgFromStylesheet(el) {
+			/* Elementor schreibt oft per Klassen-CSS, nicht inline */
+			var cs = window.getComputedStyle(el);
+			if (cs.backgroundImage && cs.backgroundImage !== 'none') {
+				return {
+					image: cs.backgroundImage,
+					size: cs.backgroundSize && cs.backgroundSize !== 'auto' ? cs.backgroundSize : 'cover',
+					position: cs.backgroundPosition || 'center center'
+				};
+			}
+			return null;
+		}
+
+		function getBgFromSettings(el) {
+			var s = parseSettings(el);
+			if (!s || !s.background_image) return null;
+			var url = s.background_image.url || s.background_image;
+			if (!url || typeof url !== 'string') return null;
+			return {
+				image: 'url("' + url + '")',
+				size: 'cover',
+				position: 'center center'
+			};
+		}
+
+		function getBg(el) {
+			var stored = el.getAttribute('data-fdelil-bg-image');
+			if (stored) {
+				return {
+					image: stored,
+					size: el.getAttribute('data-fdelil-bg-size') || 'cover',
+					position: el.getAttribute('data-fdelil-bg-position') || 'center center'
+				};
+			}
+			var direct = getBgFromStylesheet(el) || getBgFromSettings(el);
+			if (direct) return direct;
+
+			/* Elementor legt Bild manchmal auf innere Motion-/Overlay-Layer */
+			var kids = el.querySelectorAll('.elementor-motion-effects-layer, .elementor-background-slideshow__slide__image, .elementor-motion-effects-container');
+			for (var i = 0; i < kids.length; i++) {
+				var childBg = getBgFromStylesheet(kids[i]);
+				if (childBg) return childBg;
+			}
+			return null;
+		}
+
+		function wantsFixed(el) {
+			if (settingsWantFixed(el)) return true;
+			var cs = window.getComputedStyle(el);
+			if (cs.backgroundAttachment === 'fixed') return true;
+			var inline = el.getAttribute('style') || '';
+			if (/background-attachment\s*:\s*fixed/i.test(inline)) return true;
+			/* Häufige Custom-Klasse aus Elementor */
+			if (el.classList.contains('image-background') || el.classList.contains('image-bac')) return true;
+			var cls = el.className || '';
+			if (typeof cls === 'string' && cls.indexOf('image-bac') !== -1) return true;
+			return false;
+		}
+
+		function findCandidates(root) {
+			var scope = root && root.querySelectorAll ? root : document;
+			var list = scope.querySelectorAll('.e-con, .elementor-section, .elementor-column, .elementor-element');
+			var out = [];
+			for (var i = 0; i < list.length; i++) {
+				if (wantsFixed(list[i])) out.push(list[i]);
+			}
+			return out;
+		}
+
+		function ensureLayer(el, bg) {
+			var layer = null;
+			for (var i = 0; i < el.children.length; i++) {
+				if (el.children[i].classList && el.children[i].classList.contains('fdelil-fixed-bg-layer')) {
+					layer = el.children[i];
+					break;
+				}
+			}
+			if (!layer) {
+				layer = document.createElement('div');
+				layer.className = 'fdelil-fixed-bg-layer';
+				layer.setAttribute('aria-hidden', 'true');
+				el.insertBefore(layer, el.firstChild);
+			}
+			layer.style.setProperty('background-image', bg.image, 'important');
+			layer.style.setProperty('background-size', bg.size || 'cover', 'important');
+			layer.style.setProperty('background-position', bg.position || 'center center', 'important');
+			layer.style.setProperty('background-repeat', 'no-repeat', 'important');
+			return layer;
+		}
+
+		function updateLayer(el) {
+			var layer = el._fdelilBgLayer;
+			if (!layer) return;
+			var rect = el.getBoundingClientRect();
+			var vh = window.innerHeight || document.documentElement.clientHeight;
+			layer.style.height = vh + 'px';
+			/* Polyfill für fixed: Layer am Viewport ausrichten, Section clippt via overflow */
+			layer.style.transform = 'translate3d(0,' + (-rect.top) + 'px,0)';
+		}
+
+		function enable(el) {
+			var bg = getBg(el);
+			if (!bg || !bg.image || bg.image === 'none' || !extractUrl(bg.image)) {
+				/* Fallback: Bild wenigstens sichtbar lassen */
+				el.style.setProperty('background-attachment', 'scroll', 'important');
+				return;
+			}
+
+			if (!el.getAttribute('data-fdelil-bg-image')) {
+				el.setAttribute('data-fdelil-bg-image', bg.image);
+				el.setAttribute('data-fdelil-bg-size', bg.size || 'cover');
+				el.setAttribute('data-fdelil-bg-position', bg.position || 'center center');
+			}
+
+			el.classList.add('fdelil-fixed-bg-host');
+			el._fdelilBgLayer = ensureLayer(el, bg);
+			el.style.setProperty('background-image', 'none', 'important');
+			el.style.setProperty('background-attachment', 'scroll', 'important');
+			updateLayer(el);
+
+			if (hosts.indexOf(el) === -1) hosts.push(el);
+		}
+
+		function disable(el) {
+			var layer = null;
+			for (var i = 0; i < el.children.length; i++) {
+				if (el.children[i].classList && el.children[i].classList.contains('fdelil-fixed-bg-layer')) {
+					layer = el.children[i];
+					break;
+				}
+			}
+			if (layer) layer.parentNode.removeChild(layer);
+			el.classList.remove('fdelil-fixed-bg-host');
+			el._fdelilBgLayer = null;
+
+			var stored = el.getAttribute('data-fdelil-bg-image');
+			el.style.removeProperty('background-image');
+			el.style.removeProperty('background-attachment');
+			if (stored) {
+				el.style.backgroundImage = stored;
+				el.style.backgroundSize = el.getAttribute('data-fdelil-bg-size') || 'cover';
+				el.style.backgroundPosition = el.getAttribute('data-fdelil-bg-position') || 'center center';
+				el.style.backgroundAttachment = 'fixed';
+			}
+		}
+
+		function onScroll() {
+			if (ticking) return;
+			ticking = true;
+			window.requestAnimationFrame(function () {
+				for (var i = 0; i < hosts.length; i++) updateLayer(hosts[i]);
+				ticking = false;
+			});
+		}
+
+		function refresh() {
+			var mobile = isMobile();
+			var candidates = findCandidates(document);
+
+			if (!mobile) {
+				for (var i = 0; i < hosts.length; i++) disable(hosts[i]);
+				hosts = [];
+				/* Auch Kandidaten zurücksetzen, falls Host-Liste leer war */
+				for (var j = 0; j < candidates.length; j++) {
+					if (candidates[j].classList.contains('fdelil-fixed-bg-host')) disable(candidates[j]);
+				}
+				return;
+			}
+
+			hosts = [];
+			for (var k = 0; k < candidates.length; k++) {
+				enable(candidates[k]);
+			}
+			onScroll();
+		}
+
+		function bind() {
+			window.addEventListener('scroll', onScroll, { passive: true });
+			window.addEventListener('resize', refresh);
+			window.addEventListener('orientationchange', refresh);
+		}
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', function () { refresh(); bind(); });
+		} else {
+			refresh();
+			bind();
+		}
+		window.addEventListener('load', refresh);
+
+		document.addEventListener('DOMContentLoaded', function () {
+			if (!window.jQuery) return;
+			window.jQuery(window).on('elementor/frontend/init', function () {
+				refresh();
+				if (window.elementorFrontend && window.elementorFrontend.hooks) {
+					window.elementorFrontend.hooks.addAction('frontend/element_ready/global', function () {
+						refresh();
+					});
+				}
+			});
+		});
+	})();
+	</script>
+	<?php
+}

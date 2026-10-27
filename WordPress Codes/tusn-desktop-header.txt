@@ -1,0 +1,458 @@
+<?php
+/*
+ * TuS N-Lübbecke Desktop Header
+ * Header Manager - FINAL VERSION 2026 - ULTRA STABLE
+ * Layout: Logo links (Fixed Width) | Menü stabil rechts
+ * v2026.08 – Dyn „Alle Spiele Live“-Button zwischen CTA1 und CTA2
+ */
+
+// 1. HELPER: RELATIVE → ABSOLUTE URL
+function make_absolute_url($path) {
+    if (!$path) return '';
+    $path = trim($path);
+    if (preg_match('#^https?://#i', $path)) return $path;
+    if (strpos($path, '/') === 0) return home_url($path);
+    return get_stylesheet_directory_uri() . '/' . $path;
+}
+
+// 2. ICON FELD IM MENÜ
+add_action('wp_nav_menu_item_custom_fields', 'add_submenu_icon_field', 10, 4);
+function add_submenu_icon_field($item_id) {
+    $icon_url = get_post_meta($item_id, '_submenu_icon_url', true);
+    ?>
+    <p class="field-submenu-icon description description-wide">
+        <label for="edit-menu-item-submenu-icon-<?php echo $item_id; ?>">
+            Menü-Icon URL (Hauptmenü: Rechts / Submenü: Links)<br>
+            <input type="text" id="edit-menu-item-submenu-icon-<?php echo $item_id; ?>" class="widefat" name="menu_item_submenu_icon[<?php echo $item_id; ?>]" value="<?php echo esc_attr($icon_url); ?>">
+        </label>
+    </p>
+    <?php
+}
+
+add_action('wp_update_nav_menu_item', 'save_submenu_icon_field', 10, 3);
+function save_submenu_icon_field($menu_id, $menu_item_db_id) {
+    if (isset($_POST['menu_item_submenu_icon'][$menu_item_db_id])) {
+        update_post_meta($menu_item_db_id, '_submenu_icon_url', sanitize_text_field($_POST['menu_item_submenu_icon'][$menu_item_db_id]));
+    }
+}
+
+// 3. WALKER KLASSE (MIT STANDARD CLASSES & ACTIVE FIX)
+class Custom_Header_Walker extends Walker_Nav_Menu {
+    public function start_lvl(&$output, $depth = 0, $args = null) {
+        $output .= '<ul class="sub-menu">';
+    }
+    public function start_el(&$output, $item, $depth = 0, $args = null, $id = 0) {
+        $classes = empty($item->classes) ? array() : (array) $item->classes;
+        
+        // WP-FIX: Startseiten-Active-State erzwingen (falls es ein Custom Link ist)
+        $is_home_link = (rtrim($item->url, '/') === rtrim(home_url(), '/') || $item->url === '/');
+        if ( is_front_page() && $is_home_link ) {
+            $classes[] = 'current-menu-item';
+            $classes[] = 'current_page_item';
+        }
+
+        // Duplikate filtern
+        $classes = array_unique($classes);
+        $class_names = join(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item, $args));
+        $class_names = $class_names ? ' class="' . esc_attr($class_names) . '"' : '';
+
+        $icon_url = get_post_meta($item->ID, '_submenu_icon_url', true);
+        
+        // Logik für Icon Positionierung
+        $icon_left = '';
+        $icon_right = '';
+
+        if ($icon_url) {
+            if ($depth > 0) {
+                // Submenü: Icon Links
+                $icon_left = '<img src="'.esc_url($icon_url).'" class="menu-icon-img">';
+            } else {
+                // Hauptmenü: Icon Rechts
+                $icon_right = '<img src="'.esc_url($icon_url).'" class="menu-icon-right">';
+            }
+        }
+        
+        $output .= '<li' . $class_names . '>';
+        $output .= '<a href="'.esc_url($item->url).'" title="'.esc_attr($item->title).'">';
+        $output .= $icon_left . '<span class="link-text">' . esc_html($item->title) . '</span>' . $icon_right;
+        $output .= '</a>';
+    }
+}
+
+// 4. HEADER RENDERER
+add_action('wp_body_open', 'insert_custom_header');
+function insert_custom_header() {
+    if (has_nav_menu('primary')) {
+        echo do_shortcode('[custom_header]');
+    }
+}
+
+add_shortcode('custom_header', 'render_custom_header');
+function render_custom_header() {
+    $data = get_option('header_manager_data', []);
+    $data = wp_parse_args($data, ['menu_color' => '#1a1a1a']);
+    
+    // URLs
+    $logo_url       = home_url('/wp-content/uploads/2026/07/cropped-logo_120px.png');
+    $white_logo_url = home_url('/wp-content/uploads/2026/07/cropped-logo_120px.png');
+    $cta_icon_url   = home_url('/wp-content/uploads/2026/07/ticket-alt.png');
+    $dyn_btn_img    = home_url('/wp-content/uploads/2026/08/dyn-button.jpg');
+    $dyn_btn_url    = 'https://www.dyn.sport/aktion/handball?utm_source=2-hbl&utm_medium=media-direct&utm_campaign=C:DE_L:DE_SC:League_CT:CXT_ST:Handball_G:FIX&utm_content=CT:CXT_CTD:2-hbl-RoS&utm_term=ST:Handball_CF:Banner';
+
+    // Menu Logic
+    $locations = get_nav_menu_locations();
+    $menu_id = $locations['primary'] ?? 0;
+    if (!$menu_id) return '';
+    
+    $items = wp_get_nav_menu_items($menu_id);
+    if (!$items) return '';
+
+    $normal = $ctas = [];
+    foreach ($items as $item) {
+        $type = get_post_meta($item->ID, '_menu_item_cta_type', true);
+        
+        // Check CTA
+        if ($type && $type !== 'none' && $item->menu_item_parent == 0) {
+            $cta_custom_icon = get_post_meta($item->ID, '_submenu_icon_url', true);
+            $ctas[] = (object)[
+                'url' => $item->url, 
+                'title' => $item->title, 
+                'type' => $type,
+                'icon_url' => $cta_custom_icon 
+            ];
+        } else {
+            $normal[] = $item;
+        }
+    }
+
+    $walker = new Custom_Header_Walker();
+    $menu_html = '<ul class="nav-menu">' . $walker->walk($normal, 2) . '</ul>';
+    
+    $is_front = is_front_page() ? ' is-on-frontpage' : '';
+    $dyn_rendered = false;
+
+    ob_start(); ?>
+    <nav class="custom-navigation<?php echo $is_front; ?>" id="navbar">
+        <div class="nav-container">
+            <!-- LOGO UND MENÜ IN EINER GEMEINSAMEN SPALTE -->
+            <div class="nav-left-group">
+                <a href="<?php echo home_url(); ?>" class="nav-logo-link">
+                    <img src="<?php echo esc_url($logo_url); ?>" alt="Logo" class="main-logo default-logo">
+                    <img src="<?php echo esc_url($white_logo_url); ?>" alt="Logo" class="main-logo white-logo">
+                </a>
+                <?php echo $menu_html; ?>
+            </div>
+
+            <div class="nav-right">
+                <?php foreach ($ctas as $cta): ?>
+                    <?php if ($cta->type === 'cta2'): ?>
+                        <?php if ( ! $dyn_rendered ) : $dyn_rendered = true; ?>
+                            <a href="<?php echo esc_url( $dyn_btn_url ); ?>" class="cta-dyn-btn" target="_blank" rel="noopener noreferrer" title="Alle Spiele live bei Dyn">
+                                <img src="<?php echo esc_url( $dyn_btn_img ); ?>" alt="Alle Spiele live bei Dyn" width="160" height="44" loading="lazy" decoding="async">
+                            </a>
+                        <?php endif; ?>
+                        <a href="<?php echo esc_url($cta->url); ?>" class="cta-button-stylized">
+                            <div class="cta-icon-wrapper">
+                                <img src="<?php echo esc_url($cta_icon_url); ?>" alt="icon">
+                            </div>
+                            <span><?php echo esc_html($cta->title); ?></span>
+                        </a>
+                    <?php else: /* CTA 1 */ ?>
+                        <a href="<?php echo esc_url($cta->url); ?>" class="cta1-btn" title="<?php echo esc_attr($cta->title); ?>">
+                            <?php echo esc_html($cta->title); ?>
+                            <?php if (!empty($cta->icon_url)): ?>
+                                <img src="<?php echo esc_url($cta_icon_url); ?>" class="menu-icon-right">
+                            <?php endif; ?>
+                        </a>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </nav>
+
+<style>
+        /* RESET & BASIS */
+        .custom-navigation, .custom-navigation * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        .custom-navigation {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;
+            height: 85px; 
+            
+            background: #1a1a1a !important; /* DARK MODE ANPASSUNG */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* DARK MODE ANPASSUNG */
+            
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            display: flex; align-items: center; 
+            padding: 0 clamp(1em, 3vw, 4em);
+            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        background 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* STATE: SCROLLED */
+        .custom-navigation.shrunk { 
+            height: 68px; 
+            background: #1a1a1a !important; /* DARK MODE ANPASSUNG */
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3); 
+            border-bottom-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* CONTAINER LOGIK */
+        .nav-container { width: 100%; max-width: 1350px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 100%; position: relative; flex-wrap: nowrap; }
+
+        /* LINKE SPALTE: LOGO & MENÜ */
+        .nav-left-group { display: flex; align-items: center; height: 100%; gap: clamp(16px, 2vw, 32px); flex-wrap: nowrap; }
+        
+        /* RECHTE SPALTE: CTA */
+        .nav-right { display: flex; justify-content: flex-end; gap: clamp(0.4rem, 1vw, 0.75rem); align-items: center; height: 100%; white-space: nowrap; flex-wrap: nowrap; }
+        
+        /* LOGO STABILITÄT */
+        .nav-logo-link { 
+            display: flex; align-items: center; position: relative; overflow: hidden; 
+            padding: 5px 0; flex-shrink: 0; width: auto;
+            transition: opacity 0.3s ease; 
+        }
+        .nav-logo-link:hover { opacity: 0.75; }
+        .main-logo { 
+            height: clamp(48px, 5vw, 70px); width: auto; display: block; 
+            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            object-fit: contain; object-position: left center; 
+        }
+        .custom-navigation.shrunk .main-logo { height: clamp(36px, 4vw, 50px); }
+
+        .default-logo { display: none !important; } /* DARK MODE: Default ausgeblendet */
+        .white-logo { display: block !important; } /* DARK MODE: White/Logo eingeblendet */
+
+        /* MENÜ */
+        .nav-menu { list-style: none; display: flex; gap: 2px; height: 100%; align-items: center; flex-wrap: nowrap; }
+        .nav-menu li { position: relative; height: 100%; display: flex; align-items: center; }
+        
+        /* Trennstriche zwischen den Menüpunkten */
+        .nav-menu > li:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 18px;
+            background-color: rgba(255, 255, 255, 0.15); /* DARK MODE ANPASSUNG */
+            pointer-events: none;
+        }
+        
+        .nav-menu > li > a, .cta1-btn { 
+            color: #ffffff !important; /* DARK MODE ANPASSUNG */
+            text-transform: uppercase; /* CAPSLOCK ANPASSUNG */
+            text-decoration: none; font-size: clamp(13px, 1vw, 15px); font-weight: 600;
+            padding: 0 clamp(8px, 1.2vw, 18px); height: 42px; display: inline-flex; align-items: center;
+            border-radius: 0 !important; 
+            transition: background-color 0.25s ease, color 0.25s ease;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        /* Hover Effekt */
+        .nav-menu > li > a:hover {
+            background-color: rgba(255, 255, 255, 0.08) !important; /* DARK MODE ANPASSUNG */
+        }
+
+        /* Active State */
+        .nav-menu > li.current-menu-item > a,
+        .nav-menu > li.current_page_item > a,
+        .nav-menu > li.current-menu-ancestor > a {
+            background-color: transparent !important;
+            color: #ff4444 !important; /* Etwas helleres Rot für besseren Kontrast auf Dark */
+        }
+
+        .nav-menu > li.current-menu-item > a .link-text,
+        .nav-menu > li.current_page_item > a .link-text,
+        .nav-menu > li.current-menu-ancestor > a .link-text {
+            color: #ff4444 !important;
+        }
+        
+        .nav-menu > li.current-menu-item > a:hover,
+        .nav-menu > li.current_page_item > a:hover {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .cta1-btn:hover { background: rgba(255,255,255,0.1); color: #fff !important; }
+
+        /* SUBMENÜ */
+        .sub-menu { 
+            position: absolute; top: 100%; left: 0; background: #1a1a1a !important; /* DARK MODE ANPASSUNG */
+            min-width: 240px; border-radius: 0; 
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5); 
+            opacity: 0; visibility: hidden; 
+            transform: translateY(8px) scale(0.98); 
+            transform-origin: top left;
+            transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.2s; 
+            padding: 8px; list-style: none; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            z-index: 10000; margin-top: -10px; 
+        }
+        .nav-menu li:hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) scale(1) !important; }
+        .sub-menu li { height: auto !important; width: 100%; display: block !important; }
+        .sub-menu li a { 
+            display: flex !important; align-items: center; padding: 11px 14px; 
+            text-transform: uppercase; /* CAPSLOCK ANPASSUNG */
+            text-decoration: none; color: #ffffff !important; font-size: 14px; 
+            font-weight: 500;
+            border-radius: 0; 
+            transition: background 0.2s ease, padding-left 0.2s ease; 
+        }
+        .sub-menu li a:hover { background: rgba(255,255,255,0.08); padding-left: 18px; }
+        
+        .menu-icon-img { width: 18px; height: 18px; margin-right: 12px; object-fit: contain; filter: brightness(0) invert(1); flex-shrink: 0; }
+        .menu-icon-right { width: 18px; height: 18px; margin-left: 8px; object-fit: contain; filter: brightness(0) invert(1); }
+
+        /* DYN BUTTON (Bild) */
+        .cta-dyn-btn {
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+            height: 44px;
+            line-height: 0;
+            text-decoration: none;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+        .cta-dyn-btn img {
+            height: 44px;
+            width: auto;
+            max-width: min(180px, 22vw);
+            display: block;
+            object-fit: contain;
+        }
+        .custom-navigation.shrunk .cta-dyn-btn,
+        .custom-navigation.shrunk .cta-dyn-btn img {
+            height: 38px;
+        }
+        .cta-dyn-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.92;
+        }
+
+        /* CTA BUTTON 2 */
+        .cta-button-stylized {
+          display: inline-flex;
+          align-items: center;
+          gap: clamp(4px, 0.8vw, 10px);
+          height: 44px;
+          padding: 2px clamp(8px, 1.2vw, 18px) 2px clamp(4px, 0.6vw, 6px);
+          border-radius: 0;
+          text-decoration: none;
+          text-transform: uppercase; /* CAPSLOCK ANPASSUNG */
+          font-weight: 600;
+          font-size: clamp(12px, 1.1vw, 14px);
+          color: #fff !important;
+          background-color: #D70000 !important;
+          border: 1px solid transparent;
+          transition: background-color 0.3s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+          position: relative;
+          overflow: hidden;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .cta-button-stylized::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 50%;
+          height: 100%;
+          background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+          transition: 0.6s ease;
+        }
+
+        .cta-button-stylized:hover {
+          background: #ff2222 !important;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta-button-stylized:active {
+          transform: translateY(0);
+        }
+
+        .cta-button-stylized:hover::before {
+          left: 150%;
+        }
+
+        .cta-button-stylized span {
+          position: relative;
+          z-index: 2;
+        }
+
+        .cta-icon-wrapper {
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 8px;
+        }
+
+        .cta-icon-wrapper img {
+          width: 100%;
+          height: auto;
+          transition: opacity 0.3s ease;
+          filter: invert(1); /* DARK MODE ANPASSUNG */
+        }
+
+        .icon-hover { display: none; }
+        .cta-button-stylized:hover .icon-normal { display: none; }
+        .cta-button-stylized:hover .icon-hover { display: block; }
+
+        /* CTA 1 */
+        .cta1-btn { border: 1px solid rgba(255,255,255,0.2); }
+        .cta1-btn:hover { border-color: rgba(255,255,255,0.4); }
+        
+        /* Mobil & Tablet Ausblenden */
+        @media (max-width: 1024px) {
+            .custom-navigation {
+                display: none !important;
+            }
+        }        
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const nav = document.getElementById("navbar");
+            const updateNav = () => {
+                if (window.scrollY > 40) nav.classList.add("shrunk");
+                else nav.classList.remove("shrunk");
+            };
+            window.addEventListener("scroll", updateNav);
+            updateNav();
+        });
+    </script>
+    <?php
+    return ob_get_clean();
+}
+
+add_action('wp_nav_menu_item_custom_fields', function($item_id) {
+    $type = get_post_meta($item_id, '_menu_item_cta_type', true) ?: 'none';
+    ?>
+    <p class="description-wide">
+        <label>CTA-Typ<br>
+            <select name="menu_item_cta_type[<?php echo $item_id; ?>]">
+                <option value="none" <?php selected($type, 'none'); ?>>Normal</option>
+                <option value="cta1" <?php selected($type, 'cta1'); ?>>CTA 1</option>
+                <option value="cta2" <?php selected($type, 'cta2'); ?>>CTA 2</option>
+            </select>
+        </label>
+    </p>
+    <?php
+}, 11, 1);
+
+add_action('wp_update_nav_menu_item', function($menu_id, $menu_item_db_id) {
+    if (isset($_POST['menu_item_cta_type'][$menu_item_db_id])) {
+        update_post_meta($menu_item_db_id, '_menu_item_cta_type', $_POST['menu_item_cta_type'][$menu_item_db_id]);
+    }
+}, 10, 2);
+
+add_action('after_setup_theme', function() {
+    register_nav_menu('primary', __('Primary Menu', 'header-manager'));
+});

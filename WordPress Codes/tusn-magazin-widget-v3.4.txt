@@ -1,0 +1,1824 @@
+<?php
+/**
+ * Plugin Name: TuS N-Lübbecke Magazin
+ * Description: PDF-Magazin mit Umblätter-Animation (Desktop) bzw. Seitenwechsler (Mobile), Zoom und Archiv. Shortcode [magazin].
+ * Version: 3.5
+ * Author: Rocketory / Nicolas Zhigalov
+ * Author URI: https://rocketory.de
+ * Text Domain: tusn-magazin
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+define( 'TUSN_MAGAZIN_OPTION', 'tusn_magazin_settings' );
+
+function tusn_magazin_defaults() {
+	return array(
+		'pdf_id'  => 0,
+		'pdf_url' => '',
+		'title'   => '',
+		'history' => array(),
+	);
+}
+
+function tusn_magazin_get_settings() {
+	$saved = get_option( TUSN_MAGAZIN_OPTION, array() );
+	if ( ! is_array( $saved ) ) {
+		$saved = array();
+	}
+
+	$settings = wp_parse_args( $saved, tusn_magazin_defaults() );
+	if ( ! is_array( $settings['history'] ) ) {
+		$settings['history'] = array();
+	}
+
+	$settings['history'] = tusn_magazin_normalize_history( $settings['history'] );
+
+	return $settings;
+}
+
+function tusn_magazin_normalize_history( $history ) {
+	if ( ! is_array( $history ) ) {
+		return array();
+	}
+
+	$normalized = array();
+
+	foreach ( $history as $entry ) {
+		if ( ! is_array( $entry ) ) {
+			continue;
+		}
+
+		$pdf_id  = intval( $entry['pdf_id'] ?? 0 );
+		$pdf_url = isset( $entry['pdf_url'] ) ? esc_url_raw( $entry['pdf_url'] ) : '';
+
+		if ( $pdf_id > 0 ) {
+			$attachment_url = wp_get_attachment_url( $pdf_id );
+			if ( $attachment_url ) {
+				$pdf_url = esc_url_raw( $attachment_url );
+			} else {
+				$pdf_id = 0;
+			}
+		}
+
+		if ( ! $pdf_url ) {
+			continue;
+		}
+
+		$key = isset( $entry['key'] ) ? sanitize_key( $entry['key'] ) : '';
+		if ( ! $key ) {
+			$key = 'hist_' . wp_generate_password( 8, false, false );
+		}
+
+		$normalized[] = array(
+			'key'     => $key,
+			'pdf_id'  => $pdf_id,
+			'pdf_url' => $pdf_url,
+			'title'   => isset( $entry['title'] ) ? sanitize_text_field( $entry['title'] ) : '',
+			'date'    => isset( $entry['date'] ) ? intval( $entry['date'] ) : time(),
+		);
+	}
+
+	usort(
+		$normalized,
+		function ( $a, $b ) {
+			return intval( $b['date'] ) <=> intval( $a['date'] );
+		}
+	);
+
+	return $normalized;
+}
+
+function tusn_magazin_get_pdf_url( $settings = null ) {
+	if ( null === $settings ) {
+		$settings = tusn_magazin_get_settings();
+	}
+
+	$pdf_id = intval( $settings['pdf_id'] ?? 0 );
+	if ( $pdf_id > 0 ) {
+		$url = wp_get_attachment_url( $pdf_id );
+		if ( $url ) {
+			return $url;
+		}
+	}
+
+	$url = isset( $settings['pdf_url'] ) ? esc_url_raw( $settings['pdf_url'] ) : '';
+	return $url ? $url : '';
+}
+
+function tusn_magazin_get_pdf_label( $pdf_id, $pdf_url, $title = '' ) {
+	if ( $title ) {
+		return $title;
+	}
+
+	if ( $pdf_id > 0 ) {
+		$filename = basename( get_attached_file( $pdf_id ) );
+		if ( $filename ) {
+			return $filename;
+		}
+	}
+
+	if ( $pdf_url ) {
+		return basename( wp_parse_url( $pdf_url, PHP_URL_PATH ) );
+	}
+
+	return __( 'Magazin-Ausgabe', 'tusn-magazin' );
+}
+
+function tusn_magazin_history_has_pdf( $history, $pdf_id, $pdf_url ) {
+	foreach ( $history as $entry ) {
+		if ( $pdf_id > 0 && intval( $entry['pdf_id'] ?? 0 ) === $pdf_id ) {
+			return true;
+		}
+		if ( $pdf_url && ! empty( $entry['pdf_url'] ) && $entry['pdf_url'] === $pdf_url ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function tusn_magazin_create_history_entry( $pdf_id, $pdf_url, $title = '' ) {
+	return array(
+		'key'     => 'hist_' . wp_generate_password( 8, false, false ),
+		'pdf_id'  => intval( $pdf_id ),
+		'pdf_url' => esc_url_raw( $pdf_url ),
+		'title'   => sanitize_text_field( $title ),
+		'date'    => time(),
+	);
+}
+
+function tusn_magazin_get_editions( $settings = null ) {
+	if ( null === $settings ) {
+		$settings = tusn_magazin_get_settings();
+	}
+
+	$editions = array();
+	$current_url = tusn_magazin_get_pdf_url( $settings );
+
+	if ( $current_url ) {
+		$editions[] = array(
+			'key'   => 'current',
+			'pdf'   => $current_url,
+			'title' => tusn_magazin_get_pdf_label(
+				intval( $settings['pdf_id'] ?? 0 ),
+				$current_url,
+				$settings['title'] ?? ''
+			),
+			'date'  => time(),
+		);
+	}
+
+	foreach ( $settings['history'] as $entry ) {
+		$editions[] = array(
+			'key'   => $entry['key'],
+			'pdf'   => $entry['pdf_url'],
+			'title' => tusn_magazin_get_pdf_label(
+				intval( $entry['pdf_id'] ?? 0 ),
+				$entry['pdf_url'],
+				$entry['title'] ?? ''
+			),
+			'date'  => intval( $entry['date'] ?? 0 ),
+		);
+	}
+
+	return $editions;
+}
+
+/* ---------------------------------------------------------
+   ADMIN
+--------------------------------------------------------- */
+
+add_action( 'admin_menu', 'tusn_magazin_admin_menu' );
+function tusn_magazin_admin_menu() {
+	add_menu_page(
+		__( 'Magazin', 'tusn-magazin' ),
+		__( 'Magazin', 'tusn-magazin' ),
+		'manage_options',
+		'tusn-magazin',
+		'tusn_magazin_admin_page',
+		'dashicons-book-alt',
+		59
+	);
+}
+
+add_action( 'admin_enqueue_scripts', 'tusn_magazin_admin_assets' );
+function tusn_magazin_admin_assets( $hook ) {
+	if ( 'toplevel_page_tusn-magazin' !== $hook ) {
+		return;
+	}
+
+	wp_enqueue_media();
+	wp_enqueue_script( 'jquery' );
+	add_action( 'admin_footer', 'tusn_magazin_admin_js' );
+}
+
+function tusn_magazin_admin_js() {
+	?>
+	<script>
+	jQuery(function ($) {
+		var frame;
+
+		function setPdfSelection(id, url, title) {
+			$('#tusn_magazin_pdf_id').val(id || 0);
+			$('#tusn_magazin_pdf_url').val(url || '');
+			$('#tusn-magazin-pdf-name').text(title || '<?php echo esc_js( __( 'Keine PDF ausgewählt', 'tusn-magazin' ) ); ?>');
+			$('#tusn-magazin-remove-pdf').toggle(!!url);
+		}
+
+		$('#tusn-magazin-select-pdf').on('click', function (e) {
+			e.preventDefault();
+
+			if (frame) {
+				frame.open();
+				return;
+			}
+
+			frame = wp.media({
+				title: '<?php echo esc_js( __( 'PDF für Magazin auswählen', 'tusn-magazin' ) ); ?>',
+				button: { text: '<?php echo esc_js( __( 'PDF verwenden', 'tusn-magazin' ) ); ?>' },
+				library: { type: 'application/pdf' },
+				multiple: false
+			});
+
+			frame.on('select', function () {
+				var attachment = frame.state().get('selection').first().toJSON();
+				setPdfSelection(attachment.id, attachment.url, attachment.filename || attachment.title);
+			});
+
+			frame.open();
+		});
+
+		$('#tusn-magazin-remove-pdf').on('click', function (e) {
+			e.preventDefault();
+			setPdfSelection(0, '', '');
+		});
+	});
+	</script>
+	<?php
+}
+
+function tusn_magazin_admin_page() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	$settings = tusn_magazin_get_settings();
+
+	if ( isset( $_GET['tusn_magazin_delete'] ) && isset( $_GET['key'] ) ) {
+		$delete_key = sanitize_key( wp_unslash( $_GET['key'] ) );
+		check_admin_referer( 'tusn_magazin_delete_' . $delete_key );
+
+		$settings['history'] = array_values(
+			array_filter(
+				$settings['history'],
+				function ( $entry ) use ( $delete_key ) {
+					return ( $entry['key'] ?? '' ) !== $delete_key;
+				}
+			)
+		);
+
+		update_option( TUSN_MAGAZIN_OPTION, $settings );
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Ausgabe aus dem Archiv entfernt.', 'tusn-magazin' ) . '</p></div>';
+	}
+
+	if ( isset( $_POST['tusn_magazin_save'] ) && check_admin_referer( 'tusn_magazin_save', 'tusn_magazin_nonce' ) ) {
+		$old_settings = $settings;
+		$old_pdf_id   = intval( $old_settings['pdf_id'] ?? 0 );
+		$old_pdf_url  = tusn_magazin_get_pdf_url( $old_settings );
+		$history      = $old_settings['history'];
+
+		$pdf_id  = isset( $_POST['pdf_id'] ) ? intval( $_POST['pdf_id'] ) : 0;
+		$pdf_url = '';
+
+		if ( $pdf_id > 0 ) {
+			$attachment_url = wp_get_attachment_url( $pdf_id );
+			if ( $attachment_url ) {
+				$pdf_url = esc_url_raw( $attachment_url );
+			} else {
+				$pdf_id = 0;
+			}
+		}
+
+		$new_title = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
+
+		if ( $pdf_id > 0 && $old_pdf_id > 0 && $pdf_id !== $old_pdf_id && $old_pdf_url ) {
+			if ( ! tusn_magazin_history_has_pdf( $history, $old_pdf_id, $old_pdf_url ) ) {
+				$history[] = tusn_magazin_create_history_entry(
+					$old_pdf_id,
+					$old_pdf_url,
+					$old_settings['title'] ?? ''
+				);
+			}
+		}
+
+		if ( $pdf_id > 0 && $pdf_url ) {
+			$history = array_values(
+				array_filter(
+					$history,
+					function ( $entry ) use ( $pdf_id, $pdf_url ) {
+						$entry_id  = intval( $entry['pdf_id'] ?? 0 );
+						$entry_url = $entry['pdf_url'] ?? '';
+						if ( $entry_id > 0 && $entry_id === $pdf_id ) {
+							return false;
+						}
+						if ( $entry_url && $entry_url === $pdf_url ) {
+							return false;
+						}
+						return true;
+					}
+				)
+			);
+		}
+
+		$settings = array(
+			'pdf_id'  => $pdf_id,
+			'pdf_url' => $pdf_url,
+			'title'   => $new_title,
+			'history' => tusn_magazin_normalize_history( $history ),
+		);
+
+		update_option( TUSN_MAGAZIN_OPTION, $settings );
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Magazin gespeichert.', 'tusn-magazin' ) . '</p></div>';
+	}
+
+	$pdf_url      = tusn_magazin_get_pdf_url( $settings );
+	$pdf_filename = tusn_magazin_get_pdf_label(
+		intval( $settings['pdf_id'] ?? 0 ),
+		$pdf_url,
+		''
+	);
+	?>
+	<div class="wrap tusn-magazin-admin">
+		<h1><?php esc_html_e( 'Magazin', 'tusn-magazin' ); ?></h1>
+		<p><?php esc_html_e( 'Laden Sie hier die aktuelle Magazin-PDF hoch. Beim Austausch wandert die bisherige Ausgabe automatisch ins Archiv. Im Frontend werden alle Ausgaben als Cover-Vorschau angezeigt.', 'tusn-magazin' ); ?></p>
+
+		<form method="post">
+			<?php wp_nonce_field( 'tusn_magazin_save', 'tusn_magazin_nonce' ); ?>
+
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><label for="tusn_magazin_title"><?php esc_html_e( 'Titel (optional)', 'tusn-magazin' ); ?></label></th>
+					<td>
+						<input type="text" class="regular-text" id="tusn_magazin_title" name="title" value="<?php echo esc_attr( $settings['title'] ); ?>" placeholder="<?php esc_attr_e( 'z. B. Vereinsmagazin 2026', 'tusn-magazin' ); ?>">
+						<p class="description"><?php esc_html_e( 'Wird oberhalb des Magazins und in der Cover-Vorschau angezeigt.', 'tusn-magazin' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Aktuelle PDF', 'tusn-magazin' ); ?></th>
+					<td>
+						<input type="hidden" id="tusn_magazin_pdf_id" name="pdf_id" value="<?php echo esc_attr( intval( $settings['pdf_id'] ) ); ?>">
+						<input type="hidden" id="tusn_magazin_pdf_url" name="pdf_url" value="<?php echo esc_attr( $pdf_url ); ?>">
+						<p><strong id="tusn-magazin-pdf-name"><?php echo esc_html( $pdf_url ? $pdf_filename : __( 'Keine PDF ausgewählt', 'tusn-magazin' ) ); ?></strong></p>
+						<p>
+							<button type="button" class="button button-secondary" id="tusn-magazin-select-pdf"><?php esc_html_e( 'PDF auswählen / hochladen', 'tusn-magazin' ); ?></button>
+							<button type="button" class="button-link-delete" id="tusn-magazin-remove-pdf" <?php echo $pdf_url ? '' : 'style="display:none;"'; ?>><?php esc_html_e( 'PDF entfernen', 'tusn-magazin' ); ?></button>
+						</p>
+						<?php if ( $pdf_url ) : ?>
+							<p><a href="<?php echo esc_url( $pdf_url ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'PDF im Browser öffnen', 'tusn-magazin' ); ?></a></p>
+						<?php endif; ?>
+					</td>
+				</tr>
+			</table>
+
+			<?php submit_button( __( 'Speichern', 'tusn-magazin' ), 'primary', 'tusn_magazin_save' ); ?>
+		</form>
+
+		<?php if ( ! empty( $settings['history'] ) ) : ?>
+			<hr>
+			<h2><?php esc_html_e( 'Archiv – frühere Ausgaben', 'tusn-magazin' ); ?></h2>
+			<p><?php esc_html_e( 'Diese PDFs wurden durch eine neue Ausgabe ersetzt und erscheinen im Frontend als weitere Cover.', 'tusn-magazin' ); ?></p>
+
+			<table class="widefat striped tusn-magazin-history-table">
+				<thead>
+					<tr>
+						<th scope="col"><?php esc_html_e( 'Titel / Datei', 'tusn-magazin' ); ?></th>
+						<th scope="col"><?php esc_html_e( 'Archiviert am', 'tusn-magazin' ); ?></th>
+						<th scope="col"><?php esc_html_e( 'PDF', 'tusn-magazin' ); ?></th>
+						<th scope="col" style="width:120px;"><?php esc_html_e( 'Aktion', 'tusn-magazin' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ( $settings['history'] as $entry ) : ?>
+						<?php
+						$entry_label = tusn_magazin_get_pdf_label(
+							intval( $entry['pdf_id'] ?? 0 ),
+							$entry['pdf_url'] ?? '',
+							$entry['title'] ?? ''
+						);
+						$delete_url  = wp_nonce_url(
+							add_query_arg(
+								array(
+									'page'                 => 'tusn-magazin',
+									'tusn_magazin_delete'  => '1',
+									'key'                  => $entry['key'],
+								),
+								admin_url( 'admin.php' )
+							),
+							'tusn_magazin_delete_' . $entry['key']
+						);
+						?>
+						<tr>
+							<td><strong><?php echo esc_html( $entry_label ); ?></strong></td>
+							<td><?php echo esc_html( wp_date( get_option( 'date_format' ), intval( $entry['date'] ?? 0 ) ) ); ?></td>
+							<td><a href="<?php echo esc_url( $entry['pdf_url'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Öffnen', 'tusn-magazin' ); ?></a></td>
+							<td>
+								<a href="<?php echo esc_url( $delete_url ); ?>" class="submitdelete" onclick="return confirm('<?php echo esc_js( __( 'Diese Ausgabe aus dem Archiv entfernen?', 'tusn-magazin' ) ); ?>');">
+									<?php esc_html_e( 'Löschen', 'tusn-magazin' ); ?>
+								</a>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		<?php endif; ?>
+
+		<hr>
+		<h2><?php esc_html_e( 'Shortcode', 'tusn-magazin' ); ?></h2>
+		<p><?php esc_html_e( 'Fügen Sie den folgenden Shortcode in eine Seite oder einen Beitrag ein (z. B. in Elementor):', 'tusn-magazin' ); ?></p>
+		<input type="text" readonly value="[magazin]" class="large-text code" onclick="this.select();" style="max-width:320px;">
+	</div>
+	<?php
+}
+
+/* ---------------------------------------------------------
+   FRONTEND
+--------------------------------------------------------- */
+
+add_shortcode( 'magazin', 'tusn_magazin_shortcode' );
+function tusn_magazin_shortcode( $atts ) {
+	$atts = shortcode_atts(
+		array(
+			'pdf' => '',
+		),
+		$atts,
+		'magazin'
+	);
+
+	$settings       = tusn_magazin_get_settings();
+	$pdf_url        = $atts['pdf'] ? esc_url_raw( $atts['pdf'] ) : tusn_magazin_get_pdf_url( $settings );
+	$title          = $settings['title'] ?? '';
+	$active_key     = 'current';
+	$past_editions  = array();
+
+	foreach ( $settings['history'] as $entry ) {
+		$past_editions[] = array(
+			'key'   => $entry['key'],
+			'pdf'   => $entry['pdf_url'],
+			'title' => tusn_magazin_get_pdf_label(
+				intval( $entry['pdf_id'] ?? 0 ),
+				$entry['pdf_url'] ?? '',
+				$entry['title'] ?? ''
+			),
+			'date'  => intval( $entry['date'] ?? 0 ),
+		);
+	}
+
+	if ( $atts['pdf'] ) {
+		$past_editions = array();
+	}
+
+	if ( ! $pdf_url ) {
+		return current_user_can( 'manage_options' )
+			? '<p><em>' . esc_html__( 'Magazin: Bitte im Backend unter „Magazin“ eine PDF hochladen.', 'tusn-magazin' ) . '</em></p>'
+			: '';
+	}
+
+	tusn_magazin_enqueue_assets();
+
+	$instance_id = 'tusn-magazin-' . wp_unique_id();
+
+	ob_start();
+	?>
+	<div
+		class="tusn-magazin"
+		id="<?php echo esc_attr( $instance_id ); ?>"
+		data-pdf="<?php echo esc_url( $pdf_url ); ?>"
+		data-active="<?php echo esc_attr( $active_key ); ?>"
+		data-state="loading"
+	>
+		<?php if ( $title ) : ?>
+			<h2 class="tusn-magazin__title"><?php echo esc_html( $title ); ?></h2>
+		<?php endif; ?>
+
+		<div class="tusn-magazin__stage" aria-live="polite">
+			<div class="tusn-magazin__loader">
+				<span class="tusn-magazin__loader-spinner" aria-hidden="true"></span>
+				<span class="tusn-magazin__loader-text"><?php esc_html_e( 'Magazin wird geladen …', 'tusn-magazin' ); ?></span>
+			</div>
+			<div class="tusn-magazin__zoom-viewport">
+				<div class="tusn-magazin__zoom-layer">
+					<div class="tusn-magazin__viewer" aria-hidden="true"></div>
+				</div>
+			</div>
+			<p class="tusn-magazin__error" role="alert"></p>
+		</div>
+
+		<div class="tusn-magazin__controls">
+			<div class="tusn-magazin__controls-nav">
+				<button type="button" class="tusn-magazin__btn tusn-magazin__btn--prev" aria-label="<?php esc_attr_e( 'Vorherige Seite', 'tusn-magazin' ); ?>">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				</button>
+				<span class="tusn-magazin__status">
+					<span class="tusn-magazin__page-current">1</span>
+					<span class="tusn-magazin__page-sep">/</span>
+					<span class="tusn-magazin__page-total">1</span>
+				</span>
+				<button type="button" class="tusn-magazin__btn tusn-magazin__btn--next" aria-label="<?php esc_attr_e( 'Nächste Seite', 'tusn-magazin' ); ?>">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				</button>
+			</div>
+			<div class="tusn-magazin__controls-tools">
+				<button type="button" class="tusn-magazin__btn tusn-magazin__btn--zoom-out" aria-label="<?php esc_attr_e( 'Verkleinern', 'tusn-magazin' ); ?>" title="<?php esc_attr_e( 'Verkleinern', 'tusn-magazin' ); ?>">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 11h6M21 21l-4.3-4.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+				</button>
+				<span class="tusn-magazin__zoom-label" aria-live="polite">100%</span>
+				<button type="button" class="tusn-magazin__btn tusn-magazin__btn--zoom-in" aria-label="<?php esc_attr_e( 'Vergrößern', 'tusn-magazin' ); ?>" title="<?php esc_attr_e( 'Vergrößern', 'tusn-magazin' ); ?>">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 8v6M8 11h6M21 21l-4.3-4.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+				</button>
+				<button type="button" class="tusn-magazin__btn tusn-magazin__btn--download" aria-label="<?php esc_attr_e( 'PDF öffnen', 'tusn-magazin' ); ?>" title="<?php esc_attr_e( 'PDF öffnen', 'tusn-magazin' ); ?>">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 11l4 4 4-4M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				</button>
+			</div>
+		</div>
+
+		<p class="tusn-magazin__hint"><?php esc_html_e( 'Zum Blättern wischen oder klicken. Zoomen über +/− oder Strg + Mausrad.', 'tusn-magazin' ); ?></p>
+
+		<?php if ( ! empty( $past_editions ) ) : ?>
+			<button type="button" class="tusn-magazin__back-current" hidden>
+				<?php esc_html_e( 'Zur aktuellen Ausgabe', 'tusn-magazin' ); ?>
+			</button>
+
+			<div class="tusn-magazin__archive" aria-label="<?php esc_attr_e( 'Frühere Magazin-Ausgaben', 'tusn-magazin' ); ?>">
+				<h3 class="tusn-magazin__archive-title"><?php esc_html_e( 'Frühere Ausgaben', 'tusn-magazin' ); ?></h3>
+				<div class="tusn-magazin__archive-grid">
+					<?php foreach ( $past_editions as $edition ) : ?>
+						<button
+							type="button"
+							class="tusn-magazin__archive-item"
+							data-edition-key="<?php echo esc_attr( $edition['key'] ); ?>"
+							data-edition-pdf="<?php echo esc_url( $edition['pdf'] ); ?>"
+							aria-pressed="false"
+						>
+							<span class="tusn-magazin__archive-cover" aria-hidden="true">
+								<span class="tusn-magazin__archive-cover-loader"></span>
+							</span>
+							<span class="tusn-magazin__archive-label"><?php echo esc_html( $edition['title'] ); ?></span>
+						</button>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		<?php endif; ?>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+
+function tusn_magazin_enqueue_assets() {
+	static $done = false;
+	if ( $done ) {
+		return;
+	}
+	$done = true;
+
+	wp_enqueue_script(
+		'pdfjs',
+		'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+		array(),
+		'3.11.174',
+		true
+	);
+
+	wp_enqueue_script(
+		'st-page-flip',
+		'https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js',
+		array(),
+		'2.0.7',
+		true
+	);
+
+	wp_register_script(
+		'tusn-magazin',
+		false,
+		array( 'pdfjs', 'st-page-flip' ),
+		'3.0',
+		true
+	);
+	wp_enqueue_script( 'tusn-magazin' );
+	wp_add_inline_script( 'tusn-magazin', tusn_magazin_frontend_js() );
+	add_action( 'wp_footer', 'tusn_magazin_print_styles', 20 );
+}
+
+function tusn_magazin_print_styles() {
+	static $done = false;
+	if ( $done ) {
+		return;
+	}
+	$done = true;
+	?>
+	<style>
+		.tusn-magazin {
+			--tusn-magazin-accent: #D70000;
+			--tusn-magazin-bg: #0f0f0f;
+			--tusn-magazin-text: #f5f5f5;
+			--tusn-magazin-muted: #a3a3a3;
+			max-width: 1100px;
+			margin: 0 auto;
+			padding: 24px 16px 32px;
+			color: var(--tusn-magazin-text);
+		}
+		.tusn-magazin button {
+			background-image: none !important;
+		}
+		.tusn-magazin__title {
+			margin: 0 0 20px;
+			text-align: center;
+			font-size: clamp(1.4rem, 2.5vw, 2rem);
+			font-weight: 800;
+			color: #fff;
+		}
+		.tusn-magazin__archive {
+			margin-top: 32px;
+			padding-top: 28px;
+			border-top: 1px solid rgba(255,255,255,0.08);
+		}
+		.tusn-magazin__back-current {
+			display: block;
+			margin: 20px auto 0;
+			padding: 10px 18px;
+			border: 1px solid rgba(255,255,255,0.2) !important;
+			background: #1a1a1a !important;
+			background-image: none !important;
+			color: #fff !important;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: border-color .15s ease, background-color .15s ease;
+		}
+		.tusn-magazin__back-current:hover,
+		.tusn-magazin__back-current:focus,
+		.tusn-magazin__back-current:active {
+			background: #242424 !important;
+			background-image: none !important;
+			border-color: var(--tusn-magazin-accent) !important;
+			color: #fff !important;
+		}
+		.tusn-magazin__back-current[hidden] {
+			display: none !important;
+		}
+		.tusn-magazin__archive-title {
+			margin: 0 0 14px;
+			font-size: 1rem;
+			font-weight: 700;
+			color: #fff;
+			text-align: center;
+		}
+		.tusn-magazin__archive-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+			gap: 16px;
+		}
+		.tusn-magazin__archive-item {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 10px;
+			padding: 10px;
+			border: 1px solid rgba(255,255,255,0.12) !important;
+			background: #161616 !important;
+			background-image: none !important;
+			color: #fff !important;
+			cursor: pointer;
+			text-align: left;
+			box-shadow: none !important;
+			transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+		}
+		.tusn-magazin__archive-item:hover,
+		.tusn-magazin__archive-item:focus,
+		.tusn-magazin__archive-item:active {
+			border-color: rgba(255,255,255,0.28) !important;
+			background: #1f1f1f !important;
+			background-image: none !important;
+			color: #fff !important;
+			transform: translateY(-2px);
+			box-shadow: none !important;
+		}
+		.tusn-magazin__archive-item.is-active,
+		.tusn-magazin__archive-item.is-active:hover,
+		.tusn-magazin__archive-item.is-active:focus,
+		.tusn-magazin__archive-item.is-active:active {
+			border-color: var(--tusn-magazin-accent) !important;
+			background: #161616 !important;
+			background-image: none !important;
+			box-shadow: 0 0 0 1px var(--tusn-magazin-accent) !important;
+			color: #fff !important;
+		}
+		.tusn-magazin__archive-cover {
+			position: relative;
+			display: block;
+			aspect-ratio: 3 / 4;
+			background: #fff;
+			overflow: hidden;
+		}
+		.tusn-magazin__archive-cover img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+		.tusn-magazin__archive-cover-loader {
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(90deg, #ececec 25%, #f8f8f8 50%, #ececec 75%);
+			background-size: 200% 100%;
+			animation: tusnMagazinShimmer 1.2s ease infinite;
+		}
+		.tusn-magazin__archive-item.is-cover-ready .tusn-magazin__archive-cover-loader {
+			display: none;
+		}
+		@keyframes tusnMagazinShimmer {
+			0% { background-position: 200% 0; }
+			100% { background-position: -200% 0; }
+		}
+		.tusn-magazin__archive-label {
+			font-size: 13px;
+			line-height: 1.35;
+			font-weight: 600;
+			color: #f5f5f5;
+			word-break: break-word;
+		}
+		.tusn-magazin__stage {
+			position: relative;
+			min-height: 420px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: var(--tusn-magazin-bg);
+			border: 1px solid rgba(255,255,255,0.08);
+			padding: 24px 12px;
+			overflow: hidden;
+			overscroll-behavior-x: none;
+		}
+		.tusn-magazin__zoom-viewport {
+			position: relative;
+			width: 100%;
+			min-height: 360px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+			touch-action: manipulation;
+		}
+		.tusn-magazin.is-zoomed .tusn-magazin__zoom-viewport {
+			cursor: grab;
+			touch-action: none;
+			overflow: hidden;
+		}
+		.tusn-magazin.is-zoomed.is-panning .tusn-magazin__zoom-viewport {
+			cursor: grabbing;
+		}
+		.tusn-magazin__zoom-layer {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transform-origin: center center;
+			will-change: transform;
+			transition: transform .18s ease;
+		}
+		.tusn-magazin.is-panning .tusn-magazin__zoom-layer {
+			transition: none;
+		}
+		.tusn-magazin.is-zoomed .tusn-magazin__book,
+		.tusn-magazin.is-zoomed .tusn-magazin__page-img {
+			pointer-events: none;
+		}
+		.tusn-magazin__zoom-label {
+			min-width: 52px;
+			text-align: center;
+			font-size: 13px;
+			font-weight: 700;
+			font-variant-numeric: tabular-nums;
+			color: var(--tusn-magazin-muted);
+		}
+		.tusn-magazin__loader {
+			position: absolute;
+			inset: 0;
+			z-index: 5;
+			display: none;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 14px;
+			color: var(--tusn-magazin-muted);
+			font-size: 14px;
+			background: var(--tusn-magazin-bg);
+		}
+		.tusn-magazin[data-state="loading"] .tusn-magazin__loader {
+			display: flex;
+		}
+		.tusn-magazin[data-state="loading"] .tusn-magazin__viewer,
+		.tusn-magazin[data-state="loading"] .tusn-magazin__controls {
+			visibility: hidden;
+			pointer-events: none;
+		}
+		.tusn-magazin[data-state="ready"] .tusn-magazin__viewer {
+			visibility: visible;
+		}
+		.tusn-magazin[data-state="ready"] .tusn-magazin__controls {
+			display: flex;
+		}
+		.tusn-magazin[data-state="error"] .tusn-magazin__loader {
+			display: none;
+		}
+		.tusn-magazin[data-state="error"] .tusn-magazin__error {
+			display: block;
+		}
+		.tusn-magazin__loader-spinner {
+			width: 34px;
+			height: 34px;
+			border: 3px solid rgba(255,255,255,0.15);
+			border-top-color: var(--tusn-magazin-accent);
+			border-radius: 50%;
+			animation: tusnMagazinSpin .8s linear infinite;
+		}
+		@keyframes tusnMagazinSpin { to { transform: rotate(360deg); } }
+		.tusn-magazin__viewer {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.tusn-magazin__page-img {
+			display: block;
+			width: 100%;
+			max-width: 100%;
+			height: auto;
+			background: #fff;
+			box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+			user-select: none;
+			-webkit-user-drag: none;
+		}
+		.tusn-magazin__book {
+			max-width: 100%;
+			box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+			touch-action: none;
+		}
+		.tusn-magazin__book .page,
+		.tusn-magazin__book .page img {
+			touch-action: none;
+		}
+		.tusn-magazin__book .page {
+			background: #fff;
+			border: 1px solid #e5e5e5;
+		}
+		.tusn-magazin__book .page img.is-placeholder {
+			opacity: 0.35;
+			background: #f3f3f3;
+		}
+		.tusn-magazin__book .page img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			background: #fff;
+			user-select: none;
+			-webkit-user-drag: none;
+		}
+		.tusn-magazin__error {
+			display: none;
+			margin: 0;
+			padding: 16px;
+			color: #ffb4b4;
+			text-align: center;
+		}
+		.tusn-magazin__controls {
+			display: none;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: center;
+			gap: 14px 22px;
+			margin-top: 18px;
+		}
+		.tusn-magazin__controls-nav,
+		.tusn-magazin__controls-tools {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 12px;
+		}
+		.tusn-magazin__btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 46px;
+			height: 46px;
+			padding: 0;
+			border: 1px solid rgba(255,255,255,0.2) !important;
+			background: #1a1a1a !important;
+			background-image: none !important;
+			color: #fff !important;
+			cursor: pointer;
+			border-radius: 0;
+			box-shadow: none !important;
+			outline: none;
+			-webkit-appearance: none;
+			appearance: none;
+			transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+		}
+		.tusn-magazin__btn svg {
+			display: block;
+			width: 22px;
+			height: 22px;
+			flex-shrink: 0;
+			pointer-events: none;
+		}
+		.tusn-magazin__btn:hover {
+			background: var(--tusn-magazin-accent) !important;
+			background-image: none !important;
+			border-color: var(--tusn-magazin-accent) !important;
+			color: #fff !important;
+		}
+		.tusn-magazin__btn:focus,
+		.tusn-magazin__btn:active {
+			background: #1a1a1a !important;
+			background-image: none !important;
+			border-color: rgba(255,255,255,0.2) !important;
+			color: #fff !important;
+			outline: none;
+			box-shadow: none !important;
+		}
+		.tusn-magazin__btn:focus-visible {
+			outline: 2px solid rgba(255,255,255,0.85);
+			outline-offset: 2px;
+		}
+		.tusn-magazin__btn:hover:active {
+			background: var(--tusn-magazin-accent) !important;
+			background-image: none !important;
+			border-color: var(--tusn-magazin-accent) !important;
+		}
+		.tusn-magazin__btn:disabled,
+		.tusn-magazin__btn:disabled:hover {
+			opacity: 0.35;
+			cursor: not-allowed;
+			background: #1a1a1a !important;
+			background-image: none !important;
+			border-color: rgba(255,255,255,0.12) !important;
+			color: #fff !important;
+		}
+		.tusn-magazin__status {
+			min-width: 72px;
+			text-align: center;
+			font-weight: 700;
+			font-variant-numeric: tabular-nums;
+		}
+		.tusn-magazin__page-sep {
+			margin: 0 4px;
+			color: var(--tusn-magazin-muted);
+		}
+		.tusn-magazin__hint {
+			margin: 12px 0 0;
+			text-align: center;
+			font-size: 13px;
+			color: var(--tusn-magazin-muted);
+		}
+		@media (max-width: 768px) {
+			.tusn-magazin {
+				/* Volle Breite: kein seitlicher Außenabstand am Viewer */
+				padding: 12px 0 24px;
+			}
+			.tusn-magazin__title {
+				padding-left: 12px;
+				padding-right: 12px;
+			}
+			.tusn-magazin__archive {
+				padding-left: 12px;
+				padding-right: 12px;
+			}
+			.tusn-magazin__archive-grid {
+				grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+				gap: 12px;
+			}
+			.tusn-magazin__stage {
+				min-height: 360px;
+				padding: 0;
+				border-left: none;
+				border-right: none;
+				overflow: hidden;
+			}
+			.tusn-magazin__page-img {
+				box-shadow: none;
+			}
+			.tusn-magazin__controls {
+				padding-left: 8px;
+				padding-right: 8px;
+			}
+			.tusn-magazin__controls-tools {
+				flex-wrap: wrap;
+			}
+			.tusn-magazin__back-current {
+				margin-left: 12px;
+				margin-right: 12px;
+			}
+			.tusn-magazin__hint {
+				display: none;
+			}
+		}
+	</style>
+	<?php
+}
+
+function tusn_magazin_frontend_js() {
+	$load_error = esc_js( __( 'Das Magazin konnte nicht geladen werden.', 'tusn-magazin' ) );
+
+	return <<<JS
+(function () {
+	'use strict';
+
+	var CONFIG = {
+		mobileMaxWidth: 768,
+		zoomMin: 1,
+		zoomMax: 2.5,
+		zoomStep: 0.25,
+		mobileDoubleTapZoom: 1.75,
+		doubleTapMs: 320,
+		doubleTapSlop: 36,
+		batchPages: 2,
+		pdfWorker: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+	};
+
+	var STATE = {
+		LOADING: 'loading',
+		READY: 'ready',
+		ERROR: 'error'
+	};
+
+	var pdfCache = {};
+	var coverCache = {};
+
+	function clamp(value, min, max) {
+		return Math.min(max, Math.max(min, value));
+	}
+
+	function isMobileViewport() {
+		return window.matchMedia('(max-width: ' + CONFIG.mobileMaxWidth + 'px)').matches;
+	}
+
+	var PdfService = {
+		load: async function (url) {
+			if (pdfCache[url]) {
+				return pdfCache[url];
+			}
+			if (!window.pdfjsLib) {
+				throw new Error('PDF.js missing');
+			}
+			pdfjsLib.GlobalWorkerOptions.workerSrc = CONFIG.pdfWorker;
+			var task = pdfjsLib.getDocument({ url: url, withCredentials: false });
+			var pdf = await task.promise;
+			pdfCache[url] = pdf;
+			return pdf;
+		},
+		renderPage: async function (pdf, pageNum, displayWidth, pixelRatio) {
+			var page = await pdf.getPage(pageNum);
+			var baseViewport = page.getViewport({ scale: 1 });
+			var renderScale = (displayWidth * pixelRatio) / baseViewport.width;
+			var viewport = page.getViewport({ scale: renderScale });
+			var canvas = document.createElement('canvas');
+			var context = canvas.getContext('2d');
+			canvas.width = Math.floor(viewport.width);
+			canvas.height = Math.floor(viewport.height);
+			await page.render({ canvasContext: context, viewport: viewport }).promise;
+			return {
+				src: canvas.toDataURL('image/jpeg', 0.92),
+				width: Math.floor(displayWidth),
+				height: Math.floor(displayWidth * (baseViewport.height / baseViewport.width))
+			};
+		},
+		getPixelRatio: function (mobile) {
+			var dpr = window.devicePixelRatio || 1;
+			return mobile
+				? Math.min(Math.max(dpr, 2), 3)
+				: Math.min(Math.max(dpr, 1.5), 2.5);
+		},
+		renderAll: async function (pdf, displayWidth, mobile, onProgress) {
+			var total = pdf.numPages;
+			var pixelRatio = PdfService.getPixelRatio(mobile);
+			var images = [];
+			var width = 0;
+			var height = 0;
+			for (var pageNum = 1; pageNum <= total; pageNum++) {
+				var rendered = await PdfService.renderPage(pdf, pageNum, displayWidth, pixelRatio);
+				if (!width) {
+					width = rendered.width;
+					height = rendered.height;
+				}
+				images.push(rendered.src);
+				if (onProgress) {
+					onProgress(pageNum, total);
+				}
+			}
+			return { images: images, width: width, height: height, total: total };
+		},
+		renderProgressive: async function (pdf, displayWidth, mobile, hooks) {
+			hooks = hooks || {};
+			var total = pdf.numPages;
+			var pixelRatio = PdfService.getPixelRatio(mobile);
+			var batchSize = Math.max(1, CONFIG.batchPages || 2);
+			var images = [];
+			var width = 0;
+			var height = 0;
+			var pageNum;
+
+			for (pageNum = 1; pageNum <= total; pageNum++) {
+				var rendered = await PdfService.renderPage(pdf, pageNum, displayWidth, pixelRatio);
+				if (!width) {
+					width = rendered.width;
+					height = rendered.height;
+				}
+				images.push(rendered.src);
+				if (hooks.onProgress) {
+					hooks.onProgress(pageNum, total);
+				}
+
+				// Sobald ein Paar (oder der Rest am Ende) fertig ist → sofort einblenden.
+				var isBatchEnd = (images.length % batchSize === 0) || (pageNum === total);
+				if (isBatchEnd && hooks.onBatchReady) {
+					await hooks.onBatchReady({
+						images: images.slice(),
+						width: width,
+						height: height,
+						total: total,
+						ready: images.length
+					});
+				}
+			}
+
+			var completePayload = {
+				images: images,
+				width: width,
+				height: height,
+				total: total,
+				ready: images.length
+			};
+
+			if (hooks.onComplete) {
+				await hooks.onComplete(completePayload);
+			}
+
+			return completePayload;
+		},
+		renderCover: async function (url, maxWidth) {
+			if (coverCache[url]) {
+				return coverCache[url];
+			}
+			var pdf = await PdfService.load(url);
+			var rendered = await PdfService.renderPage(pdf, 1, maxWidth, 1.5);
+			coverCache[url] = rendered.src;
+			return rendered.src;
+		}
+	};
+
+	var BLANK_PAGE_SRC = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+	function MobileReader(viewer, payload) {
+		this.viewer = viewer;
+		this.images = payload.images.slice();
+		this.totalPages = payload.total || this.images.length;
+		this.index = 0;
+		this.img = null;
+	}
+
+	MobileReader.prototype.mount = function () {
+		this.viewer.innerHTML = '';
+		this.viewer.removeAttribute('aria-hidden');
+		this.img = document.createElement('img');
+		this.img.className = 'tusn-magazin__page-img';
+		this.img.alt = '';
+		this.img.src = this.images[0] || '';
+		this.viewer.appendChild(this.img);
+	};
+
+	MobileReader.prototype.destroy = function () {
+		this.viewer.innerHTML = '';
+		this.viewer.setAttribute('aria-hidden', 'true');
+		this.img = null;
+	};
+
+	MobileReader.prototype.getIndex = function () {
+		return this.index;
+	};
+
+	MobileReader.prototype.getCount = function () {
+		return this.totalPages;
+	};
+
+	MobileReader.prototype.getReadyCount = function () {
+		return this.images.length;
+	};
+
+	MobileReader.prototype.setImages = function (images, total) {
+		var visibleSrc = this.images[this.index] || '';
+		this.images = images.slice();
+		if (typeof total === 'number' && total > 0) {
+			this.totalPages = total;
+		}
+		this.index = clamp(this.index, 0, Math.max(0, this.images.length - 1));
+		var nextSrc = this.images[this.index] || '';
+		// Sichtbare Seite nicht neu setzen → kein Flackern beim Nachladen.
+		if (this.img && nextSrc && nextSrc !== visibleSrc) {
+			this.img.src = nextSrc;
+		}
+	};
+
+	MobileReader.prototype.goTo = function (nextIndex) {
+		this.index = clamp(nextIndex, 0, this.images.length - 1);
+		if (this.img && this.images[this.index]) {
+			this.img.src = this.images[this.index];
+		}
+	};
+
+	MobileReader.prototype.prev = function () {
+		this.goTo(this.index - 1);
+	};
+
+	MobileReader.prototype.next = function () {
+		this.goTo(this.index + 1);
+	};
+
+	function DesktopFlipbook(viewer, payload) {
+		this.viewer = viewer;
+		this.payload = {
+			images: payload.images.slice(),
+			width: payload.width,
+			height: payload.height,
+			total: payload.total || payload.images.length
+		};
+		this.instance = null;
+		this.onPageChange = null;
+	}
+
+	DesktopFlipbook.prototype.mount = function (onPageChange) {
+		var PageFlipCtor = (window.St && window.St.PageFlip) ? window.St.PageFlip : window.PageFlip;
+		if (!PageFlipCtor) {
+			throw new Error('PageFlip missing');
+		}
+		var self = this;
+		this.onPageChange = onPageChange || this.onPageChange;
+		this.viewer.innerHTML = '';
+		this.viewer.removeAttribute('aria-hidden');
+		var book = document.createElement('div');
+		book.className = 'tusn-magazin__book';
+		var total = Math.max(this.payload.total || 0, this.payload.images.length);
+		this.payload.total = total;
+
+		// Alle Seiten-Slots einmalig anlegen; fehlende Seiten als Placeholder.
+		// Nachladen aktualisiert nur img.src – kein Remount, kein Flackern.
+		for (var i = 0; i < total; i++) {
+			var page = document.createElement('div');
+			page.className = 'page';
+			var img = document.createElement('img');
+			img.alt = '';
+			img.setAttribute('data-page', String(i));
+			if (this.payload.images[i]) {
+				img.src = this.payload.images[i];
+			} else {
+				img.src = BLANK_PAGE_SRC;
+				img.classList.add('is-placeholder');
+			}
+			page.appendChild(img);
+			book.appendChild(page);
+		}
+		this.viewer.appendChild(book);
+		this.instance = new PageFlipCtor(book, {
+			width: this.payload.width,
+			height: this.payload.height,
+			size: 'stretch',
+			minWidth: 280,
+			maxWidth: 1400,
+			minHeight: 360,
+			maxHeight: 1400,
+			showCover: true,
+			mobileScrollSupport: false,
+			usePortrait: false,
+			autoSize: true,
+			drawShadow: true,
+			flippingTime: 700
+		});
+		this.instance.loadFromHTML(book.querySelectorAll('.page'));
+		this.instance.on('flip', function () {
+			var ready = self.getReadyCount();
+			var idx = self.getIndex();
+			if (ready > 0 && idx >= ready && typeof self.instance.turnToPage === 'function') {
+				self.instance.turnToPage(ready - 1);
+			}
+			if (self.onPageChange) {
+				self.onPageChange();
+			}
+		});
+	};
+
+	DesktopFlipbook.prototype.destroy = function () {
+		if (this.instance && typeof this.instance.destroy === 'function') {
+			try { this.instance.destroy(); } catch (e) {}
+		}
+		this.instance = null;
+		this.viewer.innerHTML = '';
+		this.viewer.setAttribute('aria-hidden', 'true');
+	};
+
+	DesktopFlipbook.prototype.getIndex = function () {
+		return this.instance ? this.instance.getCurrentPageIndex() : 0;
+	};
+
+	DesktopFlipbook.prototype.getCount = function () {
+		return this.payload.total || (this.instance ? this.instance.getPageCount() : 0);
+	};
+
+	DesktopFlipbook.prototype.getReadyCount = function () {
+		return this.payload.images.length;
+	};
+
+	DesktopFlipbook.prototype.setImages = function (images, total) {
+		var prevReady = this.payload.images.length;
+		this.payload.images = images.slice();
+		if (typeof total === 'number' && total > 0) {
+			this.payload.total = total;
+		} else {
+			this.payload.total = Math.max(this.payload.total || 0, this.payload.images.length);
+		}
+
+		if (!this.instance) {
+			this.mount(this.onPageChange);
+			return;
+		}
+
+		var imgs = this.viewer.querySelectorAll('.tusn-magazin__book .page img');
+		for (var i = prevReady; i < images.length; i++) {
+			if (!imgs[i] || !images[i]) continue;
+			imgs[i].src = images[i];
+			imgs[i].classList.remove('is-placeholder');
+		}
+	};
+
+	DesktopFlipbook.prototype.prev = function () {
+		if (this.instance) {
+			this.instance.flipPrev();
+		}
+	};
+
+	DesktopFlipbook.prototype.next = function () {
+		if (this.instance) {
+			var nextIndex = this.getIndex() + 1;
+			if (nextIndex >= this.getReadyCount()) {
+				return;
+			}
+			this.instance.flipNext();
+		}
+	};
+
+	function MagazineApp(root) {
+		this.root = root;
+		this.dom = {
+			stage: root.querySelector('.tusn-magazin__stage'),
+			loaderText: root.querySelector('.tusn-magazin__loader-text'),
+			viewer: root.querySelector('.tusn-magazin__viewer'),
+			error: root.querySelector('.tusn-magazin__error'),
+			controls: root.querySelector('.tusn-magazin__controls'),
+			btnPrev: root.querySelector('.tusn-magazin__btn--prev'),
+			btnNext: root.querySelector('.tusn-magazin__btn--next'),
+			btnZoomIn: root.querySelector('.tusn-magazin__btn--zoom-in'),
+			btnZoomOut: root.querySelector('.tusn-magazin__btn--zoom-out'),
+			btnDownload: root.querySelector('.tusn-magazin__btn--download'),
+			zoomLabel: root.querySelector('.tusn-magazin__zoom-label'),
+			pageCurrent: root.querySelector('.tusn-magazin__page-current'),
+			pageTotal: root.querySelector('.tusn-magazin__page-total'),
+			zoomLayer: root.querySelector('.tusn-magazin__zoom-layer'),
+			zoomViewport: root.querySelector('.tusn-magazin__zoom-viewport'),
+			backCurrent: root.querySelector('.tusn-magazin__back-current'),
+			archiveItems: root.querySelectorAll('.tusn-magazin__archive-item')
+		};
+		this.reader = null;
+		this.currentPdf = root.getAttribute('data-pdf') || '';
+		this.defaultPdf = this.currentPdf;
+		this.loadToken = 0;
+		this.zoom = 1;
+		this.panX = 0;
+		this.panY = 0;
+		this.isPanning = false;
+		this.panStartX = 0;
+		this.panStartY = 0;
+		this.panOriginX = 0;
+		this.panOriginY = 0;
+		this.tapStartX = 0;
+		this.tapStartY = 0;
+		this.tapMoved = false;
+		this.lastTapAt = 0;
+		this.lastTapX = 0;
+		this.lastTapY = 0;
+		this.ignoreDblClickUntil = 0;
+		this.loadError = '{$load_error}';
+	}
+
+	MagazineApp.prototype.toggleMobileZoom = function () {
+		if (this.zoom > 1.01) {
+			this.setZoom(1, false);
+		} else {
+			this.setZoom(CONFIG.mobileDoubleTapZoom, false);
+		}
+	};
+
+	MagazineApp.prototype.setState = function (state, message) {
+		this.root.setAttribute('data-state', state);
+		if (this.dom.error) {
+			this.dom.error.textContent = state === STATE.ERROR ? (message || this.loadError) : '';
+		}
+	};
+
+	MagazineApp.prototype.setLoaderText = function (text) {
+		if (this.dom.loaderText) {
+			this.dom.loaderText.textContent = text;
+		}
+	};
+
+	MagazineApp.prototype.getDisplayWidth = function () {
+		var stageWidth = this.dom.stage ? this.dom.stage.clientWidth : 0;
+		if (isMobileViewport()) {
+			// Kein Seitenabzug: Stage geht auf Mobile randlos, Bild nutzt volle Breite.
+			var mobileWidth = stageWidth > 0 ? stageWidth : window.innerWidth;
+			return Math.max(240, Math.min(mobileWidth, 520));
+		}
+		var spreadWidth = stageWidth > 80 ? stageWidth - 32 : window.innerWidth - 80;
+		return Math.max(280, Math.min(Math.floor(spreadWidth / 2), 520));
+	};
+
+	MagazineApp.prototype.destroyReader = function () {
+		if (this.reader) {
+			this.reader.destroy();
+			this.reader = null;
+		}
+	};
+
+	MagazineApp.prototype.applyZoom = function () {
+		if (!this.dom.zoomLayer) {
+			return;
+		}
+		this.dom.zoomLayer.style.transform = 'translate(' + this.panX + 'px, ' + this.panY + 'px) scale(' + this.zoom + ')';
+		this.root.classList.toggle('is-zoomed', this.zoom > 1.01);
+		if (this.dom.zoomLabel) {
+			this.dom.zoomLabel.textContent = Math.round(this.zoom * 100) + '%';
+		}
+		if (this.dom.btnZoomOut) {
+			this.dom.btnZoomOut.disabled = this.zoom <= CONFIG.zoomMin + 0.001;
+		}
+		if (this.dom.btnZoomIn) {
+			this.dom.btnZoomIn.disabled = this.zoom >= CONFIG.zoomMax - 0.001;
+		}
+	};
+
+	MagazineApp.prototype.setZoom = function (nextZoom, keepPan) {
+		this.zoom = Math.round(clamp(nextZoom, CONFIG.zoomMin, CONFIG.zoomMax) * 100) / 100;
+		if (!keepPan || this.zoom <= 1.01) {
+			this.panX = 0;
+			this.panY = 0;
+		}
+		this.applyZoom();
+	};
+
+	MagazineApp.prototype.updateControls = function () {
+		if (!this.reader) {
+			return;
+		}
+		var index = this.reader.getIndex();
+		var count = this.reader.getCount();
+		var ready = typeof this.reader.getReadyCount === 'function'
+			? this.reader.getReadyCount()
+			: count;
+		if (this.dom.pageCurrent) {
+			this.dom.pageCurrent.textContent = String(index + 1);
+		}
+		if (this.dom.pageTotal) {
+			this.dom.pageTotal.textContent = String(count);
+		}
+		if (this.dom.btnPrev) {
+			this.dom.btnPrev.disabled = index <= 0;
+		}
+		if (this.dom.btnNext) {
+			this.dom.btnNext.disabled = index >= ready - 1;
+		}
+	};
+
+	MagazineApp.prototype.setActiveEdition = function (key) {
+		var self = this;
+		this.root.setAttribute('data-active', key);
+		if (this.dom.backCurrent) {
+			this.dom.backCurrent.hidden = key === 'current';
+		}
+		this.dom.archiveItems.forEach(function (item) {
+			var isActive = key !== 'current' && item.getAttribute('data-edition-key') === key;
+			item.classList.toggle('is-active', isActive);
+			item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+		});
+	};
+
+	MagazineApp.prototype.loadArchiveCovers = function () {
+		this.dom.archiveItems.forEach(function (item) {
+			var pdfUrl = item.getAttribute('data-edition-pdf');
+			var coverWrap = item.querySelector('.tusn-magazin__archive-cover');
+			if (!pdfUrl || !coverWrap || coverWrap.querySelector('img')) {
+				return;
+			}
+			PdfService.renderCover(pdfUrl, 280)
+				.then(function (src) {
+					var img = document.createElement('img');
+					img.src = src;
+					img.alt = '';
+					coverWrap.appendChild(img);
+					item.classList.add('is-cover-ready');
+				})
+				.catch(function () {
+					item.classList.add('is-cover-ready');
+				});
+		});
+	};
+
+	MagazineApp.prototype.mountReader = function (payload, mobile) {
+		var self = this;
+		this.destroyReader();
+		this.reader = mobile
+			? new MobileReader(this.dom.viewer, payload)
+			: new DesktopFlipbook(this.dom.viewer, payload);
+		if (mobile) {
+			this.reader.mount();
+		} else {
+			this.reader.mount(function () {
+				self.updateControls();
+			});
+		}
+		this.setZoom(1, false);
+		this.setState(STATE.READY);
+		this.updateControls();
+	};
+
+	MagazineApp.prototype.loadEdition = async function (pdfUrl, editionKey) {
+		if (!pdfUrl) {
+			return;
+		}
+		var token = ++this.loadToken;
+		this.currentPdf = pdfUrl;
+		this.destroyReader();
+		this.setState(STATE.LOADING);
+		this.setLoaderText('Erste Seiten werden geladen …');
+		this.setActiveEdition(editionKey || 'current');
+
+		try {
+			var pdf = await PdfService.load(pdfUrl);
+			if (token !== this.loadToken) {
+				return;
+			}
+			var displayWidth = this.getDisplayWidth();
+			var mobile = isMobileViewport();
+			var self = this;
+			var shown = false;
+
+			await PdfService.renderProgressive(pdf, displayWidth, mobile, {
+				onProgress: function (current, total) {
+					if (token !== self.loadToken) {
+						return;
+					}
+					if (!shown) {
+						self.setLoaderText('Seite ' + current + ' von ' + total + ' …');
+					}
+				},
+				onBatchReady: function (payload) {
+					if (token !== self.loadToken) {
+						return;
+					}
+					// Erstes Paar: Reader mounten. Danach nur still nachreichen (kein Remount).
+					if (!shown) {
+						shown = true;
+						self.mountReader(payload, mobile);
+						return;
+					}
+					if (self.reader) {
+						self.reader.setImages(payload.images, payload.total);
+						self.updateControls();
+					}
+				},
+				onComplete: function (payload) {
+					if (token !== self.loadToken || !self.reader) {
+						return;
+					}
+					self.reader.setImages(payload.images, payload.total);
+					self.updateControls();
+				}
+			});
+		} catch (e) {
+			if (token !== this.loadToken) {
+				return;
+			}
+			this.setState(STATE.ERROR, this.loadError);
+		}
+	};
+
+	MagazineApp.prototype.bindEvents = function () {
+		var self = this;
+
+		if (this.dom.btnPrev) {
+			this.dom.btnPrev.addEventListener('click', function () {
+				if (!self.reader) return;
+				self.reader.prev();
+				self.updateControls();
+			});
+		}
+
+		if (this.dom.btnNext) {
+			this.dom.btnNext.addEventListener('click', function () {
+				if (!self.reader) return;
+				self.reader.next();
+				self.updateControls();
+			});
+		}
+
+		if (this.dom.btnZoomIn) {
+			this.dom.btnZoomIn.addEventListener('click', function () {
+				self.setZoom(self.zoom + CONFIG.zoomStep, true);
+			});
+		}
+
+		if (this.dom.btnZoomOut) {
+			this.dom.btnZoomOut.addEventListener('click', function () {
+				self.setZoom(self.zoom - CONFIG.zoomStep, true);
+			});
+		}
+
+		if (this.dom.btnDownload) {
+			this.dom.btnDownload.addEventListener('click', function () {
+				if (!self.currentPdf) return;
+				window.open(self.currentPdf, '_blank', 'noopener,noreferrer');
+			});
+		}
+
+		this.dom.archiveItems.forEach(function (item) {
+			item.addEventListener('click', function () {
+				var pdfUrl = item.getAttribute('data-edition-pdf');
+				var editionKey = item.getAttribute('data-edition-key');
+				self.loadEdition(pdfUrl, editionKey);
+			});
+		});
+
+		if (this.dom.backCurrent) {
+			this.dom.backCurrent.addEventListener('click', function () {
+				self.loadEdition(self.defaultPdf, 'current');
+			});
+		}
+
+		if (this.dom.zoomViewport) {
+			this.dom.zoomViewport.addEventListener('pointerdown', function (event) {
+				if (event.pointerType === 'mouse' && event.button !== 0) return;
+				self.tapStartX = event.clientX;
+				self.tapStartY = event.clientY;
+				self.tapMoved = false;
+
+				if (self.zoom <= 1.01) return;
+				self.isPanning = true;
+				self.root.classList.add('is-panning');
+				self.panStartX = event.clientX;
+				self.panStartY = event.clientY;
+				self.panOriginX = self.panX;
+				self.panOriginY = self.panY;
+				if (self.dom.zoomViewport.setPointerCapture) {
+					self.dom.zoomViewport.setPointerCapture(event.pointerId);
+				}
+				event.preventDefault();
+			});
+
+			this.dom.zoomViewport.addEventListener('pointermove', function (event) {
+				var moveX = event.clientX - self.tapStartX;
+				var moveY = event.clientY - self.tapStartY;
+				if ((moveX * moveX + moveY * moveY) > 100) {
+					self.tapMoved = true;
+				}
+				if (!self.isPanning) return;
+				self.panX = self.panOriginX + (event.clientX - self.panStartX);
+				self.panY = self.panOriginY + (event.clientY - self.panStartY);
+				self.applyZoom();
+			});
+
+			var endPan = function (event) {
+				if (!self.isPanning) return;
+				self.isPanning = false;
+				self.root.classList.remove('is-panning');
+				if (self.dom.zoomViewport.releasePointerCapture && event && event.pointerId) {
+					try { self.dom.zoomViewport.releasePointerCapture(event.pointerId); } catch (err) {}
+				}
+			};
+
+			this.dom.zoomViewport.addEventListener('pointerup', function (event) {
+				endPan(event);
+
+				// Mobile: dblclick ist unzuverlässig → eigenen Doppeltipp erkennen.
+				if (!isMobileViewport()) return;
+				if (event.pointerType === 'mouse') return;
+				if (self.tapMoved) {
+					self.lastTapAt = 0;
+					return;
+				}
+
+				var now = Date.now();
+				var dx = Math.abs(event.clientX - self.lastTapX);
+				var dy = Math.abs(event.clientY - self.lastTapY);
+				var isDoubleTap = (now - self.lastTapAt) <= CONFIG.doubleTapMs
+					&& dx <= CONFIG.doubleTapSlop
+					&& dy <= CONFIG.doubleTapSlop;
+
+				if (isDoubleTap) {
+					self.lastTapAt = 0;
+					self.ignoreDblClickUntil = now + 450;
+					event.preventDefault();
+					self.toggleMobileZoom();
+					return;
+				}
+
+				self.lastTapAt = now;
+				self.lastTapX = event.clientX;
+				self.lastTapY = event.clientY;
+			});
+			this.dom.zoomViewport.addEventListener('pointercancel', endPan);
+			this.dom.zoomViewport.addEventListener('wheel', function (event) {
+				if (!(event.ctrlKey || event.metaKey)) return;
+				event.preventDefault();
+				var direction = event.deltaY < 0 ? 1 : -1;
+				self.setZoom(self.zoom + direction * CONFIG.zoomStep, true);
+			}, { passive: false });
+
+			this.dom.zoomViewport.addEventListener('dblclick', function (event) {
+				// Desktop: Doppelklick komplett aus – sonst Zoom + Umblättern gleichzeitig.
+				if (!isMobileViewport()) {
+					event.preventDefault();
+					event.stopPropagation();
+					return;
+				}
+				event.preventDefault();
+				// Doppeltipp wurde schon per pointerup gehandhabt → kein zweites Toggle.
+				if (Date.now() < self.ignoreDblClickUntil) {
+					return;
+				}
+				self.toggleMobileZoom();
+			});
+		}
+
+		this.root.addEventListener('keydown', function (event) {
+			if (!self.reader) return;
+			if (event.key === 'ArrowLeft') {
+				self.reader.prev();
+				self.updateControls();
+			}
+			if (event.key === 'ArrowRight') {
+				self.reader.next();
+				self.updateControls();
+			}
+			if (event.key === '+' || event.key === '=') {
+				self.setZoom(self.zoom + CONFIG.zoomStep, true);
+			}
+			if (event.key === '-' || event.key === '_') {
+				self.setZoom(self.zoom - CONFIG.zoomStep, true);
+			}
+			if (event.key === '0') {
+				self.setZoom(1, false);
+			}
+		});
+
+		window.matchMedia('(max-width: ' + CONFIG.mobileMaxWidth + 'px)').addEventListener('change', function () {
+			if (self.currentPdf) {
+				self.loadEdition(self.currentPdf, self.root.getAttribute('data-active') || 'current');
+			}
+		});
+	};
+
+	MagazineApp.prototype.init = function () {
+		this.bindEvents();
+		this.loadArchiveCovers();
+		this.applyZoom();
+		this.loadEdition(this.currentPdf, this.root.getAttribute('data-active') || 'current');
+	};
+
+	function boot() {
+		document.querySelectorAll('.tusn-magazin[data-pdf]').forEach(function (root) {
+			if (root.dataset.magazinBooted === '1') {
+				return;
+			}
+			root.dataset.magazinBooted = '1';
+			var app = new MagazineApp(root);
+			app.init();
+		});
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', boot);
+	} else {
+		boot();
+	}
+})();
+JS;
+}

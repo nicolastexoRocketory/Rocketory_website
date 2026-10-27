@@ -1,0 +1,856 @@
+<?php
+/**
+ * Plugin Name: TuS N-Lübbecke Mobile-Navigation
+ * Description: Sticky Mobile-Menü (Vollbild-Panel) mit Logo und den unter Design → Menüs zugewiesenen Menüpunkten. Wird automatisch auf allen Frontend-Seiten ausgegeben. Optional auch als Widget/Shortcode [tusn_mobile_nav].
+ * Version: 1.6
+ * Author: Rocketory
+ * Text Domain: tusn-mobile-nav
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/* ============================================================
+   1) Menü-Position + Einstellungen
+   ============================================================ */
+
+add_action( 'after_setup_theme', 'tusn_mn_register_menu' );
+function tusn_mn_register_menu() {
+	register_nav_menu( 'tusn_mobile', __( 'TuS Mobile-Navigation', 'tusn-mobile-nav' ) );
+}
+
+function tusn_mn_defaults() {
+	return array(
+		'logo_url'      => '/wp-content/uploads/2026/07/cropped-logo_120px.png',
+		'logo_alt'      => 'TuS N-Lübbecke Logo',
+		'home_url'      => '',
+		'tickets_url'   => '/tickets',
+		'tickets_label' => 'Tickets',
+		'dyn_btn_url'   => 'https://www.dyn.sport/aktion/handball?utm_source=2-hbl&utm_medium=media-direct&utm_campaign=C:DE_L:DE_SC:League_CT:CXT_ST:Handball_G:FIX&utm_content=CT:CXT_CTD:2-hbl-RoS&utm_term=ST:Handball_CF:Banner',
+		'dyn_btn_img'   => '/wp-content/uploads/2026/08/dyn-button.jpg',
+		'dyn_btn_alt'   => 'Alle Spiele live bei Dyn',
+		'close_label'   => 'Schließen',
+	);
+}
+
+function tusn_mn_get_opts() {
+	$saved = get_option( 'tusn_mobile_nav_opts' );
+	if ( ! is_array( $saved ) ) {
+		$saved = array();
+	}
+	return wp_parse_args( $saved, tusn_mn_defaults() );
+}
+
+/* ============================================================
+   2) Admin: Einstellungen unter Design → Mobile-Nav
+   ============================================================ */
+
+add_action( 'admin_menu', 'tusn_mn_admin_menu' );
+function tusn_mn_admin_menu() {
+	add_theme_page(
+		'Mobile-Navigation',
+		'Mobile-Navigation',
+		'manage_options',
+		'tusn-mobile-nav',
+		'tusn_mn_admin_page'
+	);
+}
+
+add_action( 'admin_enqueue_scripts', 'tusn_mn_admin_assets' );
+function tusn_mn_admin_assets( $hook ) {
+	if ( 'appearance_page_tusn-mobile-nav' !== $hook ) {
+		return;
+	}
+	wp_enqueue_media();
+}
+
+function tusn_mn_admin_page() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$opts = tusn_mn_get_opts();
+
+	if ( isset( $_POST['tusn_mn_save'] ) && check_admin_referer( 'tusn_mn_save', 'tusn_mn_nonce' ) ) {
+		$opts['logo_url']      = esc_url_raw( wp_unslash( $_POST['logo_url'] ?? '' ) );
+		$opts['logo_alt']      = sanitize_text_field( wp_unslash( $_POST['logo_alt'] ?? '' ) );
+		$opts['home_url']      = esc_url_raw( wp_unslash( $_POST['home_url'] ?? '' ) );
+		$opts['tickets_url']   = esc_url_raw( wp_unslash( $_POST['tickets_url'] ?? '/tickets' ) );
+		$opts['tickets_label'] = sanitize_text_field( wp_unslash( $_POST['tickets_label'] ?? 'Tickets' ) );
+		$opts['dyn_btn_url']   = esc_url_raw( wp_unslash( $_POST['dyn_btn_url'] ?? '' ) );
+		$opts['dyn_btn_img']   = esc_url_raw( wp_unslash( $_POST['dyn_btn_img'] ?? '' ) );
+		$opts['dyn_btn_alt']   = sanitize_text_field( wp_unslash( $_POST['dyn_btn_alt'] ?? '' ) );
+		$opts['close_label']   = sanitize_text_field( wp_unslash( $_POST['close_label'] ?? 'Schließen' ) );
+		update_option( 'tusn_mobile_nav_opts', $opts );
+		echo '<div class="notice notice-success is-dismissible"><p>Gespeichert.</p></div>';
+		$opts = tusn_mn_get_opts();
+	}
+
+	$menus     = wp_get_nav_menus();
+	$locations = get_nav_menu_locations();
+	$assigned  = isset( $locations['tusn_mobile'] ) ? (int) $locations['tusn_mobile'] : 0;
+	?>
+	<div class="wrap" style="max-width:720px;">
+		<h1>TuS Mobile-Navigation</h1>
+		<p>Das Menü erscheint automatisch auf allen Seiten (sichtbar bis ca. 900&nbsp;px Breite). Menüpunkte unter <strong>Design → Menüs</strong> der Position <strong>„TuS Mobile-Navigation“</strong> zuweisen.</p>
+
+		<?php if ( ! $assigned ) : ?>
+			<div class="notice notice-warning"><p>Noch kein Menü zugewiesen. Bitte unter <a href="<?php echo esc_url( admin_url( 'nav-menus.php' ) ); ?>">Design → Menüs</a> die Position „TuS Mobile-Navigation“ befüllen.</p></div>
+		<?php else : ?>
+			<p><strong>Aktives Menü:</strong>
+				<?php
+				foreach ( $menus as $m ) {
+					if ( (int) $m->term_id === $assigned ) {
+						echo esc_html( $m->name );
+						break;
+					}
+				}
+				?>
+			</p>
+		<?php endif; ?>
+
+		<form method="post">
+			<?php wp_nonce_field( 'tusn_mn_save', 'tusn_mn_nonce' ); ?>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th><label for="logo_url">Logo-URL</label></th>
+					<td>
+						<input type="text" class="large-text" id="logo_url" name="logo_url" value="<?php echo esc_attr( $opts['logo_url'] ); ?>">
+						<p class="description">Datei <code>tusn-logo-120px.png</code> in die Mediathek hochladen und URL hier einfügen. Relativpfade wie <code>/wp-content/uploads/…</code> sind erlaubt.</p>
+						<?php if ( $opts['logo_url'] ) : ?>
+							<p><img src="<?php echo esc_url( $opts['logo_url'] ); ?>" alt="" style="max-height:64px;width:auto;background:#0f0f0f;padding:8px;border-radius:4px;"></p>
+						<?php endif; ?>
+					</td>
+				</tr>
+				<tr>
+					<th><label for="logo_alt">Logo Alt-Text</label></th>
+					<td><input type="text" class="regular-text" id="logo_alt" name="logo_alt" value="<?php echo esc_attr( $opts['logo_alt'] ); ?>"></td>
+				</tr>
+				<tr>
+					<th><label for="home_url">Logo-Link (Startseite)</label></th>
+					<td>
+						<input type="url" class="large-text" id="home_url" name="home_url" value="<?php echo esc_attr( $opts['home_url'] ); ?>" placeholder="<?php echo esc_attr( home_url( '/' ) ); ?>">
+						<p class="description">Leer = Startseite der Website.</p>
+					</td>
+				</tr>
+				<tr>
+					<th><label for="tickets_label">Tickets-Button Text</label></th>
+					<td><input type="text" class="regular-text" id="tickets_label" name="tickets_label" value="<?php echo esc_attr( $opts['tickets_label'] ); ?>"></td>
+				</tr>
+				<tr>
+					<th><label for="tickets_url">Tickets-Button Link</label></th>
+					<td><input type="text" class="large-text" id="tickets_url" name="tickets_url" value="<?php echo esc_attr( $opts['tickets_url'] ); ?>"></td>
+				</tr>
+				<tr>
+					<th><label for="dyn_btn_img">DYN-Button Bild</label></th>
+					<td>
+						<input type="text" class="large-text" id="dyn_btn_img" name="dyn_btn_img" value="<?php echo esc_attr( $opts['dyn_btn_img'] ); ?>">
+						<p style="margin:8px 0;">
+							<button type="button" class="button" id="tusn_mn_dyn_upload">Bild aus Mediathek wählen</button>
+						</p>
+						<p class="description">Leer lassen, um den DYN-Button auszublenden. Höhe entspricht automatisch dem Tickets-Button.</p>
+						<?php if ( ! empty( $opts['dyn_btn_img'] ) ) : ?>
+							<p><img id="tusn_mn_dyn_preview" src="<?php echo esc_url( $opts['dyn_btn_img'] ); ?>" alt="" style="height:36px;width:auto;background:#0f0f0f;padding:6px;border-radius:4px;"></p>
+						<?php else : ?>
+							<p><img id="tusn_mn_dyn_preview" src="" alt="" style="display:none;height:36px;width:auto;background:#0f0f0f;padding:6px;border-radius:4px;"></p>
+						<?php endif; ?>
+					</td>
+				</tr>
+				<tr>
+					<th><label for="dyn_btn_url">DYN-Button Link</label></th>
+					<td><input type="url" class="large-text" id="dyn_btn_url" name="dyn_btn_url" value="<?php echo esc_attr( $opts['dyn_btn_url'] ); ?>"></td>
+				</tr>
+				<tr>
+					<th><label for="dyn_btn_alt">DYN-Button Alt-/Titeltext</label></th>
+					<td><input type="text" class="regular-text" id="dyn_btn_alt" name="dyn_btn_alt" value="<?php echo esc_attr( $opts['dyn_btn_alt'] ); ?>"></td>
+				</tr>
+				<tr>
+					<th><label for="close_label">Schließen (Panel, Aria)</label></th>
+					<td><input type="text" class="regular-text" id="close_label" name="close_label" value="<?php echo esc_attr( $opts['close_label'] ); ?>"></td>
+				</tr>
+			</table>
+			<?php submit_button( 'Änderungen speichern', 'primary', 'tusn_mn_save' ); ?>
+		</form>
+		<p>Shortcode (falls manuell benötigt): <code>[tusn_mobile_nav]</code></p>
+		<script>
+		jQuery(function ($) {
+			var frame;
+			$('#tusn_mn_dyn_upload').on('click', function (e) {
+				e.preventDefault();
+				if (frame) {
+					frame.open();
+					return;
+				}
+				frame = wp.media({
+					title: 'DYN-Button Bild wählen',
+					button: { text: 'Übernehmen' },
+					multiple: false,
+					library: { type: 'image' }
+				});
+				frame.on('select', function () {
+					var att = frame.state().get('selection').first().toJSON();
+					$('#dyn_btn_img').val(att.url);
+					$('#tusn_mn_dyn_preview').attr('src', att.url).show();
+				});
+				frame.open();
+			});
+		});
+		</script>
+	</div>
+	<?php
+}
+
+/* ============================================================
+   3) Walker: Top-Level-Links + Untermenüs als Drill-down
+   ============================================================ */
+
+class TUSN_Mobile_Nav_Walker extends Walker_Nav_Menu {
+	public $sub_panels = array();
+
+	public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
+		$title = apply_filters( 'the_title', $item->title, $item->ID );
+		$title = apply_filters( 'nav_menu_item_title', $title, $item, $args, $depth );
+		$url   = ! empty( $item->url ) ? $item->url : '#';
+		$has_children = in_array( 'menu-item-has-children', (array) $item->classes, true );
+
+		if ( 0 === (int) $depth ) {
+			if ( $has_children ) {
+				$sub_id = 'tusnMnSub-' . (int) $item->ID;
+				$output .= '<button type="button" class="tusn-mn__link tusn-mn__drill" data-tusn-mn-sub="' . esc_attr( $sub_id ) . '" aria-expanded="false" aria-controls="' . esc_attr( $sub_id ) . '">';
+				$output .= esc_html( $title );
+				$output .= ' <span aria-hidden="true">→</span></button>';
+				if ( ! isset( $this->sub_panels[ $sub_id ] ) ) {
+					$this->sub_panels[ $sub_id ] = array(
+						'title'  => $title,
+						'parent' => $item,
+						'items'  => array(),
+					);
+				} else {
+					$this->sub_panels[ $sub_id ]['title']  = $title;
+					$this->sub_panels[ $sub_id ]['parent'] = $item;
+				}
+			} else {
+				$output .= '<a class="tusn-mn__link" href="' . esc_url( $url ) . '" data-tusn-mn-close>';
+				$output .= esc_html( $title );
+				$output .= '</a>';
+			}
+		}
+	}
+
+	public function display_element( $element, &$children_elements, $max_depth, $depth, $args, &$output ) {
+		if ( ! $element ) {
+			return;
+		}
+		$id_field = $this->db_fields['id'];
+		$id       = $element->$id_field;
+
+		// Untermenü-Einträge für Drill-Panel sammeln
+		if ( 0 === (int) $depth && ! empty( $children_elements[ $id ] ) ) {
+			$sub_id = 'tusnMnSub-' . (int) $id;
+			if ( ! isset( $this->sub_panels[ $sub_id ] ) ) {
+				$this->sub_panels[ $sub_id ] = array(
+					'title'  => $element->title,
+					'parent' => $element,
+					'items'  => array(),
+				);
+			}
+			foreach ( $children_elements[ $id ] as $child ) {
+				$this->sub_panels[ $sub_id ]['items'][] = $child;
+			}
+		}
+
+		parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
+	}
+
+	public function start_lvl( &$output, $depth = 0, $args = null ) {
+		// Untermenüs werden als eigene Panels gerendert, nicht als nested UL.
+	}
+
+	public function end_lvl( &$output, $depth = 0, $args = null ) {}
+
+	public function end_el( &$output, $item, $depth = 0, $args = null ) {}
+}
+
+/* ============================================================
+   4) Markup ausgeben
+   ============================================================ */
+
+function tusn_mn_render( $instance = array() ) {
+	static $printed = false;
+	if ( $printed ) {
+		return ''; // Nur einmal pro Seite.
+	}
+	$printed = true;
+
+	$opts     = tusn_mn_get_opts();
+	$home     = ! empty( $opts['home_url'] ) ? $opts['home_url'] : home_url( '/' );
+	$logo_url = $opts['logo_url'];
+	$logo_alt = $opts['logo_alt'];
+
+	$locations = get_nav_menu_locations();
+	$menu_id   = isset( $locations['tusn_mobile'] ) ? (int) $locations['tusn_mobile'] : 0;
+
+	$walker = new TUSN_Mobile_Nav_Walker();
+	$links  = '';
+
+	if ( $menu_id ) {
+		$links = wp_nav_menu(
+			array(
+				'menu'        => $menu_id,
+				'container'   => false,
+				'echo'        => false,
+				'fallback_cb' => false,
+				'depth'       => 2,
+				'items_wrap'  => '%3$s',
+				'walker'      => $walker,
+			)
+		);
+	}
+
+	if ( ! $links ) {
+		// Fallback: Seiten aus dem Hauptmenü / Primärmenü, sonst Home.
+		$fallback = wp_page_menu(
+			array(
+				'echo'        => false,
+				'container'   => false,
+				'before'      => '',
+				'after'       => '',
+				'depth'       => 1,
+			)
+		);
+		// Sehr grober Fallback – besser Menü zuweisen.
+		$links = '<a class="tusn-mn__link" href="' . esc_url( $home ) . '" data-tusn-mn-close">Startseite</a>';
+		unset( $fallback );
+	}
+
+	ob_start();
+	?>
+	<style id="tusn-mn-css">
+	.tusn-mn {
+	  --tusn-mn-bg: #0f0f0f;
+	  --tusn-mn-accent: #D70000;
+	  --tusn-mn-text: #ffffff;
+	  --tusn-mn-muted: rgba(255,255,255,0.55);
+	  --tusn-mn-border: rgba(255,255,255,0.12);
+	  --tusn-mn-h: 60px;
+	  --tusn-mn-cta-h: 36px;
+	  --tusn-mn-offset: calc(var(--tusn-mn-h) + env(safe-area-inset-top, 0px));
+	  --tusn-mn-pad: max(16px, env(safe-area-inset-left));
+	  --tusn-mn-pad-r: max(16px, env(safe-area-inset-right));
+	  font-family: inherit;
+	  box-sizing: border-box;
+	}
+	.tusn-mn *, .tusn-mn *::before, .tusn-mn *::after { box-sizing: border-box; }
+
+	/* Fixierte Bar – immer oben, volle Viewport-Breite (nur Mobile/Tablet) */
+	.tusn-mn__bar {
+	  display: none;
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  right: 0;
+	  z-index: 100050;
+	  width: 100%;
+	  max-width: 100%;
+	  margin: 0;
+	  background: var(--tusn-mn-bg);
+	  min-height: var(--tusn-mn-h);
+	  padding: 10px var(--tusn-mn-pad-r) 10px var(--tusn-mn-pad);
+	  padding-top: max(10px, env(safe-area-inset-top));
+	  align-items: center;
+	  justify-content: space-between;
+	  gap: 12px;
+	  box-shadow: 0 2px 14px rgba(0,0,0,0.35);
+	  transform: translateZ(0);
+	  -webkit-backface-visibility: hidden;
+	  backface-visibility: hidden;
+	}
+	.tusn-mn__bar-spacer {
+	  display: none;
+	  width: 100%;
+	  height: var(--tusn-mn-offset);
+	  pointer-events: none;
+	  visibility: hidden;
+	}
+	.admin-bar .tusn-mn__bar { top: 32px; }
+	.admin-bar .tusn-mn__bar-spacer { height: calc(var(--tusn-mn-offset) + 32px); }
+	@media screen and (max-width: 782px) {
+	  .admin-bar .tusn-mn__bar { top: 46px; }
+	  .admin-bar .tusn-mn__bar-spacer { height: calc(var(--tusn-mn-offset) + 46px); }
+	}
+	.tusn-mn__logo {
+	  display: inline-flex; align-items: center; flex-shrink: 0;
+	  text-decoration: none !important; line-height: 0;
+	}
+	.tusn-mn__logo img {
+	  height: 40px; width: auto; display: block; max-width: 120px;
+	  object-fit: contain;
+	}
+	.tusn-mn__actions {
+	  display: inline-flex; align-items: center; gap: 8px;
+	  flex-shrink: 0; margin-left: auto;
+	}
+	/* DYN + Tickets: identische Außenhöhe (Bild darf nicht per max-width schrumpfen). */
+	.tusn-mn__dyn,
+	.tusn-mn__tickets {
+	  box-sizing: border-box !important;
+	  height: var(--tusn-mn-cta-h) !important;
+	  min-height: var(--tusn-mn-cta-h) !important;
+	  max-height: var(--tusn-mn-cta-h) !important;
+	  display: inline-flex !important;
+	  align-items: center !important;
+	  justify-content: center !important;
+	  flex-shrink: 0 !important;
+	  margin: 0 !important;
+	  border: none !important;
+	  border-radius: 0 !important;
+	  line-height: 1 !important;
+	  text-decoration: none !important;
+	  overflow: hidden;
+	}
+	.tusn-mn__dyn {
+	  padding: 0 !important;
+	  transition: transform .15s ease, opacity .15s ease;
+	}
+	.tusn-mn__dyn img {
+	  /* Feste Höhe = Tickets; Breite aus Seitenverhältnis, ohne max-width-Kappung. */
+	  height: var(--tusn-mn-cta-h) !important;
+	  width: auto !important;
+	  max-width: none !important;
+	  max-height: none !important;
+	  display: block !important;
+	  margin: 0 !important;
+	  padding: 0 !important;
+	  border: 0 !important;
+	  vertical-align: top;
+	}
+	.tusn-mn__dyn:hover,
+	.tusn-mn__dyn:focus {
+	  transform: translateY(-1px);
+	  opacity: 0.92;
+	}
+	.tusn-mn__tickets {
+	  background: var(--tusn-mn-accent) !important;
+	  color: #fff !important;
+	  font-family: inherit; font-size: 13px; font-weight: 800;
+	  letter-spacing: 0.02em; text-transform: uppercase;
+	  padding: 0 14px !important;
+	  white-space: nowrap;
+	  transition: background .15s ease, transform .15s ease;
+	}
+	.tusn-mn__tickets:hover,
+	.tusn-mn__tickets:focus {
+	  background: #b80000 !important; color: #fff !important;
+	  transform: translateY(-1px);
+	}
+	.tusn-mn__toggle {
+	  display: inline-flex; align-items: center; justify-content: center;
+	  width: 44px; height: 44px;
+	  background: none !important; border: none !important;
+	  color: var(--tusn-mn-text) !important;
+	  cursor: pointer; padding: 0; margin: 0;
+	  -webkit-appearance: none; appearance: none;
+	  position: relative;
+	}
+	.tusn-mn__toggle:hover { opacity: 0.85; }
+	.tusn-mn__burger {
+	  position: relative;
+	  width: 22px; height: 16px;
+	  display: block;
+	}
+	.tusn-mn__burger span {
+	  position: absolute; left: 0; right: 0;
+	  height: 2px; background: #fff;
+	  border-radius: 1px;
+	  transition: transform .28s cubic-bezier(.4,0,.2,1),
+	              opacity .2s ease,
+	              top .28s cubic-bezier(.4,0,.2,1);
+	}
+	.tusn-mn__burger span:nth-child(1) { top: 0; }
+	.tusn-mn__burger span:nth-child(2) { top: 7px; }
+	.tusn-mn__burger span:nth-child(3) { top: 14px; }
+	.tusn-mn__toggle.is-open .tusn-mn__burger span:nth-child(1) {
+	  top: 7px; transform: rotate(45deg);
+	}
+	.tusn-mn__toggle.is-open .tusn-mn__burger span:nth-child(2) {
+	  opacity: 0; transform: scaleX(0);
+	}
+	.tusn-mn__toggle.is-open .tusn-mn__burger span:nth-child(3) {
+	  top: 7px; transform: rotate(-45deg);
+	}
+	.tusn-mn__dot {
+	  width: 20px; height: 20px; border-radius: 50%;
+	  border: 1.5px solid rgba(255,255,255,0.55);
+	  display: inline-flex; align-items: center; justify-content: center;
+	}
+	.tusn-mn__dot span {
+	  width: 6px; height: 6px; border-radius: 50%; background: #fff;
+	}
+
+	/* Fullscreen Panel */
+	.tusn-mn__panel {
+	  position: fixed; inset: 0; z-index: 100060;
+	  background: var(--tusn-mn-bg);
+	  color: var(--tusn-mn-text);
+	  display: flex; flex-direction: column;
+	  height: 100vh; height: 100dvh;
+	  transform: translateX(100%);
+	  transition: transform .35s cubic-bezier(.4,0,.2,1);
+	  pointer-events: none;
+	  overflow: hidden;
+	  padding-bottom: max(24px, env(safe-area-inset-bottom));
+	}
+	.tusn-mn__panel.is-open {
+	  transform: translateX(0);
+	  pointer-events: auto;
+	}
+	.tusn-mn__panel-head {
+	  display: flex; align-items: center; justify-content: space-between;
+	  gap: 12px; flex-shrink: 0;
+	  min-height: var(--tusn-mn-h);
+	  padding: 12px var(--tusn-mn-pad-r) 12px var(--tusn-mn-pad);
+	  padding-top: max(12px, env(safe-area-inset-top));
+	  border-bottom: 1px solid var(--tusn-mn-border);
+	}
+	.tusn-mn__close {
+	  display: inline-flex; align-items: center; gap: 8px;
+	  background: none !important; border: none !important;
+	  color: var(--tusn-mn-text) !important;
+	  font-family: inherit; font-size: 14px; font-weight: 700;
+	  cursor: pointer; padding: 8px 4px; margin: 0;
+	}
+	.tusn-mn__close:hover { opacity: 0.8; }
+
+	.tusn-mn__subnav {
+	  display: none; flex-shrink: 0;
+	  justify-content: flex-end;
+	  padding: 14px var(--tusn-mn-pad-r) 8px var(--tusn-mn-pad);
+	}
+	.tusn-mn__panel.is-sub-open .tusn-mn__subnav { display: flex; }
+	.tusn-mn__back {
+	  background: none !important; border: none !important;
+	  color: var(--tusn-mn-text) !important;
+	  font-family: inherit; font-size: 14px; font-weight: 600;
+	  cursor: pointer; padding: 0; margin: 0;
+	}
+
+	.tusn-mn__stack {
+	  position: relative; flex: 1; min-height: 0; overflow: hidden;
+	}
+	.tusn-mn__view {
+	  position: absolute; inset: 0;
+	  display: flex; flex-direction: column;
+	  background: var(--tusn-mn-bg);
+	  transform: translateX(100%);
+	  transition: transform .35s cubic-bezier(.4,0,.2,1);
+	  visibility: hidden; pointer-events: none;
+	}
+	.tusn-mn__view--main {
+	  z-index: 1; transform: translateX(0);
+	  visibility: visible; pointer-events: auto;
+	}
+	.tusn-mn__panel.is-sub-open .tusn-mn__view--main {
+	  transform: translateX(-18%);
+	  pointer-events: none;
+	}
+	.tusn-mn__view--sub { z-index: 2; }
+	.tusn-mn__view--sub.is-active {
+	  transform: translateX(0);
+	  visibility: visible; pointer-events: auto;
+	}
+
+	.tusn-mn__links {
+	  display: flex; flex-direction: column;
+	  flex: 1; min-height: 0;
+	  overflow-y: auto; -webkit-overflow-scrolling: touch;
+	  overscroll-behavior: contain;
+	  padding: 0 0 16px;
+	}
+	.tusn-mn__link {
+	  display: flex; align-items: center; justify-content: space-between;
+	  width: 100%;
+	  font-family: inherit; font-weight: 700;
+	  font-size: clamp(1.25rem, 5vw, 1.85rem);
+	  letter-spacing: -0.02em; line-height: 1.2;
+	  color: var(--tusn-mn-text) !important;
+	  text-decoration: none !important;
+	  background: none !important; border: none !important;
+	  border-bottom: 1px solid var(--tusn-mn-border) !important;
+	  border-radius: 0; text-align: left;
+	  padding: 18px var(--tusn-mn-pad-r) 18px var(--tusn-mn-pad);
+	  cursor: pointer; margin: 0;
+	  -webkit-appearance: none; appearance: none;
+	}
+	.tusn-mn__link span { font-size: 0.9rem; font-weight: 600; opacity: 0.7; }
+	.tusn-mn__link:hover { color: #fff !important; background: rgba(255,255,255,0.04) !important; }
+
+	.tusn-mn__sub-title {
+	  margin: 0; padding: 8px var(--tusn-mn-pad-r) 16px var(--tusn-mn-pad);
+	  font-size: clamp(1.1rem, 4vw, 1.4rem); font-weight: 800;
+	  color: var(--tusn-mn-accent);
+	}
+
+	/* Reveal-Animation */
+	.tusn-mn__panel.is-open .tusn-mn__view--main .tusn-mn__links > * {
+	  opacity: 0; transform: translateY(0.4em);
+	  transition: opacity .28s ease, transform .28s ease;
+	}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > * {
+	  opacity: 1; transform: translateY(0);
+	}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(1){transition-delay:50ms;}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(2){transition-delay:90ms;}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(3){transition-delay:130ms;}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(4){transition-delay:170ms;}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(5){transition-delay:210ms;}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(6){transition-delay:250ms;}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(7){transition-delay:290ms;}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(8){transition-delay:330ms;}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(9){transition-delay:370ms;}
+	.tusn-mn__panel.is-open.is-reveal .tusn-mn__view--main .tusn-mn__links > *:nth-child(10){transition-delay:410ms;}
+
+	@media (max-width: 900px) {
+	  .tusn-mn__bar { display: flex; }
+	  .tusn-mn__bar-spacer { display: block; }
+	}
+	@media (prefers-reduced-motion: reduce) {
+	  .tusn-mn__panel, .tusn-mn__view { transition: none; }
+	  .tusn-mn__panel.is-open .tusn-mn__view--main .tusn-mn__links > * {
+	    opacity: 1; transform: none; transition: none;
+	  }
+	}
+	</style>
+
+	<div class="tusn-mn" id="tusnMobileNav">
+	  <div class="tusn-mn__bar-spacer" aria-hidden="true"></div>
+	  <div class="tusn-mn__bar">
+	    <a class="tusn-mn__logo" href="<?php echo esc_url( $home ); ?>" aria-label="<?php echo esc_attr( $logo_alt ); ?>">
+	      <?php if ( $logo_url ) : ?>
+	        <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $logo_alt ); ?>" width="120" height="120" decoding="async">
+	      <?php else : ?>
+	        <span style="color:#fff;font-weight:800;">TuS N-Lübbecke</span>
+	      <?php endif; ?>
+	    </a>
+	    <div class="tusn-mn__actions">
+	      <?php if ( ! empty( $opts['dyn_btn_img'] ) && ! empty( $opts['dyn_btn_url'] ) ) :
+	        $dyn_alt = ! empty( $opts['dyn_btn_alt'] ) ? $opts['dyn_btn_alt'] : 'Alle Spiele live bei Dyn';
+	        ?>
+	        <a class="tusn-mn__dyn" href="<?php echo esc_url( $opts['dyn_btn_url'] ); ?>" target="_blank" rel="noopener noreferrer" title="<?php echo esc_attr( $dyn_alt ); ?>">
+	          <img src="<?php echo esc_url( $opts['dyn_btn_img'] ); ?>" alt="<?php echo esc_attr( $dyn_alt ); ?>" width="138" height="36" loading="lazy" decoding="async">
+	        </a>
+	      <?php endif; ?>
+	      <a class="tusn-mn__tickets" href="<?php echo esc_url( $opts['tickets_url'] ? $opts['tickets_url'] : '/tickets' ); ?>">
+	        <?php echo esc_html( $opts['tickets_label'] ? $opts['tickets_label'] : 'Tickets' ); ?>
+	      </a>
+	      <button type="button" class="tusn-mn__toggle" id="tusnMnToggle" aria-expanded="false" aria-controls="tusnMnPanel" aria-label="<?php esc_attr_e( 'Menü öffnen', 'tusn-mobile-nav' ); ?>">
+	        <span class="tusn-mn__burger" aria-hidden="true">
+	          <span></span><span></span><span></span>
+	        </span>
+	      </button>
+	    </div>
+	  </div>
+
+	  <div class="tusn-mn__panel" id="tusnMnPanel" inert>
+	    <div class="tusn-mn__panel-head">
+	      <a class="tusn-mn__logo" href="<?php echo esc_url( $home ); ?>" data-tusn-mn-close aria-label="<?php echo esc_attr( $logo_alt ); ?>">
+	        <?php if ( $logo_url ) : ?>
+	          <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $logo_alt ); ?>" width="120" height="120" decoding="async">
+	        <?php else : ?>
+	          <span style="color:#fff;font-weight:800;">TuS N-Lübbecke</span>
+	        <?php endif; ?>
+	      </a>
+	      <button type="button" class="tusn-mn__close" id="tusnMnClose" aria-label="<?php echo esc_attr( $opts['close_label'] ); ?>">
+	        <?php echo esc_html( $opts['close_label'] ); ?>
+	        <span class="tusn-mn__dot" aria-hidden="true"><span></span></span>
+	      </button>
+	    </div>
+
+	    <div class="tusn-mn__subnav" aria-hidden="true">
+	      <button type="button" class="tusn-mn__back" data-tusn-mn-back>← Zurück</button>
+	    </div>
+
+	    <div class="tusn-mn__stack">
+	      <div class="tusn-mn__view tusn-mn__view--main is-active" id="tusnMnMain">
+	        <nav class="tusn-mn__links" aria-label="<?php esc_attr_e( 'Mobile Navigation', 'tusn-mobile-nav' ); ?>">
+	          <?php echo $links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Walker escaped. ?>
+	        </nav>
+	      </div>
+
+	      <?php foreach ( $walker->sub_panels as $sub_id => $panel ) : ?>
+	        <div class="tusn-mn__view tusn-mn__view--sub" id="<?php echo esc_attr( $sub_id ); ?>" aria-hidden="true">
+	          <p class="tusn-mn__sub-title"><?php echo esc_html( $panel['title'] ); ?></p>
+	          <nav class="tusn-mn__links">
+	            <?php
+	            // Parent-Link zuerst, falls vorhanden
+	            if ( ! empty( $panel['parent']->url ) && '#' !== $panel['parent']->url ) :
+	              ?>
+	              <a class="tusn-mn__link" href="<?php echo esc_url( $panel['parent']->url ); ?>" data-tusn-mn-close><?php echo esc_html( $panel['title'] ); ?> <span>Übersicht</span></a>
+	            <?php endif; ?>
+	            <?php foreach ( $panel['items'] as $child ) : ?>
+	              <a class="tusn-mn__link" href="<?php echo esc_url( $child->url ); ?>" data-tusn-mn-close><?php echo esc_html( $child->title ); ?></a>
+	            <?php endforeach; ?>
+	          </nav>
+	        </div>
+	      <?php endforeach; ?>
+	    </div>
+	  </div>
+	</div>
+
+	<script id="tusn-mn-js">
+	(function () {
+	  if (window.__tusnMnBound) return;
+	  window.__tusnMnBound = true;
+
+	  function ready(fn) {
+	    if (document.readyState !== 'loading') fn();
+	    else document.addEventListener('DOMContentLoaded', fn);
+	  }
+
+	  ready(function () {
+	    var root = document.getElementById('tusnMobileNav');
+	    if (!root) return;
+	    var btn = document.getElementById('tusnMnToggle');
+	    var panel = document.getElementById('tusnMnPanel');
+	    var closeBtn = document.getElementById('tusnMnClose');
+	    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	    function resetSubs(skipFocus) {
+	      var active = panel.querySelector('.tusn-mn__view--sub.is-active');
+	      var trigger = active ? panel.querySelector('[data-tusn-mn-sub="' + active.id + '"]') : null;
+	      panel.classList.remove('is-sub-open');
+	      var subnav = panel.querySelector('.tusn-mn__subnav');
+	      if (subnav) subnav.setAttribute('aria-hidden', 'true');
+	      panel.querySelectorAll('.tusn-mn__view--sub').forEach(function (v) {
+	        v.classList.remove('is-active');
+	        v.setAttribute('aria-hidden', 'true');
+	      });
+	      panel.querySelectorAll('[data-tusn-mn-sub]').forEach(function (b) {
+	        b.setAttribute('aria-expanded', 'false');
+	      });
+	      if (!skipFocus && trigger) trigger.focus({ preventScroll: true });
+	    }
+
+	    function closeMenu() {
+	      resetSubs(true);
+	      panel.classList.remove('is-open', 'is-reveal');
+	      panel.setAttribute('inert', '');
+	      btn.classList.remove('is-open');
+	      btn.setAttribute('aria-expanded', 'false');
+	      btn.setAttribute('aria-label', 'Menü öffnen');
+	      document.body.style.overflow = '';
+	      btn.focus({ preventScroll: true });
+	    }
+
+	    function openMenu() {
+	      panel.classList.add('is-open');
+	      panel.removeAttribute('inert');
+	      btn.classList.add('is-open');
+	      btn.setAttribute('aria-expanded', 'true');
+	      btn.setAttribute('aria-label', 'Menü schließen');
+	      document.body.style.overflow = 'hidden';
+	      if (!reduce.matches) {
+	        panel.classList.remove('is-reveal');
+	        requestAnimationFrame(function () {
+	          requestAnimationFrame(function () { panel.classList.add('is-reveal'); });
+	        });
+	      } else {
+	        panel.classList.add('is-reveal');
+	      }
+	    }
+
+	    btn.addEventListener('click', function () {
+	      panel.classList.contains('is-open') ? closeMenu() : openMenu();
+	    });
+	    if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+
+	    panel.querySelectorAll('[data-tusn-mn-close]').forEach(function (el) {
+	      el.addEventListener('click', closeMenu);
+	    });
+
+	    panel.querySelectorAll('[data-tusn-mn-sub]').forEach(function (drill) {
+	      drill.addEventListener('click', function () {
+	        var id = drill.getAttribute('data-tusn-mn-sub');
+	        var sub = document.getElementById(id);
+	        if (!sub) return;
+	        resetSubs(true);
+	        sub.classList.add('is-active');
+	        sub.setAttribute('aria-hidden', 'false');
+	        panel.classList.add('is-sub-open');
+	        var subnav = panel.querySelector('.tusn-mn__subnav');
+	        if (subnav) subnav.setAttribute('aria-hidden', 'false');
+	        drill.setAttribute('aria-expanded', 'true');
+	      });
+	    });
+
+	    panel.querySelectorAll('[data-tusn-mn-back]').forEach(function (b) {
+	      b.addEventListener('click', function () { resetSubs(false); });
+	    });
+
+	    document.addEventListener('keydown', function (e) {
+	      if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+	        if (panel.classList.contains('is-sub-open')) resetSubs(false);
+	        else closeMenu();
+	      }
+	    });
+	  });
+	})();
+	</script>
+	<?php
+	return ob_get_clean();
+}
+
+/* ============================================================
+   5) Automatisch auf allen Seiten + Shortcode + Widget
+   ============================================================ */
+
+add_action( 'wp_body_open', 'tusn_mn_auto_print', 5 );
+add_action( 'wp_footer', 'tusn_mn_auto_print_fallback', 5 );
+
+function tusn_mn_auto_print() {
+	if ( is_admin() ) {
+		return;
+	}
+	echo tusn_mn_render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+function tusn_mn_auto_print_fallback() {
+	// Themes ohne wp_body_open: einmal im Footer ausgeben (fixed bleibt am Viewport).
+	if ( ! did_action( 'wp_body_open' ) ) {
+		echo tusn_mn_render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+}
+
+add_shortcode( 'tusn_mobile_nav', 'tusn_mn_shortcode' );
+function tusn_mn_shortcode() {
+	// Shortcode nur Hinweis – Auto-Output ist aktiv. Bei Bedarf erneut rendern erlauben:
+	return '<!-- TuS Mobile-Nav wird automatisch ausgegeben -->';
+}
+
+class TUSN_Mobile_Nav_Widget extends WP_Widget {
+	public function __construct() {
+		parent::__construct(
+			'tusn_mobile_nav_widget',
+			'TuS Mobile-Navigation',
+			array( 'description' => 'Sticky Mobile-Menü mit Logo (wird zusätzlich automatisch siteweit ausgegeben).' )
+		);
+	}
+
+	public function widget( $args, $instance ) {
+		// Kein zweites Markup – Auto-Print übernimmt. Widget dient der Auffindbarkeit.
+		echo $args['before_widget'];
+		echo '<p style="margin:0;font-size:12px;opacity:.6;">TuS Mobile-Nav ist aktiv (automatische Ausgabe).</p>';
+		echo $args['after_widget'];
+	}
+
+	public function form( $instance ) {
+		echo '<p>Einstellungen unter <strong>Design → Mobile-Navigation</strong>. Menü unter <strong>Design → Menüs</strong> der Position „TuS Mobile-Navigation“ zuweisen.</p>';
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		return $old_instance;
+	}
+}
+
+add_action( 'widgets_init', function () {
+	register_widget( 'TUSN_Mobile_Nav_Widget' );
+} );

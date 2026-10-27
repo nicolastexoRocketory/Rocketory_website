@@ -8,6 +8,7 @@ import { buildAgenturPageSchema } from '@/lib/schema-org'
 
 import '@/styles/references.css'
 import '@/styles/agentur.css'
+import '@/styles/team.css'
 
 export const revalidate = 3600
 

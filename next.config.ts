@@ -19,6 +19,16 @@ const nextConfig: NextConfig = {
         destination: '/wartung',
         permanent: true,
       },
+      {
+        source: '/vorteile',
+        destination: '/angebote',
+        permanent: true,
+      },
+      {
+        source: '/vorteile.html',
+        destination: '/angebote',
+        permanent: true,
+      },
     ]
   },
   images: {

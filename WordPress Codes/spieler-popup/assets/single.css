@@ -1,0 +1,242 @@
+body.single-teammitglied #Subheader,
+body.tus-player-single #Subheader {
+	display: none;
+}
+
+body.single-teammitglied #Header_wrapper,
+body.tus-player-single #Header_wrapper {
+	background-image: none !important;
+	min-height: 0;
+}
+
+.tus-player-page {
+	background: #0f0f0f;
+	color: #f5f5f5;
+}
+
+.tus-player-hero {
+	position: relative;
+	min-height: 380px;
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	align-items: flex-end;
+}
+
+.tus-player-hero__overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.72) 100%);
+}
+
+.tus-player-hero__inner {
+	position: relative;
+	z-index: 1;
+	width: min(1200px, calc(100% - 48px));
+	margin: 0 auto 48px;
+}
+
+.tus-player-hero__tag {
+	display: inline-block;
+	background: #d70000;
+	color: #fff;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	padding: 6px 10px;
+	margin-bottom: 12px;
+}
+
+.tus-player-hero__title {
+	margin: 0;
+	color: #fff;
+	font-size: clamp(2rem, 4vw, 3.4rem);
+	line-height: 1.15;
+	font-weight: 800;
+}
+
+.tus-player-layout {
+	width: min(1200px, calc(100% - 48px));
+	margin: 0 auto;
+	padding: 48px 0 80px;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: 48px;
+	align-items: start;
+}
+
+.tus-player-portrait {
+	margin: 0 0 28px;
+}
+
+.tus-player-portrait img {
+	width: 100%;
+	height: auto;
+	display: block;
+	object-fit: cover;
+	aspect-ratio: 16 / 10;
+	object-position: top center;
+}
+
+.tus-player-stats {
+	list-style: none;
+	margin: 0 0 24px;
+	padding: 0;
+}
+
+.tus-player-stats li {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	border-bottom: 1px solid #333;
+	padding: 12px 0;
+}
+
+.tus-player-stats strong {
+	color: #888;
+	font-weight: 600;
+}
+
+.tus-player-stats span {
+	font-weight: 700;
+}
+
+.tus-player-sponsor {
+	max-width: 280px;
+	margin-bottom: 28px;
+}
+
+.tus-player-bio {
+	margin: 0 0 28px;
+	font-size: 1.05rem;
+	line-height: 1.7;
+	color: #e5e5e5;
+}
+
+.tus-player-cta {
+	display: inline-block;
+	background: #d70000;
+	color: #fff !important;
+	text-decoration: none !important;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 14px 22px;
+}
+
+.tus-player-cta:hover {
+	background: #b40000;
+}
+
+.tus-player-sidebar__title {
+	margin: 0 0 16px;
+	padding-bottom: 10px;
+	border-bottom: 2px solid #d70000;
+	color: #fff;
+	font-size: 1rem;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+.tus-player-related {
+	list-style: none;
+	margin: 0 0 36px;
+	padding: 0;
+}
+
+.tus-player-related li + li {
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #333;
+}
+
+.tus-player-related a {
+	display: grid;
+	grid-template-columns: 84px 1fr;
+	gap: 12px;
+	align-items: center;
+	color: #fff !important;
+	text-decoration: none;
+}
+
+.tus-player-related a:hover,
+.tus-player-related a:focus-visible {
+	color: #fff !important;
+}
+
+.tus-player-related a:hover span,
+.tus-player-related a:focus-visible span {
+	color: #d70000;
+}
+
+.tus-player-related img {
+	width: 84px;
+	height: 105px;
+	object-fit: cover;
+	object-position: top;
+	display: block;
+	background: #1a1a1a;
+}
+
+.tus-player-related small {
+	display: block;
+	margin-top: 4px;
+	color: #aaa !important;
+	font-size: 0.8rem;
+}
+
+.tus-player-related a:hover small,
+.tus-player-related a:focus-visible small {
+	color: #ccc !important;
+}
+
+.tus-player-all__group {
+	margin: 18px 0 8px;
+	color: #d70000;
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.tus-player-all {
+	list-style: none;
+	margin: 0 0 8px;
+	padding: 0;
+}
+
+.tus-player-all li {
+	padding: 4px 0;
+}
+
+.tus-player-all a {
+	color: #ddd;
+	text-decoration: none;
+}
+
+.tus-player-all a:hover,
+.tus-player-sidebar__more a {
+	color: #fff;
+}
+
+.tus-player-sidebar__more {
+	margin-top: 20px;
+}
+
+.tus-player-sidebar__more a {
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+	.tus-player-layout {
+		grid-template-columns: 1fr;
+		padding-top: 28px;
+	}
+
+	.tus-player-hero {
+		min-height: 260px;
+	}
+}

@@ -32,7 +32,7 @@
 
   var INTENT_LABELS = {
     individuell: 'Individuelles Projekt',
-    festpreis: 'Festpreiswebsite',
+    festpreis: 'Festpreiswebseite',
     seo: 'Suchmaschinenoptimierung (SEO)',
     redesign: 'Webseite ReDesign oder ReLaunch',
     beratung: 'Hierzu brauche ich Beratung'

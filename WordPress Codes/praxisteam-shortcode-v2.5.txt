@@ -1,0 +1,939 @@
+<?php
+/**
+ * Plugin Name: Team Shortcode
+ * Description: Zeigt das Handball Team in modernen Cards (Dark Mode). Inklusive Akkordeon (gruppiert nach Team Name), Mobile-Grid, Hover-Effekten, Drag&Drop-Sortierung (Teams + Mitglieder), Spieler-PopUp. Shortcode: [praxisteam]
+ * Version: 2.5
+ * Author: Nicolas Zhigalov / Rocketory
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+// ==========================================
+// 1. Backend: Custom Post Type und Taxonomien
+// ==========================================
+function pt_register_team_cpt() {
+    $tax_loc_labels = array( 'name' => 'Team Namen', 'singular_name' => 'Team Name', 'menu_name' => 'Team Namen' );
+    $tax_loc_args = array( 'hierarchical' => true, 'labels' => $tax_loc_labels, 'show_ui' => true, 'show_admin_column' => true, 'rewrite' => array( 'slug' => 'team-name' ) );
+    register_taxonomy( 'praxisteam_location', array( 'praxisteam_member' ), $tax_loc_args );
+
+    $cpt_labels = array( 'name' => 'Handball Team', 'singular_name' => 'Teammitglied', 'menu_name' => 'Handball Team', 'add_new' => 'Neu hinzufügen', 'add_new_item' => 'Neues Teammitglied hinzufügen', 'all_items' => 'Alle Mitglieder' );
+    $cpt_args = array( 'labels' => $cpt_labels, 'public' => true, 'show_ui' => true, 'show_in_menu' => true, 'rewrite' => array( 'slug' => 'teammitglied' ), 'has_archive' => false, 'hierarchical' => false, 'menu_position' => 20, 'menu_icon' => 'dashicons-groups', 'supports' => array( 'title', 'editor', 'thumbnail', 'page-attributes' ) );
+    register_post_type( 'praxisteam_member', $cpt_args );
+}
+add_action( 'init', 'pt_register_team_cpt' );
+add_theme_support( 'post-thumbnails' );
+
+// ==========================================
+// 2. Meta Box für Spieler Details & Sponsor
+// ==========================================
+add_action( 'admin_enqueue_scripts', 'pt_enqueue_media_uploader' );
+function pt_enqueue_media_uploader( $hook ) {
+    global $typenow;
+    if ( $typenow === 'praxisteam_member' ) {
+        wp_enqueue_media();
+    }
+}
+
+function pt_add_player_details_meta_box() {
+    add_meta_box(
+        'pt_player_details_box',
+        'Spieler Details & PopUp Infos',
+        'pt_render_player_details_meta_box',
+        'praxisteam_member',
+        'normal',
+        'high'
+    );
+}
+add_action( 'add_meta_boxes', 'pt_add_player_details_meta_box' );
+
+function pt_render_player_details_meta_box( $post ) {
+    $number      = get_post_meta( $post->ID, 'pt_player_number', true );
+    $position    = get_post_meta( $post->ID, 'pt_player_position', true );
+    $birthday    = get_post_meta( $post->ID, 'pt_player_birthday', true );
+    $nationality = get_post_meta( $post->ID, 'pt_player_nationality', true );
+    $height      = get_post_meta( $post->ID, 'pt_player_height', true );
+    $sponsor     = get_post_meta( $post->ID, 'pt_sponsor_image', true );
+
+    wp_nonce_field( 'pt_save_player_details', 'pt_player_details_nonce' );
+
+    echo '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">';
+
+    echo '<div>';
+    echo '<p><label for="pt_player_number" style="font-weight:bold; display:block; margin-bottom:5px;">Rückennummer:</label>';
+    echo '<input type="text" id="pt_player_number" name="pt_player_number" value="' . esc_attr( $number ) . '" style="width:100%;" /></p>';
+
+    echo '<p><label for="pt_player_position" style="font-weight:bold; display:block; margin-bottom:5px;">Position:</label>';
+    echo '<input type="text" id="pt_player_position" name="pt_player_position" value="' . esc_attr( $position ) . '" style="width:100%;" /></p>';
+
+    echo '<p><label for="pt_player_birthday" style="font-weight:bold; display:block; margin-bottom:5px;">Geburtstag:</label>';
+    echo '<input type="text" id="pt_player_birthday" name="pt_player_birthday" value="' . esc_attr( $birthday ) . '" style="width:100%;" placeholder="z.B. 15.08.1995" /></p>';
+
+    echo '<p><label for="pt_player_nationality" style="font-weight:bold; display:block; margin-bottom:5px;">Nationalität:</label>';
+    echo '<input type="text" id="pt_player_nationality" name="pt_player_nationality" value="' . esc_attr( $nationality ) . '" style="width:100%;" /></p>';
+
+    echo '<p><label for="pt_player_height" style="font-weight:bold; display:block; margin-bottom:5px;">Größe:</label>';
+    echo '<input type="text" id="pt_player_height" name="pt_player_height" value="' . esc_attr( $height ) . '" style="width:100%;" placeholder="z.B. 192 cm" /></p>';
+    echo '</div>';
+
+    echo '<div>';
+    echo '<p><label for="pt_sponsor_image" style="font-weight:bold; display:block; margin-bottom:5px;">Sponsor Logo (Bild-URL):</label>';
+    echo '<input type="text" id="pt_sponsor_image" name="pt_sponsor_image" value="' . esc_attr( $sponsor ) . '" style="width:100%; margin-bottom:10px;" />';
+    echo '<input type="button" id="pt_upload_sponsor_btn" class="button button-primary" value="Bild auswählen" /></p>';
+    if ( ! empty( $sponsor ) ) {
+        echo '<p><img src="' . esc_url( $sponsor ) . '" style="max-width:150px; border:1px solid #ddd; padding:5px; background:#fff; border-radius:4px;" /></p>';
+    }
+    echo '</div>';
+
+    echo '</div>';
+    ?>
+    <script>
+    jQuery(document).ready(function($){
+        var mediaUploader;
+        $('#pt_upload_sponsor_btn').click(function(e) {
+            e.preventDefault();
+            if (mediaUploader) {
+                mediaUploader.open();
+                return;
+            }
+            mediaUploader = wp.media.frames.file_frame = wp.media({
+                title: 'Sponsor Logo auswählen',
+                button: { text: 'Logo übernehmen' },
+                multiple: false
+            });
+            mediaUploader.on('select', function() {
+                var attachment = mediaUploader.state().get('selection').first().toJSON();
+                $('#pt_sponsor_image').val(attachment.url);
+            });
+            mediaUploader.open();
+        });
+    });
+    </script>
+    <?php
+}
+
+function pt_save_player_details_meta_box( $post_id ) {
+    if ( ! isset( $_POST['pt_player_details_nonce'] ) || ! wp_verify_nonce( $_POST['pt_player_details_nonce'], 'pt_save_player_details' ) ) {
+        return;
+    }
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        return;
+    }
+
+    $fields = array(
+        'pt_player_number',
+        'pt_player_position',
+        'pt_player_birthday',
+        'pt_player_nationality',
+        'pt_player_height',
+        'pt_sponsor_image'
+    );
+
+    foreach ( $fields as $field ) {
+        if ( isset( $_POST[ $field ] ) ) {
+            $val = wp_unslash( $_POST[ $field ] );
+            if ( 'pt_sponsor_image' === $field ) {
+                update_post_meta( $post_id, $field, esc_url_raw( $val ) );
+            } else {
+                update_post_meta( $post_id, $field, sanitize_text_field( $val ) );
+            }
+        }
+    }
+}
+add_action( 'save_post', 'pt_save_player_details_meta_box' );
+
+// ==========================================
+// 3. Spalte für Reihenfolge in der Liste
+// ==========================================
+add_filter( 'manage_praxisteam_member_posts_columns', 'pt_set_custom_edit_team_columns' );
+function pt_set_custom_edit_team_columns( $columns ) {
+    $new = array();
+    foreach ( $columns as $key => $label ) {
+        $new[ $key ] = $label;
+        if ( 'title' === $key ) {
+            $new['pt_number']   = 'Nr.';
+            $new['pt_position'] = 'Position';
+            $new['menu_order']  = 'Reihenfolge';
+        }
+    }
+    if ( ! isset( $new['menu_order'] ) ) {
+        $new['menu_order'] = 'Reihenfolge';
+    }
+    return $new;
+}
+add_action( 'manage_praxisteam_member_posts_custom_column', 'pt_custom_team_column', 10, 2 );
+function pt_custom_team_column( $column, $post_id ) {
+    if ( 'menu_order' === $column ) {
+        $post = get_post( $post_id );
+        echo esc_html( $post->menu_order );
+    }
+    if ( 'pt_number' === $column ) {
+        echo esc_html( get_post_meta( $post_id, 'pt_player_number', true ) );
+    }
+    if ( 'pt_position' === $column ) {
+        echo esc_html( get_post_meta( $post_id, 'pt_player_position', true ) );
+    }
+}
+add_filter( 'manage_edit-praxisteam_member_sortable_columns', 'pt_sortable_team_columns' );
+function pt_sortable_team_columns( $columns ) {
+    $columns['menu_order'] = 'menu_order';
+    return $columns;
+}
+
+// ==========================================
+// 4. Backend: Anordnung (Drag & Drop pro Team)
+// ==========================================
+function pt_add_settings_page() {
+	$page_hook = add_submenu_page(
+		'edit.php?post_type=praxisteam_member',
+		'Team Anordnung',
+		'Anordnung',
+		'edit_posts',
+		'pt-settings',
+		'pt_render_settings_page'
+	);
+
+	add_action(
+		'admin_enqueue_scripts',
+		function ( $hook ) use ( $page_hook ) {
+			if ( $hook !== $page_hook ) {
+				return;
+			}
+			wp_enqueue_script( 'jquery-ui-sortable' );
+		}
+	);
+}
+add_action( 'admin_menu', 'pt_add_settings_page' );
+
+function pt_save_team_member_order( $order_map ) {
+	if ( ! is_array( $order_map ) || empty( $order_map ) ) {
+		return;
+	}
+
+	foreach ( $order_map as $post_id => $menu_order ) {
+		$post_id = intval( $post_id );
+		if ( $post_id <= 0 ) {
+			continue;
+		}
+		if ( 'praxisteam_member' !== get_post_type( $post_id ) ) {
+			continue;
+		}
+		wp_update_post(
+			array(
+				'ID'         => $post_id,
+				'menu_order' => intval( $menu_order ),
+			)
+		);
+	}
+}
+
+function pt_save_team_location_order( $term_ids ) {
+	if ( ! is_array( $term_ids ) ) {
+		return;
+	}
+
+	$term_ids = array_values(
+		array_filter(
+			array_map( 'intval', $term_ids ),
+			function ( $id ) {
+				return $id > 0 && term_exists( $id, 'praxisteam_location' );
+			}
+		)
+	);
+
+	update_option( 'pt_team_location_order', $term_ids );
+}
+
+function pt_get_team_locations_ordered( $hide_empty = false ) {
+	$terms = get_terms(
+		array(
+			'taxonomy'   => 'praxisteam_location',
+			'hide_empty' => (bool) $hide_empty,
+		)
+	);
+
+	if ( empty( $terms ) || is_wp_error( $terms ) ) {
+		return array();
+	}
+
+	$saved_order = get_option( 'pt_team_location_order', array() );
+	$saved_order = array_map( 'intval', (array) $saved_order );
+
+	$terms_by_id = array();
+	foreach ( $terms as $term ) {
+		$terms_by_id[ $term->term_id ] = $term;
+	}
+
+	$ordered = array();
+	foreach ( $saved_order as $term_id ) {
+		if ( isset( $terms_by_id[ $term_id ] ) ) {
+			$ordered[] = $terms_by_id[ $term_id ];
+			unset( $terms_by_id[ $term_id ] );
+		}
+	}
+
+	foreach ( $terms_by_id as $term ) {
+		$ordered[] = $term;
+	}
+
+	if ( empty( $saved_order ) ) {
+		usort(
+			$ordered,
+			function ( $a, $b ) {
+				return strcasecmp( $a->name, $b->name );
+			}
+		);
+	}
+
+	return $ordered;
+}
+
+function pt_render_settings_page() {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return;
+	}
+
+	if ( isset( $_POST['pt_submit_settings'] ) && check_admin_referer( 'pt_settings_action', 'pt_settings_nonce' ) ) {
+		if ( isset( $_POST['team_location_order'] ) && is_array( $_POST['team_location_order'] ) ) {
+			pt_save_team_location_order( wp_unslash( $_POST['team_location_order'] ) );
+		}
+		if ( isset( $_POST['team_order'] ) && is_array( $_POST['team_order'] ) ) {
+			pt_save_team_member_order( wp_unslash( $_POST['team_order'] ) );
+		}
+		echo '<div class="notice notice-success is-dismissible"><p>Anordnung erfolgreich gespeichert!</p></div>';
+	}
+
+	$locations = pt_get_team_locations_ordered( false );
+	?>
+	<div class="wrap pt-order-wrap">
+		<h1>Handball Team – Anordnung</h1>
+		<p class="description">Sortiere <strong>Teams</strong> (welches oben steht) und <strong>Teammitglieder</strong> pro Team per Drag&nbsp;&amp;&nbsp;Drop. Nach dem Speichern gilt die Reihenfolge im Frontend (Shortcode <code>[praxisteam]</code>). Die Position auf der Karte kommt aus dem Feld „Position“ beim jeweiligen Teammitglied.</p>
+
+		<form method="post" action="">
+			<?php wp_nonce_field( 'pt_settings_action', 'pt_settings_nonce' ); ?>
+
+			<?php if ( empty( $locations ) || is_wp_error( $locations ) ) : ?>
+				<div class="notice notice-warning"><p>Keine Team Namen vorhanden. Lege zuerst unter <a href="<?php echo esc_url( admin_url( 'edit-tags.php?taxonomy=praxisteam_location&post_type=praxisteam_member' ) ); ?>">Team Namen</a> Teams an.</p></div>
+			<?php else : ?>
+				<div id="pt-sortable-teams" class="pt-order-teams">
+					<?php
+					foreach ( $locations as $loc ) :
+						$team_query = new WP_Query(
+							array(
+								'post_type'      => 'praxisteam_member',
+								'posts_per_page' => -1,
+								'orderby'        => array(
+									'menu_order' => 'ASC',
+									'title'      => 'ASC',
+								),
+								'order'          => 'ASC',
+								'tax_query'      => array(
+									array(
+										'taxonomy' => 'praxisteam_location',
+										'field'    => 'term_id',
+										'terms'    => $loc->term_id,
+									),
+								),
+							)
+						);
+						?>
+						<div class="pt-order-team" data-term-id="<?php echo esc_attr( $loc->term_id ); ?>">
+							<h2 class="pt-order-team__title pt-team-drag-handle">
+								<span class="dashicons dashicons-move" aria-hidden="true"></span>
+								<span><?php echo esc_html( $loc->name ); ?></span>
+								<input type="hidden" name="team_location_order[]" value="<?php echo esc_attr( $loc->term_id ); ?>">
+							</h2>
+
+							<?php if ( $team_query->have_posts() ) : ?>
+								<table class="wp-list-table widefat fixed striped pt-order-table">
+									<thead>
+										<tr>
+											<th scope="col" class="column-order" style="width:48px;"></th>
+											<th scope="col">Teammitglied</th>
+											<th scope="col" style="width:90px;">Position</th>
+											<th scope="col" style="width:70px;">Nr.</th>
+										</tr>
+									</thead>
+									<tbody class="pt-sortable-posts" data-team-id="<?php echo esc_attr( $loc->term_id ); ?>">
+										<?php
+										$post_index = 0;
+										while ( $team_query->have_posts() ) :
+											$team_query->the_post();
+											$member_number = get_post_meta( get_the_ID(), 'pt_player_number', true );
+											$member_pos    = get_post_meta( get_the_ID(), 'pt_player_position', true );
+											$thumb         = get_the_post_thumbnail( get_the_ID(), array( 40, 40 ), array( 'class' => 'pt-order-thumb' ) );
+											?>
+											<tr class="pt-order-row">
+												<td class="pt-drag-handle" aria-hidden="true">
+													<span class="dashicons dashicons-menu" title="Ziehen zum Sortieren"></span>
+												</td>
+												<td>
+													<div class="pt-order-member">
+														<?php if ( $thumb ) : ?>
+															<?php echo $thumb; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+														<?php else : ?>
+															<span class="pt-order-thumb pt-order-thumb--empty" aria-hidden="true"></span>
+														<?php endif; ?>
+														<strong><?php the_title(); ?></strong>
+													</div>
+													<input type="hidden" class="pt-post-order-input" name="team_order[<?php echo esc_attr( get_the_ID() ); ?>]" value="<?php echo esc_attr( $post_index ); ?>">
+												</td>
+												<td><?php echo esc_html( $member_pos ?: '—' ); ?></td>
+												<td><?php echo esc_html( $member_number ?: '—' ); ?></td>
+											</tr>
+											<?php
+											$post_index++;
+										endwhile;
+										wp_reset_postdata();
+										?>
+									</tbody>
+								</table>
+							<?php else : ?>
+								<p class="pt-order-empty"><em>Noch keine Mitglieder in diesem Team.</em></p>
+							<?php endif; ?>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+
+			<p class="submit pt-order-submit">
+				<button type="submit" name="pt_submit_settings" class="button button-primary button-hero">Anordnung speichern</button>
+			</p>
+		</form>
+	</div>
+
+	<style>
+		.pt-order-wrap .description { max-width: 760px; margin-bottom: 24px; }
+		.pt-order-teams { display: grid; gap: 28px; max-width: 900px; }
+		.pt-order-team { background: #fff; border: 1px solid #c3c4c7; box-shadow: 0 1px 1px rgba(0,0,0,.04); }
+		.pt-order-team.pt-team-placeholder {
+			min-height: 72px;
+			background: #f0f6fc;
+			outline: 2px dashed #2271b1;
+			border-color: #2271b1;
+		}
+		.pt-order-team.ui-sortable-helper {
+			box-shadow: 0 12px 32px rgba(0,0,0,.15);
+		}
+		.pt-order-team__title {
+			margin: 0;
+			padding: 14px 16px;
+			font-size: 1.05rem;
+			border-bottom: 3px solid #D70000;
+			background: #f6f7f7;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			user-select: none;
+		}
+		.pt-team-drag-handle { cursor: grab; }
+		.pt-team-drag-handle:active { cursor: grabbing; }
+		.pt-order-team__title .dashicons { color: #8c8f94; flex-shrink: 0; }
+		.pt-order-table { border: 0; margin: 0; }
+		.pt-order-table thead th { font-weight: 600; }
+		.pt-order-row { background: #fff; }
+		.pt-order-row.ui-sortable-helper {
+			display: table;
+			background: #fff;
+			box-shadow: 0 8px 24px rgba(0,0,0,.12);
+		}
+		.pt-order-row.ui-sortable-helper td { background: #fff; }
+		.pt-sortable-placeholder {
+			visibility: visible !important;
+			background: #f0f6fc;
+			outline: 2px dashed #2271b1;
+		}
+		.pt-sortable-placeholder td { height: 52px; border-top: 1px dashed #2271b1; border-bottom: 1px dashed #2271b1; }
+		.pt-drag-handle {
+			width: 48px;
+			cursor: grab;
+			text-align: center;
+			vertical-align: middle;
+			color: #8c8f94;
+			user-select: none;
+		}
+		.pt-drag-handle:active { cursor: grabbing; }
+		.pt-order-member { display: flex; align-items: center; gap: 12px; }
+		.pt-order-thumb {
+			width: 40px;
+			height: 40px;
+			object-fit: cover;
+			border-radius: 0;
+			display: block;
+			flex-shrink: 0;
+		}
+		.pt-order-thumb--empty {
+			background: #e5e5e5;
+			display: inline-block;
+		}
+		.pt-order-empty { margin: 0; padding: 16px; color: #646970; }
+		.pt-order-submit {
+			position: sticky;
+			bottom: 0;
+			background: #f0f0f1;
+			margin: 24px 0 0;
+			padding: 16px 0;
+			border-top: 1px solid #c3c4c7;
+			z-index: 10;
+		}
+	</style>
+
+	<script>
+	jQuery(document).ready(function($) {
+		function reindexTeam($tbody) {
+			$tbody.children('tr.pt-order-row').each(function(index) {
+				$(this).find('.pt-post-order-input').val(index);
+			});
+		}
+
+		$('#pt-sortable-teams').sortable({
+			items: '> .pt-order-team',
+			handle: '.pt-team-drag-handle',
+			axis: 'y',
+			cursor: 'grabbing',
+			placeholder: 'pt-team-placeholder',
+			tolerance: 'pointer',
+			forcePlaceholderSize: true
+		});
+
+		$('.pt-sortable-posts').each(function() {
+			var $tbody = $(this);
+			$tbody.sortable({
+				items: '> tr.pt-order-row',
+				handle: '.pt-drag-handle',
+				axis: 'y',
+				cursor: 'grabbing',
+				placeholder: 'pt-sortable-placeholder',
+				forcePlaceholderSize: true,
+				tolerance: 'pointer',
+				helper: function(e, ui) {
+					ui.children().each(function() {
+						$(this).width($(this).width());
+					});
+					return ui;
+				},
+				update: function() {
+					reindexTeam($tbody);
+				}
+			});
+		});
+	});
+	</script>
+	<?php
+}
+
+// ==========================================
+// 5. Frontend: Shortcode [praxisteam]
+// ==========================================
+function pt_render_team_shortcode( $atts ) {
+    ob_start();
+
+    $locations = pt_get_team_locations_ordered( true );
+
+    if ( empty( $locations ) || is_wp_error( $locations ) ) {
+        return '<p style="color: #fff;">Keine Team Namen gefunden.</p>';
+    }
+    ?>
+
+    <style>
+        .pt-team-wrapper { font-family: inherit; }
+
+        .pt-group { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; animation: ptFadeIn 0.5s ease-in-out; }
+        .pt-group-title { cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 15px 0; color: #ffffff; font-size: 1.6rem; font-weight: 700; transition: all 0.2s ease; }
+        @media (min-width: 769px) { .pt-group-title:hover { color: #ffffff; } }
+        .pt-group-title::after { content: ''; display: inline-block; width: 8px; height: 8px; border-bottom: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); transition: transform 0.2s ease; margin-right: 10px; }
+        .pt-group.is-open .pt-group-title::after { transform: rotate(-135deg); margin-top: 4px; }
+        .pt-group.is-open .pt-group-title { color: #ffffff; }
+        .pt-grid-wrapper { display: none; padding: 20px 0 30px 0; }
+        .pt-group.is-open .pt-grid-wrapper { display: block; animation: ptSlideDown 0.3s ease-in-out; }
+
+        .pt-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2em;
+        }
+
+        .pt-card { cursor: pointer; background: #1A1A1A; border-radius: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow: hidden; transition: transform 0.2s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; border: none; }
+        .pt-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(215, 0, 0, 0.25); }
+
+        .pt-card-img-wrapper {
+            position: relative !important;
+            width: 100%;
+            display: block;
+            background: #1A1A1A;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 0;
+            overflow: hidden;
+        }
+        .pt-card-img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+            margin: 0 !important;
+        }
+        .pt-card-number {
+            position: absolute !important;
+            bottom: 12px !important;
+            left: 15px !important;
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+            z-index: 10;
+            line-height: 1;
+            margin: 0;
+            pointer-events: none;
+        }
+
+        .pt-card-content { padding: 20px 25px 25px 25px; flex-grow: 1; background: #1A1A1A; line-height: 1.4; display: flex; flex-direction: column; }
+        .pt-card-title { margin: 0 0 10px 0; font-size: 1.15rem; color: #ffffff; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pt-card-text { color: #d1d5db; font-size: 0.85rem; line-height: 1.6; margin: 0; flex-grow: 1; }
+
+        .pt-sponsor-card { background: #ffffff; border-radius: 8px; padding: 12px; margin-top: 20px; text-align: center; }
+        .pt-sponsor-title { font-size: 0.65rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 8px 0; font-weight: 600; line-height: 1; }
+        .pt-sponsor-logo { max-width: 100%; height: auto; max-height: 50px; display: block; margin: 0 auto; }
+
+        /*
+         * Modal: z-index ÜBER der TuS Mobile-Nav (100050/100060),
+         * damit Schließen-Button und Kopf nicht verdeckt werden.
+         */
+        .pt-modal-wrapper {
+            position: fixed;
+            inset: 0;
+            z-index: 100100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .pt-modal-wrapper.is-active { opacity: 1; pointer-events: auto; }
+        .pt-modal-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.85); cursor: pointer; }
+        .pt-modal-content {
+            position: relative;
+            background: #1A1A1A;
+            width: 90%;
+            max-width: 800px;
+            max-height: min(90vh, 100%);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: row;
+            animation: ptSlideDown 0.3s ease-out;
+            z-index: 1;
+        }
+        .pt-modal-wrapper .pt-modal-close,
+        .pt-modal-wrapper .pt-modal-close:hover,
+        .pt-modal-wrapper .pt-modal-close:focus,
+        .pt-modal-wrapper .pt-modal-close:focus-visible,
+        .pt-modal-wrapper .pt-modal-close:active,
+        .pt-modal-wrapper .pt-modal-close:visited {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff !important;
+            font-size: 1.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            line-height: 1;
+            background: transparent !important;
+            background-color: transparent !important;
+            background-image: none !important;
+            border-radius: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            outline-offset: 0 !important;
+            text-decoration: none !important;
+            padding: 0 !important;
+            margin: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.2s ease;
+        }
+        .pt-modal-wrapper .pt-modal-close:hover,
+        .pt-modal-wrapper .pt-modal-close:focus,
+        .pt-modal-wrapper .pt-modal-close:focus-visible {
+            color: #D70000 !important;
+            background: transparent !important;
+            background-color: transparent !important;
+            background-image: none !important;
+        }
+
+        .pt-modal-left { width: 40%; background: #000; display: flex; align-items: flex-start; justify-content: center; overflow: hidden; position: relative; flex-shrink: 0; }
+        .pt-modal-left img { width: 100%; height: 100%; object-fit: cover; object-position: top center; aspect-ratio: 4/5; display: block; }
+        .pt-modal-right { width: 60%; padding: 40px; color: #fff; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .pt-modal-name { font-size: 2rem; text-transform: uppercase; margin: 0 0 20px 0; font-weight: 800; border-bottom: 1px solid #333; padding-bottom: 15px; }
+
+        .pt-modal-stats-list { list-style: none; padding: 0; margin: 0 0 30px 0; }
+        .pt-modal-stats-list li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #333; padding: 12px 0; font-size: 1rem; }
+        .pt-modal-stats-list li strong { color: #888; font-weight: 600; }
+        .pt-modal-stats-list li span { font-weight: 700; text-align: right; }
+
+        @keyframes ptFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes ptSlideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .pt-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .pt-card-number { font-size: 1.4rem; bottom: 10px !important; left: 10px !important; }
+            .pt-card-content { padding: 15px; }
+            .pt-card-title { font-size: 0.85rem !important; margin-bottom: 8px !important; font-weight: 800 !important; }
+            .pt-card-text { font-size: 0.7rem !important; line-height: 1.4 !important; }
+            .pt-card-text p, .pt-card-text span, .pt-card-text div { font-size: 0.7rem !important; line-height: 1.4 !important; }
+            .pt-group-title { font-size: 1.3rem; }
+            .pt-sponsor-card { padding: 8px; margin-top: 15px; }
+            .pt-sponsor-title { font-size: 0.55rem; margin-bottom: 5px; }
+            .pt-sponsor-logo { max-height: 35px; }
+
+            /* Mobile Modal: unterhalb der fixierten Mobile-Nav (~60px) starten */
+            .pt-modal-wrapper {
+                align-items: flex-start;
+                padding-top: calc(68px + env(safe-area-inset-top, 0px));
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-bottom: max(10px, env(safe-area-inset-bottom));
+            }
+            .admin-bar .pt-modal-wrapper {
+                padding-top: calc(68px + 46px + env(safe-area-inset-top, 0px));
+            }
+            .pt-modal-content {
+                flex-direction: column;
+                width: 100%;
+                max-width: 520px;
+                max-height: calc(100dvh - 68px - env(safe-area-inset-top, 0px) - 20px);
+                margin: 0 auto;
+            }
+            .pt-modal-wrapper .pt-modal-close,
+            .pt-modal-wrapper .pt-modal-close:hover,
+            .pt-modal-wrapper .pt-modal-close:focus,
+            .pt-modal-wrapper .pt-modal-close:focus-visible,
+            .pt-modal-wrapper .pt-modal-close:active {
+                top: 8px;
+                right: 8px;
+                background: transparent !important;
+                background-color: transparent !important;
+                background-image: none !important;
+                box-shadow: none !important;
+            }
+            .pt-modal-left {
+                width: 100%;
+                height: auto;
+                max-height: 42vh;
+                flex-shrink: 0;
+            }
+            .pt-modal-left img {
+                width: 100%;
+                height: 100%;
+                max-height: 42vh;
+                aspect-ratio: 4/5;
+                object-fit: cover;
+                object-position: top center;
+            }
+            .pt-modal-right { width: 100%; padding: 20px 20px 24px; }
+            .pt-modal-name { font-size: 1.35rem; margin-bottom: 12px; padding-bottom: 10px; padding-right: 40px; }
+            .pt-modal-stats-list li { font-size: 0.9rem; padding: 10px 0; }
+        }
+    </style>
+
+    <div class="pt-team-wrapper">
+        <div class="pt-team-container">
+            <?php
+            $group_index = 0;
+            foreach ( $locations as $loc ) :
+                $open_class = ( 0 === $group_index ) ? 'is-open' : '';
+                ?>
+                <div class="pt-group <?php echo esc_attr( $open_class ); ?>">
+                    <h2 class="pt-group-title"><?php echo esc_html( $loc->name ); ?></h2>
+                    <div class="pt-grid-wrapper">
+                        <div class="pt-grid">
+                            <?php
+                            $team_query = new WP_Query( array(
+                                'post_type'      => 'praxisteam_member',
+                                'posts_per_page' => -1,
+                                'orderby'        => array(
+                                    'menu_order' => 'ASC',
+                                    'title'      => 'ASC',
+                                ),
+                                'tax_query'      => array(
+                                    array( 'taxonomy' => 'praxisteam_location', 'field' => 'term_id', 'terms' => $loc->term_id ),
+                                ),
+                            ) );
+
+                            if ( $team_query->have_posts() ) :
+                                while ( $team_query->have_posts() ) :
+                                    $team_query->the_post();
+
+                                    $member_number = get_post_meta( get_the_ID(), 'pt_player_number', true );
+                                    $member_pos    = get_post_meta( get_the_ID(), 'pt_player_position', true );
+                                    $member_bday   = get_post_meta( get_the_ID(), 'pt_player_birthday', true );
+                                    $member_nat    = get_post_meta( get_the_ID(), 'pt_player_nationality', true );
+                                    $member_height = get_post_meta( get_the_ID(), 'pt_player_height', true );
+                                    $sponsor_img   = get_post_meta( get_the_ID(), 'pt_sponsor_image', true );
+                                    $img_url       = has_post_thumbnail() ? get_the_post_thumbnail_url( get_the_ID(), 'large' ) : '';
+                                    ?>
+                                    <div class="pt-card"
+                                         data-name="<?php echo esc_attr( get_the_title() ); ?>"
+                                         data-img="<?php echo esc_url( $img_url ); ?>"
+                                         data-number="<?php echo esc_attr( $member_number ); ?>"
+                                         data-position="<?php echo esc_attr( $member_pos ); ?>"
+                                         data-birthday="<?php echo esc_attr( $member_bday ); ?>"
+                                         data-nationality="<?php echo esc_attr( $member_nat ); ?>"
+                                         data-height="<?php echo esc_attr( $member_height ); ?>"
+                                         data-sponsor="<?php echo esc_url( $sponsor_img ); ?>"
+                                    >
+                                        <div class="pt-card-img-wrapper">
+                                            <?php if ( $img_url ) : ?>
+                                                <img class="pt-card-img" src="<?php echo esc_url( $img_url ); ?>" alt="<?php the_title_attribute(); ?>">
+                                            <?php endif; ?>
+                                            <?php if ( ! empty( $member_number ) ) : ?>
+                                                <div class="pt-card-number"><?php echo esc_html( $member_number ); ?></div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="pt-card-content">
+                                            <h3 class="pt-card-title"><?php the_title(); ?></h3>
+                                            <?php if ( ! empty( $member_pos ) ) : ?>
+                                                <div class="pt-card-text"><?php echo esc_html( $member_pos ); ?></div>
+                                            <?php endif; ?>
+                                            <?php if ( ! empty( $sponsor_img ) ) : ?>
+                                                <div class="pt-sponsor-card">
+                                                    <p class="pt-sponsor-title">Präsentiert von</p>
+                                                    <img class="pt-sponsor-logo" src="<?php echo esc_url( $sponsor_img ); ?>" alt="Sponsor">
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <?php
+                                endwhile;
+                                wp_reset_postdata();
+                            endif;
+                            ?>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                $group_index++;
+            endforeach;
+            ?>
+        </div>
+    </div>
+
+    <div class="pt-modal-wrapper" id="pt-modal" aria-hidden="true">
+        <div class="pt-modal-overlay"></div>
+        <div class="pt-modal-content" role="dialog" aria-modal="true" aria-labelledby="pt-modal-name">
+            <button type="button" class="pt-modal-close" aria-label="Schließen">&times;</button>
+            <div class="pt-modal-left">
+                <img id="pt-modal-img" src="" alt="">
+            </div>
+            <div class="pt-modal-right">
+                <h3 class="pt-modal-name" id="pt-modal-name"></h3>
+                <ul class="pt-modal-stats-list">
+                    <li id="pt-modal-row-number"><strong>Rückennummer</strong> <span id="pt-modal-number"></span></li>
+                    <li id="pt-modal-row-position"><strong>Position</strong> <span id="pt-modal-position"></span></li>
+                    <li id="pt-modal-row-birthday"><strong>Geburtstag</strong> <span id="pt-modal-birthday"></span></li>
+                    <li id="pt-modal-row-nationality"><strong>Nationalität</strong> <span id="pt-modal-nationality"></span></li>
+                    <li id="pt-modal-row-height"><strong>Größe</strong> <span id="pt-modal-height"></span></li>
+                </ul>
+                <div id="pt-modal-sponsor-wrapper" class="pt-sponsor-card" style="display:none; margin-top:0;">
+                    <p class="pt-sponsor-title">Präsentiert von</p>
+                    <img id="pt-modal-sponsor-img" class="pt-sponsor-logo" src="" alt="Sponsor">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var groupTitles = document.querySelectorAll('.pt-group-title');
+            groupTitles.forEach(function(title) {
+                title.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('is-open');
+                });
+            });
+
+            var cards = document.querySelectorAll('.pt-card');
+            var modal = document.getElementById('pt-modal');
+            if (!modal) return;
+            var overlay = modal.querySelector('.pt-modal-overlay');
+            var closeBtn = modal.querySelector('.pt-modal-close');
+
+            function openModal() {
+                modal.classList.add('is-active');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modal.classList.remove('is-active');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
+
+            cards.forEach(function(card) {
+                card.addEventListener('click', function() {
+                    var name = this.getAttribute('data-name');
+                    var img = this.getAttribute('data-img');
+                    var sponsor = this.getAttribute('data-sponsor');
+                    var statsMap = ['number', 'position', 'birthday', 'nationality', 'height'];
+
+                    document.getElementById('pt-modal-name').textContent = name || '';
+                    var imgEl = document.getElementById('pt-modal-img');
+                    imgEl.src = img || '';
+                    imgEl.alt = name || '';
+                    imgEl.style.display = img ? 'block' : 'none';
+
+                    statsMap.forEach(function(stat) {
+                        var val = this.getAttribute('data-' + stat);
+                        var row = document.getElementById('pt-modal-row-' + stat);
+                        if (val && val.trim() !== '') {
+                            document.getElementById('pt-modal-' + stat).textContent = val;
+                            row.style.display = 'flex';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }.bind(this));
+
+                    var sponsorWrapper = document.getElementById('pt-modal-sponsor-wrapper');
+                    if (sponsor && sponsor.trim() !== '') {
+                        document.getElementById('pt-modal-sponsor-img').src = sponsor;
+                        sponsorWrapper.style.display = 'block';
+                    } else {
+                        sponsorWrapper.style.display = 'none';
+                    }
+
+                    openModal();
+                });
+            });
+
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (overlay) overlay.addEventListener('click', closeModal);
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.classList.contains('is-active')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode( 'praxisteam', 'pt_render_team_shortcode' );

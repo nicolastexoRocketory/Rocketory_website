@@ -1,0 +1,357 @@
+<?php
+/**
+ * Plugin Name: Fahrschule Delil – Staggered Entrance Animation
+ * Description: Scroll-Einblendung .fadery / .fadery1–4 und .fadery-d / .fadery-d1–4 (nur Desktop). Buttons: Klasse wird auf Widget-Wrapper verschoben.
+ * Version: 7.1
+ * Author: Nicolas Zhigalov / Rocketory
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+add_action( 'wp_footer', 'fdelil_staggered_entrance_animation_v71', 99 );
+function fdelil_staggered_entrance_animation_v71() {
+
+	if ( isset( $_GET['elementor-preview'] ) || ( isset( $_GET['action'] ) && 'elementor' === $_GET['action'] ) ) {
+		return;
+	}
+
+	if ( class_exists( '\Elementor\Plugin' ) ) {
+		$elementor = \Elementor\Plugin::$instance;
+		if ( $elementor->editor->is_edit_mode() || $elementor->preview->is_preview_mode() ) {
+			return;
+		}
+	}
+
+	?>
+	<style id="fdelil-fadery-css">
+		/* Nur Wrapper & normale Elemente — NIEMALS .elementor-button direkt anfassen */
+		.fadery:not(.fadery-finished),
+		.fadery1:not(.fadery-finished),
+		.fadery2:not(.fadery-finished),
+		.fadery3:not(.fadery-finished),
+		.fadery4:not(.fadery-finished) {
+			opacity: 0;
+			transform: translateY(50px) scale(0.95);
+			filter: blur(4px);
+			transition:
+				opacity 1s cubic-bezier(0.25, 1, 0.5, 1),
+				transform 1s cubic-bezier(0.25, 1, 0.5, 1),
+				filter 1s cubic-bezier(0.25, 1, 0.5, 1);
+			will-change: opacity, transform, filter;
+		}
+
+		/* fadery-d*: Animation nur ab Desktop (>1024px) */
+		@media (min-width: 1025px) {
+			.fadery-d:not(.fadery-finished),
+			.fadery-d1:not(.fadery-finished),
+			.fadery-d2:not(.fadery-finished),
+			.fadery-d3:not(.fadery-finished),
+			.fadery-d4:not(.fadery-finished) {
+				opacity: 0;
+				transform: translateY(50px) scale(0.95);
+				filter: blur(4px);
+				transition:
+					opacity 1s cubic-bezier(0.25, 1, 0.5, 1),
+					transform 1s cubic-bezier(0.25, 1, 0.5, 1),
+					filter 1s cubic-bezier(0.25, 1, 0.5, 1);
+				will-change: opacity, transform, filter;
+			}
+		}
+
+		/* Tablet + Mobile: fadery-d sofort sichtbar, keine Animation */
+		@media (max-width: 1024px) {
+			.fadery-d,
+			.fadery-d1,
+			.fadery-d2,
+			.fadery-d3,
+			.fadery-d4,
+			.fadery-host.fadery-d,
+			.fadery-host.fadery-d1,
+			.fadery-host.fadery-d2,
+			.fadery-host.fadery-d3,
+			.fadery-host.fadery-d4 {
+				opacity: 1 !important;
+				transform: none !important;
+				filter: none !important;
+				transition: none !important;
+				will-change: auto;
+			}
+		}
+
+		/* Button-Hosts: leichter Slide, kein blur/scale */
+		.fadery-host:not(.fadery-finished):not(.fadery-d):not(.fadery-d1):not(.fadery-d2):not(.fadery-d3):not(.fadery-d4) {
+			opacity: 0;
+			transform: translateY(24px);
+			filter: none;
+			transition:
+				opacity 0.85s cubic-bezier(0.25, 1, 0.5, 1),
+				transform 0.85s cubic-bezier(0.25, 1, 0.5, 1);
+			will-change: opacity, transform;
+		}
+
+		@media (min-width: 1025px) {
+			.fadery-host.fadery-d:not(.fadery-finished),
+			.fadery-host.fadery-d1:not(.fadery-finished),
+			.fadery-host.fadery-d2:not(.fadery-finished),
+			.fadery-host.fadery-d3:not(.fadery-finished),
+			.fadery-host.fadery-d4:not(.fadery-finished) {
+				opacity: 0;
+				transform: translateY(24px);
+				filter: none;
+				transition:
+					opacity 0.85s cubic-bezier(0.25, 1, 0.5, 1),
+					transform 0.85s cubic-bezier(0.25, 1, 0.5, 1);
+				will-change: opacity, transform;
+			}
+		}
+
+		.fadery,
+		.fadery1 { transition-delay: 0s; }
+		.fadery2 { transition-delay: 0.15s; }
+		.fadery3 { transition-delay: 0.3s; }
+		.fadery4 { transition-delay: 0.45s; }
+
+		.fadery-d,
+		.fadery-d1 { transition-delay: 0s; }
+		.fadery-d2 { transition-delay: 0.15s; }
+		.fadery-d3 { transition-delay: 0.3s; }
+		.fadery-d4 { transition-delay: 0.45s; }
+
+		.fadery-host.fadery,
+		.fadery-host.fadery1,
+		.fadery-host.fadery-d,
+		.fadery-host.fadery-d1 { transition-delay: 0s; }
+		.fadery-host.fadery2,
+		.fadery-host.fadery-d2 { transition-delay: 0.15s; }
+		.fadery-host.fadery3,
+		.fadery-host.fadery-d3 { transition-delay: 0.3s; }
+		.fadery-host.fadery4,
+		.fadery-host.fadery-d4 { transition-delay: 0.45s; }
+
+		.fadery.is-visible,
+		.fadery1.is-visible,
+		.fadery2.is-visible,
+		.fadery3.is-visible,
+		.fadery4.is-visible,
+		.fadery-d.is-visible,
+		.fadery-d1.is-visible,
+		.fadery-d2.is-visible,
+		.fadery-d3.is-visible,
+		.fadery-d4.is-visible,
+		.fadery-host.is-visible {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+			filter: blur(0);
+		}
+
+		.fadery-host.is-visible {
+			transform: translateY(0);
+			filter: none;
+		}
+
+		.fadery-finished {
+			opacity: 1;
+			transform: none;
+			filter: none;
+			will-change: auto;
+			transition: none;
+		}
+
+		@media (max-width: 767px) {
+			.fadery:not(.fadery-finished),
+			.fadery1:not(.fadery-finished),
+			.fadery2:not(.fadery-finished),
+			.fadery3:not(.fadery-finished),
+			.fadery4:not(.fadery-finished),
+			.fadery-host:not(.fadery-finished):not(.fadery-d):not(.fadery-d1):not(.fadery-d2):not(.fadery-d3):not(.fadery-d4) {
+				transition-duration: 0.6s;
+			}
+			.fadery2,
+			.fadery-host.fadery2 { transition-delay: 0.1s; }
+			.fadery3,
+			.fadery-host.fadery3 { transition-delay: 0.2s; }
+			.fadery4,
+			.fadery-host.fadery4 { transition-delay: 0.3s; }
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.fadery,
+			.fadery1,
+			.fadery2,
+			.fadery3,
+			.fadery4,
+			.fadery-d,
+			.fadery-d1,
+			.fadery-d2,
+			.fadery-d3,
+			.fadery-d4,
+			.fadery-host {
+				transition: none !important;
+				opacity: 1 !important;
+				transform: none !important;
+				filter: none !important;
+			}
+		}
+	</style>
+
+	<script id="fdelil-fadery-js">
+	document.addEventListener('DOMContentLoaded', function () {
+		var FADERY = [
+			'fadery', 'fadery1', 'fadery2', 'fadery3', 'fadery4',
+			'fadery-d', 'fadery-d1', 'fadery-d2', 'fadery-d3', 'fadery-d4'
+		];
+		var FADERY_DESKTOP = ['fadery-d', 'fadery-d1', 'fadery-d2', 'fadery-d3', 'fadery-d4'];
+		var SELECTOR = '.fadery, .fadery1, .fadery2, .fadery3, .fadery4, .fadery-d, .fadery-d1, .fadery-d2, .fadery-d3, .fadery-d4';
+		var DESKTOP_MQ = window.matchMedia('(min-width: 1025px)');
+		var MOBILE_MQ = window.matchMedia('(max-width: 767px)');
+		var seen = new WeakSet();
+
+		function isInteractive(el) {
+			return el.matches('.elementor-button, a.elementor-button, button, input[type="submit"], .fdelil-mn__cta, .fdelil-termine-btn, .fdelil-btn, .fdc-btn');
+		}
+
+		function isDesktopOnly(el) {
+			for (var i = 0; i < FADERY_DESKTOP.length; i++) {
+				if (el.classList.contains(FADERY_DESKTOP[i])) return true;
+			}
+			return false;
+		}
+
+		function isDesktop() {
+			return DESKTOP_MQ.matches;
+		}
+
+		function skipOnViewport(el) {
+			return isDesktopOnly(el) && !isDesktop();
+		}
+
+		function revealInstant(el) {
+			el.classList.remove('is-visible');
+			el.classList.add('fadery-finished');
+		}
+
+		function getFaderyClass(el) {
+			for (var i = 0; i < FADERY.length; i++) {
+				if (el.classList.contains(FADERY[i])) return FADERY[i];
+			}
+			return null;
+		}
+
+		function removeFaderyClasses(el) {
+			FADERY.forEach(function (c) { el.classList.remove(c); });
+		}
+
+		function promoteButtonFadery() {
+			document.querySelectorAll('.elementor-button, button, a.elementor-button, .fdelil-mn__cta, .fdelil-termine-btn, .fdelil-btn').forEach(function (btn) {
+				var faderyClass = getFaderyClass(btn);
+				if (!faderyClass) return;
+
+				var host = btn.closest('.elementor-widget-button')
+					|| btn.closest('.elementor-widget')
+					|| btn.closest('.elementor-element');
+
+				if (!host || host === btn) {
+					host = document.createElement('div');
+					host.className = 'fadery-host';
+					btn.parentNode.insertBefore(host, btn);
+					host.appendChild(btn);
+				} else {
+					host.classList.add('fadery-host');
+				}
+
+				host.classList.add(faderyClass);
+				removeFaderyClasses(btn);
+			});
+		}
+
+		function getDelay(el) {
+			var mobile = MOBILE_MQ.matches;
+			if (el.classList.contains('fadery2') || el.classList.contains('fadery-d2')) return mobile ? 100 : 150;
+			if (el.classList.contains('fadery3') || el.classList.contains('fadery-d3')) return mobile ? 200 : 300;
+			if (el.classList.contains('fadery4') || el.classList.contains('fadery-d4')) return mobile ? 300 : 450;
+			return 0;
+		}
+
+		function finish(el) {
+			var mobile = MOBILE_MQ.matches;
+			var duration = el.classList.contains('fadery-host') ? (mobile ? 600 : 850) : (mobile ? 600 : 1000);
+			window.setTimeout(function () {
+				el.classList.remove('is-visible');
+				el.classList.add('fadery-finished');
+			}, duration + getDelay(el) + 60);
+		}
+
+		function bind() {
+			promoteButtonFadery();
+
+			var mobile = MOBILE_MQ.matches;
+			var nodes = document.querySelectorAll(SELECTOR);
+			if (!nodes.length) return;
+
+			var io = new IntersectionObserver(function (entries, obs) {
+				entries.forEach(function (entry) {
+					if (!entry.isIntersecting) return;
+					var el = entry.target;
+					if (el.classList.contains('fadery-finished') || isInteractive(el)) {
+						obs.unobserve(el);
+						return;
+					}
+					if (skipOnViewport(el)) {
+						revealInstant(el);
+						obs.unobserve(el);
+						return;
+					}
+					el.classList.add('is-visible');
+					finish(el);
+					obs.unobserve(el);
+				});
+			}, {
+				root: null,
+				rootMargin: mobile ? '0px 0px 80px 0px' : '0px 0px -30px 0px',
+				threshold: 0.01
+			});
+
+			nodes.forEach(function (el) {
+				if (isInteractive(el)) return;
+				if (el.classList.contains('fadery-finished')) return;
+				if (skipOnViewport(el)) {
+					revealInstant(el);
+					return;
+				}
+				if (seen.has(el)) return;
+				seen.add(el);
+				io.observe(el);
+			});
+		}
+
+		bind();
+		window.addEventListener('load', bind);
+
+		if (typeof DESKTOP_MQ.addEventListener === 'function') {
+			DESKTOP_MQ.addEventListener('change', function () {
+				document.querySelectorAll(SELECTOR).forEach(function (el) {
+					if (skipOnViewport(el)) {
+						revealInstant(el);
+					}
+				});
+			});
+		}
+
+		if (window.jQuery) {
+			window.jQuery(window).on('elementor/frontend/init', function () {
+				seen = new WeakSet();
+				bind();
+				if (window.elementorFrontend && window.elementorFrontend.hooks) {
+					window.elementorFrontend.hooks.addAction('frontend/element_ready/widget', function () {
+						seen = new WeakSet();
+						bind();
+					});
+				}
+			});
+		}
+	});
+	</script>
+	<?php
+}

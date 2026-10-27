@@ -1,0 +1,716 @@
+<?php
+/**
+ * Plugin Name: Fahrschule Delil – Custom Button Widget
+ * Description: Elementor-Button im Delil-Design (Big Shoulders, Akzent #FBEF03) mit SVG-Icon, Shimmer und Hover-Steuerung.
+ * Version: 1.1
+ * Author: Nicolas Zhigalov / Rocketory
+ * Author URI: https://rocketory.de
+ * Text Domain: fdelil-button
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Inline-SVG-Icons (currentColor).
+ */
+function fdelil_btn_icon_svg( $type = 'arrow' ) {
+	$icons = array(
+		'arrow' => '<svg class="fdelil-btn__svg fdelil-btn__svg--arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 12h12.2l-4.6-4.6L14 6l6 6-6 6-1.4-1.4 4.6-4.6H5z"/></svg>',
+		'arrow-up' => '<svg class="fdelil-btn__svg fdelil-btn__svg--arrow-up" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 17l1.4-1.4-4.6-4.6H20v-2H3.8l4.6-4.6L7 3 1 9l6 6z"/></svg>',
+		'chevron' => '<svg class="fdelil-btn__svg fdelil-btn__svg--chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M9.3 6.3 7.9 7.7 12.2 12l-4.3 4.3 1.4 1.4 5.7-5.7-5.7-5.7z"/></svg>',
+		'external' => '<svg class="fdelil-btn__svg fdelil-btn__svg--external" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M14 3h7v7h-2V6.4l-9.2 9.2-1.4-1.4L17.6 5H14V3zM5 5h6v2H7v10h10v-4h2v6H5V5z"/></svg>',
+		'phone' => '<svg class="fdelil-btn__svg fdelil-btn__svg--phone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.7 21 3 13.3 3 3.9c0-.5.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8z"/></svg>',
+	);
+
+	return isset( $icons[ $type ] ) ? $icons[ $type ] : $icons['arrow'];
+}
+
+function fdelil_btn_link_attrs( $link ) {
+	$link = is_array( $link ) ? $link : array();
+	$url  = ! empty( $link['url'] ) ? $link['url'] : '#';
+
+	$attrs = array(
+		'href' => esc_url( $url ),
+	);
+
+	if ( ! empty( $link['is_external'] ) ) {
+		$attrs['target'] = '_blank';
+		$attrs['rel']    = 'noopener';
+	}
+	if ( ! empty( $link['nofollow'] ) ) {
+		$attrs['rel'] = ! empty( $attrs['rel'] ) ? $attrs['rel'] . ' nofollow' : 'nofollow noopener';
+	}
+
+	$html = '';
+	foreach ( $attrs as $key => $value ) {
+		$html .= sprintf( ' %s="%s"', esc_attr( $key ), esc_attr( $value ) );
+	}
+
+	return $html;
+}
+
+add_action( 'elementor/widgets/register', 'fdelil_register_custom_button_widget' );
+function fdelil_register_custom_button_widget( $widgets_manager ) {
+
+	if ( ! class_exists( '\Elementor\Widget_Base' ) ) {
+		return;
+	}
+
+	class Fdelil_Custom_Button_Widget extends \Elementor\Widget_Base {
+
+		public function get_name() {
+			return 'fdelil-button';
+		}
+
+		public function get_title() {
+			return __( 'Delil Button', 'fdelil-button' );
+		}
+
+		public function get_icon() {
+			return 'eicon-button';
+		}
+
+		public function get_categories() {
+			return array( 'basic' );
+		}
+
+		public function get_keywords() {
+			return array( 'button', 'cta', 'delil', 'link' );
+		}
+
+		protected function register_controls() {
+
+			$this->start_controls_section(
+				'content',
+				array(
+					'label' => __( 'Inhalt', 'fdelil-button' ),
+				)
+			);
+
+			$this->add_control(
+				'button_text',
+				array(
+					'label'   => __( 'Text', 'fdelil-button' ),
+					'type'    => \Elementor\Controls_Manager::TEXT,
+					'default' => __( 'Anmeldung', 'fdelil-button' ),
+				)
+			);
+
+			$this->add_control(
+				'button_link',
+				array(
+					'label' => __( 'Link', 'fdelil-button' ),
+					'type'  => \Elementor\Controls_Manager::URL,
+				)
+			);
+
+			$this->add_control(
+				'button_style_preset',
+				array(
+					'label'   => __( 'Vorlage', 'fdelil-button' ),
+					'type'    => \Elementor\Controls_Manager::SELECT,
+					'default' => 'primary',
+					'options' => array(
+						'primary'   => __( 'Primär (Gelb)', 'fdelil-button' ),
+						'secondary' => __( 'Outline (Hell)', 'fdelil-button' ),
+						'dark'      => __( 'Dunkel', 'fdelil-button' ),
+					),
+					'condition' => array(
+						'dual_button!' => 'yes',
+					),
+				)
+			);
+
+			$this->add_control(
+				'dual_button',
+				array(
+					'label'        => __( 'Dual Button', 'fdelil-button' ),
+					'type'         => \Elementor\Controls_Manager::SWITCHER,
+					'label_on'     => __( 'An', 'fdelil-button' ),
+					'label_off'    => __( 'Aus', 'fdelil-button' ),
+					'return_value' => 'yes',
+					'default'      => '',
+					'description'  => __( 'Zeigt rechts einen zweiten Button (Gelb + Dunkel) in einer gemeinsamen gelben Umrandung.', 'fdelil-button' ),
+				)
+			);
+
+			$this->add_control(
+				'button_2_text',
+				array(
+					'label'     => __( 'Text (Button 2)', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::TEXT,
+					'default'   => __( 'Mehr erfahren', 'fdelil-button' ),
+					'condition' => array(
+						'dual_button' => 'yes',
+					),
+				)
+			);
+
+			$this->add_control(
+				'button_2_link',
+				array(
+					'label'     => __( 'Link (Button 2)', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::URL,
+					'condition' => array(
+						'dual_button' => 'yes',
+					),
+				)
+			);
+
+			$this->add_control(
+				'button_icon',
+				array(
+					'label'   => __( 'Icon (SVG)', 'fdelil-button' ),
+					'type'    => \Elementor\Controls_Manager::SELECT,
+					'default' => 'arrow',
+					'options' => array(
+						'arrow'    => __( 'Pfeil →', 'fdelil-button' ),
+						'arrow-up' => __( 'Pfeil ↗', 'fdelil-button' ),
+						'chevron'  => __( 'Chevron', 'fdelil-button' ),
+						'external' => __( 'Extern', 'fdelil-button' ),
+						'phone'    => __( 'Telefon', 'fdelil-button' ),
+						'none'     => __( 'Kein Icon', 'fdelil-button' ),
+					),
+					'condition' => array(
+						'dual_button!' => 'yes',
+					),
+				)
+			);
+
+			$this->add_control(
+				'icon_position',
+				array(
+					'label'   => __( 'Icon-Position', 'fdelil-button' ),
+					'type'    => \Elementor\Controls_Manager::SELECT,
+					'default' => 'right',
+					'options' => array(
+						'left'  => __( 'Links', 'fdelil-button' ),
+						'right' => __( 'Rechts', 'fdelil-button' ),
+					),
+					'condition' => array(
+						'button_icon!' => 'none',
+						'dual_button!' => 'yes',
+					),
+				)
+			);
+
+			$this->add_control(
+				'shimmer',
+				array(
+					'label'        => __( 'Shimmer-Effekt', 'fdelil-button' ),
+					'type'         => \Elementor\Controls_Manager::SWITCHER,
+					'label_on'     => __( 'An', 'fdelil-button' ),
+					'label_off'    => __( 'Aus', 'fdelil-button' ),
+					'return_value' => 'yes',
+					'default'      => 'yes',
+					'condition'    => array(
+						'dual_button!' => 'yes',
+					),
+				)
+			);
+
+			$this->end_controls_section();
+
+			$this->start_controls_section(
+				'style',
+				array(
+					'label' => __( 'Stil', 'fdelil-button' ),
+					'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
+				)
+			);
+
+			$this->add_responsive_control(
+				'button_align',
+				array(
+					'label'     => __( 'Ausrichtung', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::CHOOSE,
+					'options'   => array(
+						'left'   => array(
+							'title' => __( 'Links', 'fdelil-button' ),
+							'icon'  => 'eicon-text-align-left',
+						),
+						'center' => array(
+							'title' => __( 'Mitte', 'fdelil-button' ),
+							'icon'  => 'eicon-text-align-center',
+						),
+						'right'  => array(
+							'title' => __( 'Rechts', 'fdelil-button' ),
+							'icon'  => 'eicon-text-align-right',
+						),
+					),
+					'default'   => 'left',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn-wrap' => 'text-align: {{VALUE}};',
+					),
+				)
+			);
+
+			$this->start_controls_tabs( 'button_style_tabs' );
+
+			$this->start_controls_tab(
+				'button_style_normal',
+				array(
+					'label' => __( 'Normal', 'fdelil-button' ),
+				)
+			);
+
+			$this->add_control(
+				'bg_color',
+				array(
+					'label'     => __( 'Hintergrund', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#FBEF03',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn' => 'background-color: {{VALUE}} !important; background-image: none !important;',
+					),
+				)
+			);
+
+			$this->add_control(
+				'txt_color',
+				array(
+					'label'     => __( 'Textfarbe', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#000000',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn' => 'color: {{VALUE}} !important;',
+					),
+				)
+			);
+
+			$this->add_group_control(
+				\Elementor\Group_Control_Border::get_type(),
+				array(
+					'name'     => 'button_border',
+					'label'    => __( 'Rahmen', 'fdelil-button' ),
+					'selector' => '{{WRAPPER}} .fdelil-btn',
+				)
+			);
+
+			$this->add_control(
+				'button_border_radius',
+				array(
+					'label'      => __( 'Eckenradius', 'fdelil-button' ),
+					'type'       => \Elementor\Controls_Manager::DIMENSIONS,
+					'size_units' => array( 'px', '%', 'em' ),
+					'default'    => array(
+						'top'    => '0',
+						'right'  => '0',
+						'bottom' => '0',
+						'left'   => '0',
+						'unit'   => 'px',
+					),
+					'selectors'  => array(
+						'{{WRAPPER}} .fdelil-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}} !important;',
+					),
+				)
+			);
+
+			$this->add_responsive_control(
+				'button_padding',
+				array(
+					'label'      => __( 'Innenabstand', 'fdelil-button' ),
+					'type'       => \Elementor\Controls_Manager::DIMENSIONS,
+					'size_units' => array( 'px', 'em' ),
+					'default'    => array(
+						'top'    => '12',
+						'right'  => '18',
+						'bottom' => '12',
+						'left'   => '18',
+						'unit'   => 'px',
+					),
+					'selectors'  => array(
+						'{{WRAPPER}} .fdelil-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}} !important;',
+					),
+				)
+			);
+
+			$this->end_controls_tab();
+
+			$this->start_controls_tab(
+				'button_style_hover',
+				array(
+					'label' => __( 'Hover', 'fdelil-button' ),
+				)
+			);
+
+			$this->add_control(
+				'bg_color_hover',
+				array(
+					'label'     => __( 'Hintergrund (Hover)', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#E6DB00',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn:hover' => 'background-color: {{VALUE}} !important; background-image: none !important;',
+					),
+				)
+			);
+
+			$this->add_control(
+				'txt_color_hover',
+				array(
+					'label'     => __( 'Textfarbe (Hover)', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#000000',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn:hover' => 'color: {{VALUE}} !important;',
+					),
+				)
+			);
+
+			$this->add_control(
+				'border_color_hover',
+				array(
+					'label'     => __( 'Rahmenfarbe (Hover)', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#E6DB00',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn:hover' => 'border-color: {{VALUE}} !important;',
+					),
+				)
+			);
+
+			$this->end_controls_tab();
+			$this->end_controls_tabs();
+
+			$this->add_control(
+				'dual_secondary_heading',
+				array(
+					'label'     => __( 'Button 2 (Dual)', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::HEADING,
+					'separator' => 'before',
+					'condition' => array(
+						'dual_button' => 'yes',
+					),
+				)
+			);
+
+			$this->add_control(
+				'bg_color_2',
+				array(
+					'label'     => __( 'Hintergrund Button 2', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#1C1C1F',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn--dual-secondary' => 'background-color: {{VALUE}} !important; background-image: none !important;',
+					),
+					'condition' => array(
+						'dual_button' => 'yes',
+					),
+				)
+			);
+
+			$this->add_control(
+				'txt_color_2',
+				array(
+					'label'     => __( 'Textfarbe Button 2', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#FFFFFF',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn--dual-secondary' => 'color: {{VALUE}} !important;',
+					),
+					'condition' => array(
+						'dual_button' => 'yes',
+					),
+				)
+			);
+
+			$this->add_control(
+				'bg_color_2_hover',
+				array(
+					'label'     => __( 'Hintergrund Button 2 (Hover)', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#252528',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn--dual-secondary:hover' => 'background-color: {{VALUE}} !important; background-image: none !important;',
+					),
+					'condition' => array(
+						'dual_button' => 'yes',
+					),
+				)
+			);
+
+			$this->add_control(
+				'txt_color_2_hover',
+				array(
+					'label'     => __( 'Textfarbe Button 2 (Hover)', 'fdelil-button' ),
+					'type'      => \Elementor\Controls_Manager::COLOR,
+					'default'   => '#FBEF03',
+					'selectors' => array(
+						'{{WRAPPER}} .fdelil-btn--dual-secondary:hover' => 'color: {{VALUE}} !important;',
+					),
+					'condition' => array(
+						'dual_button' => 'yes',
+					),
+				)
+			);
+
+			$this->add_group_control(
+				\Elementor\Group_Control_Typography::get_type(),
+				array(
+					'name'     => 'button_typography',
+					'label'    => __( 'Typografie', 'fdelil-button' ),
+					'selector' => '{{WRAPPER}} .fdelil-btn',
+				)
+			);
+
+			$this->end_controls_section();
+		}
+
+		protected function render() {
+			$settings = $this->get_settings_for_display();
+			$is_dual  = ( ! empty( $settings['dual_button'] ) && 'yes' === $settings['dual_button'] );
+			$link     = ! empty( $settings['button_link'] ) ? $settings['button_link'] : array();
+			$url      = ! empty( $link['url'] ) ? $link['url'] : '#';
+			$preset   = ! empty( $settings['button_style_preset'] ) ? $settings['button_style_preset'] : 'primary';
+			$icon     = ! empty( $settings['button_icon'] ) ? $settings['button_icon'] : 'arrow';
+			$icon_pos = ! empty( $settings['icon_position'] ) ? $settings['icon_position'] : 'right';
+			$shimmer  = ( ! $is_dual && ! empty( $settings['shimmer'] ) && 'yes' === $settings['shimmer'] );
+
+			static $fonts_loaded = false;
+			if ( ! $fonts_loaded ) {
+				$fonts_loaded = true;
+				?>
+				<link rel="preconnect" href="https://fonts.googleapis.com">
+				<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+				<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@600;700;800&display=swap" rel="stylesheet">
+				<?php
+			}
+			?>
+			<div class="fdelil-btn-wrap<?php echo $is_dual ? ' fdelil-btn-wrap--dual' : ''; ?>">
+				<?php if ( $is_dual ) : ?>
+					<div class="fdelil-btn-dual">
+						<a class="fdelil-btn fdelil-btn--primary fdelil-btn--dual-primary"<?php echo fdelil_btn_link_attrs( $link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+							<span class="fdelil-btn__label"><?php echo esc_html( $settings['button_text'] ); ?></span>
+						</a>
+						<a class="fdelil-btn fdelil-btn--dual-secondary"<?php echo fdelil_btn_link_attrs( $settings['button_2_link'] ?? array() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+							<span class="fdelil-btn__label"><?php echo esc_html( $settings['button_2_text'] ?? __( 'Mehr erfahren', 'fdelil-button' ) ); ?></span>
+						</a>
+					</div>
+				<?php else : ?>
+					<?php
+					$classes = array(
+						'fdelil-btn',
+						'fdelil-btn--' . sanitize_html_class( $preset ),
+					);
+					if ( $shimmer ) {
+						$classes[] = 'fdelil-btn--shimmer';
+					}
+					if ( 'none' !== $icon ) {
+						$classes[] = 'fdelil-btn--icon-' . sanitize_html_class( $icon_pos );
+					}
+					?>
+					<a class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"<?php echo fdelil_btn_link_attrs( $link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+						<?php if ( 'none' !== $icon && 'left' === $icon_pos ) : ?>
+							<span class="fdelil-btn__icon"><?php echo fdelil_btn_icon_svg( $icon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+						<?php endif; ?>
+						<span class="fdelil-btn__label"><?php echo esc_html( $settings['button_text'] ); ?></span>
+						<?php if ( 'none' !== $icon && 'right' === $icon_pos ) : ?>
+							<span class="fdelil-btn__icon"><?php echo fdelil_btn_icon_svg( $icon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+						<?php endif; ?>
+					</a>
+				<?php endif; ?>
+			</div>
+
+			<style>
+			.elementor-widget-fdelil-button .fdelil-btn-wrap {
+				display: block;
+				width: 100%;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn-wrap--dual {
+				display: inline-block;
+				width: auto;
+				max-width: 100%;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn-dual {
+				display: inline-flex;
+				align-items: stretch;
+				max-width: 100%;
+				border: 2px solid var(--fdelil-btn-accent, #FBEF03);
+				border-radius: 0;
+				overflow: hidden;
+				background: transparent;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn--dual-primary,
+			.elementor-widget-fdelil-button .fdelil-btn--dual-secondary {
+				border-radius: 0 !important;
+				box-shadow: none !important;
+				flex: 0 1 auto;
+				min-width: 0;
+				white-space: nowrap;
+				padding: 14px 22px !important;
+				font-size: 16px;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn--dual-primary {
+				background: var(--fdelil-btn-accent, #FBEF03) !important;
+				color: #000 !important;
+				border: 0 !important;
+				border-right: 2px solid var(--fdelil-btn-accent, #FBEF03) !important;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn--dual-primary:hover,
+			.elementor-widget-fdelil-button .fdelil-btn--dual-primary:focus-visible {
+				background: var(--fdelil-btn-accent-hover, #E6DB00) !important;
+				color: #000 !important;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn--dual-secondary {
+				background: var(--fdelil-btn-dark, #1C1C1F) !important;
+				color: #fff !important;
+				border: 0 !important;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn--dual-secondary:hover,
+			.elementor-widget-fdelil-button .fdelil-btn--dual-secondary:focus-visible {
+				background: #252528 !important;
+				color: var(--fdelil-btn-accent, #FBEF03) !important;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn {
+				--fdelil-btn-accent: #FBEF03;
+				--fdelil-btn-accent-hover: #E6DB00;
+				--fdelil-btn-dark: #1C1C1F;
+				--fdelil-btn-border: #373737;
+				--fdelil-btn-text: #ffffff;
+				display: inline-flex !important;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				font-family: "Big Shoulders", "Arial Narrow", Impact, sans-serif !important;
+				font-weight: 800 !important;
+				font-size: 15px;
+				line-height: 1;
+				letter-spacing: 0.06em;
+				text-transform: uppercase;
+				text-decoration: none !important;
+				position: relative;
+				overflow: hidden;
+				z-index: 1;
+				border-radius: 0 !important;
+				box-shadow: none !important;
+				transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+				-webkit-tap-highlight-color: transparent;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn__label {
+				position: relative;
+				z-index: 3;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn__icon {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 18px;
+				height: 18px;
+				flex-shrink: 0;
+				position: relative;
+				z-index: 3;
+				transition: transform .25s cubic-bezier(.25,1,.5,1);
+			}
+			.elementor-widget-fdelil-button .fdelil-btn__svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+
+			/* Presets */
+			.elementor-widget-fdelil-button .fdelil-btn--primary {
+				background: var(--fdelil-btn-accent) !important;
+				color: #000 !important;
+				border: 2px solid var(--fdelil-btn-accent) !important;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn--secondary {
+				background: transparent !important;
+				color: var(--fdelil-btn-text) !important;
+				border: 1px solid var(--fdelil-btn-border) !important;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn--dark {
+				background: var(--fdelil-btn-dark) !important;
+				color: var(--fdelil-btn-text) !important;
+				border: 1px solid var(--fdelil-btn-border) !important;
+			}
+
+			.elementor-widget-fdelil-button .fdelil-btn--primary:hover,
+			.elementor-widget-fdelil-button .fdelil-btn--primary:focus-visible {
+				background: var(--fdelil-btn-accent-hover) !important;
+				border-color: var(--fdelil-btn-accent-hover) !important;
+				color: #000 !important;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn--secondary:hover,
+			.elementor-widget-fdelil-button .fdelil-btn--secondary:focus-visible {
+				border-color: var(--fdelil-btn-accent) !important;
+				color: var(--fdelil-btn-accent) !important;
+				background: transparent !important;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn--dark:hover,
+			.elementor-widget-fdelil-button .fdelil-btn--dark:focus-visible {
+				border-color: var(--fdelil-btn-accent) !important;
+				color: var(--fdelil-btn-accent) !important;
+				background: var(--fdelil-btn-dark) !important;
+			}
+
+			/* Icon-Rotation bei Hover */
+			.elementor-widget-fdelil-button .fdelil-btn-wrap:hover .fdelil-btn__svg--arrow,
+			.elementor-widget-fdelil-button .fdelil-btn-wrap:hover .fdelil-btn__svg--chevron {
+				transform: translateX(2px);
+			}
+			.elementor-widget-fdelil-button .fdelil-btn-wrap:hover .fdelil-btn__svg--arrow-up {
+				transform: rotate(45deg);
+			}
+			.elementor-widget-fdelil-button .fdelil-btn-wrap:hover .fdelil-btn__svg--external {
+				transform: translate(2px, -2px);
+			}
+			.elementor-widget-fdelil-button .fdelil-btn-wrap:hover .fdelil-btn__icon {
+				transform: none;
+			}
+
+			/* Shimmer */
+			.elementor-widget-fdelil-button .fdelil-btn--shimmer::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: -120%;
+				width: 55%;
+				height: 100%;
+				background: linear-gradient(
+					105deg,
+					rgba(255,255,255,0) 0%,
+					rgba(255,255,255,0.35) 45%,
+					rgba(255,255,255,0) 100%
+				);
+				transform: skewX(-22deg);
+				z-index: 2;
+				pointer-events: none;
+			}
+			.elementor-widget-fdelil-button .fdelil-btn-wrap:hover .fdelil-btn--shimmer::before {
+				animation: fdelil-btn-shine .75s forwards;
+			}
+			@keyframes fdelil-btn-shine {
+				100% { left: 130%; }
+			}
+
+			@media (max-width: 767px) {
+				.elementor-widget-fdelil-button .fdelil-btn {
+					font-size: 14px;
+				}
+				.elementor-widget-fdelil-button .fdelil-btn--dual-primary,
+				.elementor-widget-fdelil-button .fdelil-btn--dual-secondary {
+					padding-left: 14px !important;
+					padding-right: 14px !important;
+				}
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.elementor-widget-fdelil-button .fdelil-btn,
+				.elementor-widget-fdelil-button .fdelil-btn__icon,
+				.elementor-widget-fdelil-button .fdelil-btn__svg {
+					transition: none !important;
+					animation: none !important;
+				}
+				.elementor-widget-fdelil-button .fdelil-btn--shimmer::before {
+					display: none;
+				}
+			}
+			</style>
+			<?php
+		}
+	}
+
+	$widgets_manager->register( new Fdelil_Custom_Button_Widget() );
+}

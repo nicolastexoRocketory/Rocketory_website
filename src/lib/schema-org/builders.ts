@@ -14,7 +14,6 @@ import {
   MAPS_URL,
   META_AGENTUR_BUENDE,
   META_STANDORTE,
-  META_VORTEILE,
   META_WEBDESIGN,
   META_SEO,
   META_WARTUNG,
@@ -425,36 +424,6 @@ export function buildAngebotePageSchema(): SchemaNode[] {
   ]
 }
 
-export function buildVorteilePageSchema(): SchemaNode[] {
-  const description = META_VORTEILE
-  const faqs = [
-    {
-      question: 'Mehr Qualität. Gleiches Budget. Wie geht das?',
-      answer:
-        'Weil Design, Texte und Technik in einem Prozess laufen und wir mit Konzept starten: weniger Übergaben, weniger Nacharbeit, weniger Theme-Ballast. Scope und Preis stehen vor dem Start. Du zahlst nicht „weniger“, du bekommst mehr Ergebnis für denselben Rahmen.',
-    },
-    {
-      question: 'Eigene Bausteine. Ist das ein Baukasten?',
-      answer:
-        'Nein. „Kein Baukasten“ heißt: kein fertiges Kunden-Theme mit ausgetauschtem Logo. Jede Webseite ist ein komplexes System, eigene Bausteine und Codebasis sind unser Fundament, damit dieses System sauber und wartbar bleibt. Dein Auftritt entsteht individuell aus dem Konzept, damit die Qualität im Sichtbaren landet, nicht im Ballast.',
-    },
-  ]
-
-  return [
-    {
-      ...baseWebPage('/vorteile', 'Vorteile: Mehr Qualität. Gleiches Budget. | Rocketory', description),
-      significantLink: [
-        `${SITE_URL}/webdesign`,
-        `${SITE_URL}/angebote`,
-        `${SITE_URL}/agentur/buende`,
-        `${SITE_URL}/kontakt`,
-      ],
-    },
-    buildBreadcrumb('/vorteile', 'Vorteile'),
-    buildFaqPage('/vorteile', faqs),
-  ]
-}
-
 export function buildWebdesignPageSchema(): SchemaNode[] {
   const description = META_WEBDESIGN
   const faqs = [
@@ -761,6 +730,33 @@ export function buildKontaktPageSchema(): SchemaNode[] {
       areaServed: 'DE',
       availableLanguage: ['de'],
     },
+  ]
+}
+
+export function buildKiCheckPageSchema(): SchemaNode[] {
+  const description =
+    'KI-Check zur EU-KI-Verordnung: Kennzeichnung und Compliance für deine Webseite einschätzen – von Rocketory aus Bünde.'
+
+  return [
+    {
+      ...baseWebPage(
+        '/ki-check',
+        'KI-Check: Ist deine Webseite rechtssicher? | Rocketory',
+        description,
+      ),
+      primaryImageOfPage: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/assets/images/ki-check-hero-law.jpg`,
+        width: 1024,
+        height: 630,
+      },
+      about: [
+        { '@type': 'Thing', name: 'EU-KI-Verordnung' },
+        { '@type': 'Thing', name: 'KI-Kennzeichnung' },
+        { '@type': 'Thing', name: 'KI-Compliance' },
+      ],
+    },
+    buildBreadcrumb('/ki-check', 'KI-Check'),
   ]
 }
 

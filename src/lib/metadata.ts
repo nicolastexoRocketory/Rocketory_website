@@ -25,6 +25,12 @@ type PageMetadataOptions = {
   description?: string
   path: string
   image?: string
+  imageAlt?: string
+  imageWidth?: number
+  imageHeight?: number
+  /** Optional kürzerer Titel für Social Previews (OG/Twitter). */
+  socialTitle?: string
+  socialDescription?: string
   type?: 'website' | 'article'
   publishedTime?: string
   modifiedTime?: string
@@ -105,7 +111,10 @@ function buildContentMetadata(
 
 export function buildPageMetadata(options: PageMetadataOptions): Metadata {
   const description = options.description?.trim() || DEFAULT_DESCRIPTION
+  const socialTitle = options.socialTitle?.trim() || options.title
+  const socialDescription = options.socialDescription?.trim() || description
   const image = resolveImageUrl(options.image)
+  const imageAlt = options.imageAlt?.trim() || socialTitle
   const canonical = options.path === '/' ? SITE_URL : `${SITE_URL}${options.path}`
 
   return {
@@ -114,20 +123,27 @@ export function buildPageMetadata(options: PageMetadataOptions): Metadata {
     alternates: { canonical },
     ...(options.noIndex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
-      title: options.title,
-      description,
+      title: socialTitle,
+      description: socialDescription,
       url: canonical,
       siteName: SITE_NAME,
       locale: 'de_DE',
       type: options.type || 'website',
-      images: [{ url: image, alt: options.title }],
+      images: [
+        {
+          url: image,
+          alt: imageAlt,
+          ...(options.imageWidth ? { width: options.imageWidth } : {}),
+          ...(options.imageHeight ? { height: options.imageHeight } : {}),
+        },
+      ],
       ...(options.publishedTime ? { publishedTime: options.publishedTime } : {}),
       ...(options.modifiedTime ? { modifiedTime: options.modifiedTime } : {}),
     },
     twitter: {
       card: 'summary_large_image',
-      title: options.title,
-      description,
+      title: socialTitle,
+      description: socialDescription,
       images: [image],
     },
   }

@@ -1,0 +1,219 @@
+
+        .pt-team-wrapper { font-family: inherit; }
+
+        .pt-group { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; animation: ptFadeIn 0.5s ease-in-out; }
+        .pt-group-title { cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 15px 0; color: #ffffff; font-size: 1.6rem; font-weight: 700; transition: all 0.2s ease; }
+        @media (min-width: 769px) {
+            .pt-group-title:hover,
+            .pt-group-title:focus-visible {
+                color: #d70000;
+            }
+        }
+        .pt-group-title::after { content: ''; display: inline-block; width: 8px; height: 8px; border-bottom: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); transition: transform 0.2s ease; margin-right: 10px; }
+        .pt-group.is-open .pt-group-title::after { transform: rotate(-135deg); margin-top: 4px; }
+        .pt-group.is-open .pt-group-title { color: #ffffff; }
+        .pt-grid-wrapper { display: none; padding: 20px 0 30px 0; }
+        .pt-group.is-open .pt-grid-wrapper { display: block; animation: ptSlideDown 0.3s ease-in-out; }
+
+        .pt-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2em;
+        }
+
+        .pt-card { cursor: pointer; background: #1A1A1A; border-radius: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow: hidden; transition: transform 0.2s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; border: none; }
+        .pt-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(215, 0, 0, 0.25); }
+
+        .pt-card-img-wrapper {
+            position: relative !important;
+            width: 100%;
+            display: block;
+            background: #1A1A1A;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 0;
+            overflow: hidden;
+        }
+        .pt-card-img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+            margin: 0 !important;
+        }
+        .pt-card-number {
+            position: absolute !important;
+            bottom: 12px !important;
+            left: 15px !important;
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+            z-index: 10;
+            line-height: 1;
+            margin: 0;
+            pointer-events: none;
+        }
+
+        .pt-card-content { padding: 20px 25px 25px 25px; flex-grow: 1; background: #1A1A1A; line-height: 1.4; display: flex; flex-direction: column; }
+        .pt-card-title { margin: 0 0 10px 0; font-size: 1.15rem; color: #ffffff; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pt-card-text { color: #d1d5db; font-size: 0.85rem; line-height: 1.6; margin: 0; flex-grow: 1; }
+
+        .pt-sponsor-card { background: #ffffff; border-radius: 8px; padding: 12px; margin-top: 20px; text-align: center; }
+        .pt-sponsor-title { font-size: 0.65rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 8px 0; font-weight: 600; line-height: 1; }
+        .pt-sponsor-logo { max-width: 100%; height: auto; max-height: 50px; display: block; margin: 0 auto; }
+
+        /*
+         * Modal: z-index ÜBER der TuS Mobile-Nav (100050/100060),
+         * damit Schließen-Button und Kopf nicht verdeckt werden.
+         */
+        .pt-modal-wrapper {
+            position: fixed;
+            inset: 0;
+            z-index: 100100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .pt-modal-wrapper.is-active { opacity: 1; pointer-events: auto; }
+        .pt-modal-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.85); cursor: pointer; }
+        .pt-modal-content {
+            position: relative;
+            background: #1A1A1A;
+            width: 90%;
+            max-width: 800px;
+            max-height: min(90vh, 100%);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: row;
+            animation: ptSlideDown 0.3s ease-out;
+            z-index: 1;
+        }
+        .pt-modal-wrapper .pt-modal-close,
+        .pt-modal-wrapper .pt-modal-close:hover,
+        .pt-modal-wrapper .pt-modal-close:focus,
+        .pt-modal-wrapper .pt-modal-close:focus-visible,
+        .pt-modal-wrapper .pt-modal-close:active,
+        .pt-modal-wrapper .pt-modal-close:visited {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff !important;
+            font-size: 1.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            line-height: 1;
+            background: transparent !important;
+            background-color: transparent !important;
+            background-image: none !important;
+            border-radius: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            outline-offset: 0 !important;
+            text-decoration: none !important;
+            padding: 0 !important;
+            margin: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.2s ease;
+        }
+        .pt-modal-wrapper .pt-modal-close:hover,
+        .pt-modal-wrapper .pt-modal-close:focus,
+        .pt-modal-wrapper .pt-modal-close:focus-visible {
+            color: #D70000 !important;
+            background: transparent !important;
+            background-color: transparent !important;
+            background-image: none !important;
+        }
+
+        .pt-modal-left { width: 40%; background: #000; display: flex; align-items: flex-start; justify-content: center; overflow: hidden; position: relative; flex-shrink: 0; }
+        .pt-modal-left img { width: 100%; height: 100%; object-fit: cover; object-position: top center; aspect-ratio: 4/5; display: block; }
+        .pt-modal-right { width: 60%; padding: 40px; color: #fff; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .pt-modal-name { font-size: 2rem; text-transform: uppercase; margin: 0 0 20px 0; font-weight: 800; border-bottom: 1px solid #333; padding-bottom: 15px; }
+
+        .pt-modal-stats-list { list-style: none; padding: 0; margin: 0 0 30px 0; }
+        .pt-modal-stats-list li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #333; padding: 12px 0; font-size: 1rem; }
+        .pt-modal-stats-list li strong { color: #888; font-weight: 600; }
+        .pt-modal-stats-list li span { font-weight: 700; text-align: right; }
+
+        @keyframes ptFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes ptSlideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .pt-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .pt-card-number { font-size: 1.4rem; bottom: 10px !important; left: 10px !important; }
+            .pt-card-content { padding: 15px; }
+            .pt-card-title { font-size: 0.85rem !important; margin-bottom: 8px !important; font-weight: 800 !important; }
+            .pt-card-text { font-size: 0.7rem !important; line-height: 1.4 !important; }
+            .pt-card-text p, .pt-card-text span, .pt-card-text div { font-size: 0.7rem !important; line-height: 1.4 !important; }
+            .pt-group-title { font-size: 1.3rem; }
+            .pt-sponsor-card { padding: 8px; margin-top: 15px; }
+            .pt-sponsor-title { font-size: 0.55rem; margin-bottom: 5px; }
+            .pt-sponsor-logo { max-height: 35px; }
+
+            /* Mobile Modal: unterhalb der fixierten Mobile-Nav (~60px) starten */
+            .pt-modal-wrapper {
+                align-items: flex-start;
+                padding-top: calc(68px + env(safe-area-inset-top, 0px));
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-bottom: max(10px, env(safe-area-inset-bottom));
+            }
+            .admin-bar .pt-modal-wrapper {
+                padding-top: calc(68px + 46px + env(safe-area-inset-top, 0px));
+            }
+            .pt-modal-content {
+                flex-direction: column;
+                width: 100%;
+                max-width: 520px;
+                max-height: calc(100dvh - 68px - env(safe-area-inset-top, 0px) - 20px);
+                margin: 0 auto;
+            }
+            .pt-modal-wrapper .pt-modal-close,
+            .pt-modal-wrapper .pt-modal-close:hover,
+            .pt-modal-wrapper .pt-modal-close:focus,
+            .pt-modal-wrapper .pt-modal-close:focus-visible,
+            .pt-modal-wrapper .pt-modal-close:active {
+                top: 8px;
+                right: 8px;
+                background: transparent !important;
+                background-color: transparent !important;
+                background-image: none !important;
+                box-shadow: none !important;
+            }
+            .pt-modal-left {
+                width: 100%;
+                height: auto;
+                max-height: 42vh;
+                flex-shrink: 0;
+            }
+            .pt-modal-left img {
+                width: 100%;
+                height: 100%;
+                max-height: 42vh;
+                aspect-ratio: 4/5;
+                object-fit: cover;
+                object-position: top center;
+            }
+            .pt-modal-right { width: 100%; padding: 20px 20px 24px; }
+            .pt-modal-name { font-size: 1.35rem; margin-bottom: 12px; padding-bottom: 10px; padding-right: 40px; }
+            .pt-modal-stats-list li { font-size: 0.9rem; padding: 10px 0; }
+        }
+    

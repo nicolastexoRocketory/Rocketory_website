@@ -759,54 +759,57 @@
 }
 .rk-loc-town-list--inline{margin-top:14px;}
 
-/* Vertikaler Ortsteile-Wortbanner (#ortsteile) */
+/* Vertikale Ortsteile-/Einsatzgebiet-Laufschrift (CI) */
 .rk-town-banner{
   border:1px solid rgba(245,244,240,0.12);
-  background:#0A0F1E;
-  padding:clamp(10px,1.5vw,14px);
+  background:var(--hero-bg,#0A0F1E);
+  padding:clamp(12px,1.8vw,18px);
+  overflow:hidden;
 }
 .rk-town-banner-viewport{
-  height:clamp(7rem,12vw,8.25rem);
+  height:clamp(8rem,14vw,10rem);
   overflow:hidden;
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, #000 16%, #000 84%, transparent 100%);
-  mask-image:linear-gradient(to bottom, transparent 0%, #000 16%, #000 84%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
 }
 .rk-town-banner-track{
   display:flex;
   flex-direction:column;
   align-items:stretch;
-  animation:rk-town-banner-scroll 24s linear infinite;
+  width:100%;
+  animation:rk-town-banner-scroll 28s linear infinite;
   will-change:transform;
+}
+@keyframes rk-town-banner-scroll{
+  from{transform:translateY(0);}
+  to{transform:translateY(calc(-1 * var(--rk-town-shift, 50%)));}
 }
 .rk-town-banner-item{
   flex:0 0 auto;
-  min-height:2.65rem;
+  min-height:2.75rem;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:0.2rem 0.75rem;
+  padding:0.35rem 0.75rem;
   font-family:var(--font-serif);
   font-style:italic;
-  font-weight:600;
-  font-size:clamp(1.0625rem,1.45vw,1.3125rem);
+  font-weight:400;
+  font-size:clamp(1.25rem,2vw,1.625rem);
   letter-spacing:-0.01em;
   line-height:1.15;
   text-align:center;
-  color:rgba(245,244,240,0.38);
-  opacity:1;
-  transition:opacity 0.35s ease, transform 0.35s ease, color 0.35s ease, font-size 0.35s ease, min-height 0.35s ease;
+  white-space:nowrap;
+  color:var(--hero-text,#F5F4F0);
+  opacity:0.92;
+  transition:none;
 }
-.rk-town-banner-item.is-near{
-  color:rgba(245,244,240,0.72);
-}
+.rk-town-banner-item::after{content:none;}
+.rk-town-banner-item.is-near,
 .rk-town-banner-item.is-focus{
-  font-size:clamp(2.125rem,2.9vw,2.625rem);
-  min-height:5.3rem;
-  line-height:1.1;
-  color:var(--hero-text);
+  font-size:inherit;
+  min-height:2.75rem;
+  color:var(--hero-text,#F5F4F0);
   background:none;
-  -webkit-background-clip:unset;
-  background-clip:unset;
   animation:none;
 }
 .rk-article-split-towns .rk-town-banner{
@@ -822,14 +825,6 @@
 .rk-article-split--towns .rk-article-split-copy .rk-btn-solid{
   margin-top:clamp(20px,3vw,28px);
 }
-@keyframes rk-town-banner-scroll{
-  from{transform:translateY(0);}
-  to{transform:translateY(-50%);}
-}
-@keyframes rk-town-banner-shimmer{
-  0%,100%{background-position:100% center;}
-  50%{background-position:0% center;}
-}
 @media(hover:hover){
   .rk-town-banner:hover .rk-town-banner-track{animation-play-state:paused;}
 }
@@ -837,11 +832,12 @@
   .rk-town-banner-track{animation:none;}
   .rk-town-banner-viewport{
     height:auto;
-    max-height:clamp(7rem,12vw,8.25rem);
+    max-height:none;
     -webkit-mask-image:none;
     mask-image:none;
   }
-  .rk-town-banner-item.is-focus{animation:none;}
+  .rk-town-banner-item[aria-hidden='true'],
+  .rk-town-banner-item[data-rk-loop-clone]{display:none;}
 }
 
 .rk-loc-note{

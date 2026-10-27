@@ -1,0 +1,1186 @@
+<?php
+/**
+ * Plugin Name: Fahrschule Delil Card Grid / Slideshow
+ * Description: Elementor-Widget: Cards mit Bild, Titel, Tags, Maps-Link, Text und Kontaktinfos. Desktop = Grid (1–4 Spalten), Mobile = Slideshow.
+ * Version: 1.8
+ * Author: Rocketory / Nicolas Zhigalov
+ * Author URI: https://rocketory.de
+ * Text Domain: fdelil-cards
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/* ---------------------------------------------------------
+   HELPERS
+--------------------------------------------------------- */
+
+function fdelil_cards_icon_svg( $type ) {
+	$icons = array(
+		'phone'    => '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.7 21 3 13.3 3 3.9c0-.5.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8z"/></svg>',
+		'email'    => '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/></svg>',
+		'whatsapp' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.5 2 2 6.3 2 11.7c0 2 .6 3.9 1.7 5.5L2 22l5-1.6c1.5.8 3.2 1.3 5 1.3 5.5 0 10-4.3 10-9.7S17.5 2 12 2zm5.7 13.8c-.2.7-1.3 1.2-2.1 1.4-.6.1-1.3.2-3.8-.8-3.2-1.3-5.2-4.6-5.4-4.8-.2-.2-1.5-2-1.5-3.8s1-.2 1.3-.2c.3 0 .7 0 1 .8.4 1.1 1.2 3 1.3 3.2.1.2.2.5 0 .8-.2.3-.3.5-.6.8-.3.3-.6.6-.3 1.1.3.5 1.4 2.3 3 3.6 2 1.6 3.7 2.1 4.3 2.4.5.2.9.2 1.2-.1.3-.4 1.4-1.6 1.7-2.2.4-.6.7-.5 1.2-.3.5.2 3.1 1.5 3.6 1.7.5.3.9.4 1 .6.1.2.1 1.1-.1 1.8z"/></svg>',
+		'clock'    => '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 11h-4V7h2v4h2v2z"/></svg>',
+		'pin'      => '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>',
+		'user'     => '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12zm0 2c-4 0-7.5 2-7.5 4.5V21h15v-2.5C19.5 16 16 14 12 14z"/></svg>',
+		'globe'    => '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.9 9h-3.2a15 15 0 0 0-1.3-5 8 8 0 0 1 4.5 5zM12 4c.9 1.2 1.8 3.2 2.2 7H9.8C10.2 7.2 11.1 5.2 12 4zM4.1 11a8 8 0 0 1 4.5-5 15 15 0 0 0-1.3 5H4.1zm0 2h3.2a15 15 0 0 0 1.3 5 8 8 0 0 1-4.5-5zm7.9 7c-.9-1.2-1.8-3.2-2.2-7h4.4c-.4 3.8-1.3 5.8-2.2 7zm5.4-2a15 15 0 0 0 1.3-5h3.2a8 8 0 0 1-4.5 5z"/></svg>',
+		'maps'     => '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15 4.5 9 6.8 3.5 4.7A1 1 0 0 0 2 5.6v12.8a1 1 0 0 0 1.4.9L9 17.2l6 2.3 5.5-2.1a1 1 0 0 0 .5-.9V4.7a1 1 0 0 0-1.4-.9L15 5.5v-1zm0 2.2 5-1.9v11.3l-5 1.9V6.7zm-2 11.2-4-1.5V5.7l4 1.5v10.7zM4 6.8l3 1.1v10.8l-3 1.2V6.8z"/></svg>',
+	);
+
+	return $icons[ $type ] ?? $icons['pin'];
+}
+
+function fdelil_cards_normalize_item( $raw ) {
+	$tags = array();
+
+	for ( $i = 1; $i <= 3; $i++ ) {
+		$label = trim( (string) ( $raw[ "tag_{$i}_label" ] ?? '' ) );
+		if ( '' === $label ) {
+			continue;
+		}
+		$tags[] = array(
+			'label' => $label,
+			'url'   => esc_url_raw( $raw[ "tag_{$i}_url" ] ?? '' ),
+			'style' => ( ( $raw[ "tag_{$i}_style" ] ?? 'neutral' ) === 'accent' ) ? 'accent' : 'neutral',
+		);
+	}
+
+	$maps_url   = trim( (string) ( $raw['maps_url'] ?? '' ) );
+	$maps_label = trim( (string) ( $raw['maps_label'] ?? '' ) );
+	if ( $maps_url ) {
+		$tags[] = array(
+			'label' => $maps_label !== '' ? $maps_label : 'GOOGLE MAPS',
+			'url'   => esc_url_raw( $maps_url ),
+			'style' => 'neutral',
+			'icon'  => 'maps',
+		);
+	}
+
+	$contacts = array();
+	for ( $i = 1; $i <= 4; $i++ ) {
+		$text = trim( (string) ( $raw[ "contact_{$i}_text" ] ?? '' ) );
+		if ( '' === $text ) {
+			continue;
+		}
+		$contacts[] = array(
+			'text' => $text,
+			'url'  => esc_url_raw( $raw[ "contact_{$i}_url" ] ?? '' ),
+			'icon' => sanitize_key( $raw[ "contact_{$i}_icon" ] ?? 'phone' ),
+		);
+	}
+
+	return array(
+		'image'    => esc_url_raw( $raw['image'] ?? '' ),
+		'title'    => sanitize_text_field( $raw['title'] ?? '' ),
+		'text'     => wp_kses_post( $raw['text'] ?? '' ),
+		'alt'      => sanitize_text_field( $raw['alt'] ?? ( $raw['title'] ?? '' ) ),
+		'tags'     => $tags,
+		'contacts' => $contacts,
+	);
+}
+
+/* ---------------------------------------------------------
+   ELEMENTOR WIDGET
+--------------------------------------------------------- */
+
+add_action(
+	'elementor/widgets/register',
+	function ( $widgets_manager ) {
+		if ( ! class_exists( '\Elementor\Widget_Base' ) ) {
+			return;
+		}
+
+		class FDelil_Card_Grid_Widget extends \Elementor\Widget_Base {
+
+			public function get_name() {
+				return 'fdelil_card_grid';
+			}
+
+			public function get_title() {
+				return 'Card Grid / Slideshow';
+			}
+
+			public function get_icon() {
+				return 'eicon-gallery-grid';
+			}
+
+			public function get_categories() {
+				return array( 'general' );
+			}
+
+			public function get_keywords() {
+				return array( 'cards', 'grid', 'slider', 'slideshow', 'delil', 'standort', 'tags' );
+			}
+
+			protected function register_controls() {
+				$this->start_controls_section(
+					'section_items',
+					array( 'label' => 'Cards' )
+				);
+
+				$repeater = new \Elementor\Repeater();
+
+				$repeater->add_control(
+					'image',
+					array(
+						'label'   => 'Bild',
+						'type'    => \Elementor\Controls_Manager::MEDIA,
+						'default' => array(
+							'url' => \Elementor\Utils::get_placeholder_image_src(),
+						),
+					)
+				);
+
+				$repeater->add_control(
+					'title',
+					array(
+						'label'       => 'Titel',
+						'type'        => \Elementor\Controls_Manager::TEXT,
+						'default'     => 'LÜBBECKE ★ HAUPTSTANDORT',
+						'label_block' => true,
+					)
+				);
+
+				$repeater->add_control(
+					'tags_heading',
+					array(
+						'label'     => 'Tags (optional – leer = ausgeblendet)',
+						'type'      => \Elementor\Controls_Manager::HEADING,
+						'separator' => 'before',
+					)
+				);
+
+				for ( $i = 1; $i <= 3; $i++ ) {
+					$repeater->add_control(
+						"tag_{$i}_label",
+						array(
+							'label'       => "Tag {$i} Text",
+							'type'        => \Elementor\Controls_Manager::TEXT,
+							'label_block' => true,
+							'placeholder' => $i === 1 ? 'z. B. LÜBECKER STRASSE 4M' : '',
+						)
+					);
+					$repeater->add_control(
+						"tag_{$i}_url",
+						array(
+							'label'       => "Tag {$i} Link",
+							'type'        => \Elementor\Controls_Manager::URL,
+							'placeholder' => 'https://…',
+							'options'     => array( 'url', 'is_external', 'nofollow' ),
+						)
+					);
+					$repeater->add_control(
+						"tag_{$i}_style",
+						array(
+							'label'   => "Tag {$i} Stil",
+							'type'    => \Elementor\Controls_Manager::SELECT,
+							'default' => $i === 1 ? 'accent' : 'neutral',
+							'options' => array(
+								'accent'  => 'Gelb',
+								'neutral' => 'Weiß / Grau',
+							),
+						)
+					);
+				}
+
+				$repeater->add_control(
+					'maps_heading',
+					array(
+						'label'     => 'Google Maps Tag (optional)',
+						'type'      => \Elementor\Controls_Manager::HEADING,
+						'separator' => 'before',
+					)
+				);
+
+				$repeater->add_control(
+					'maps_label',
+					array(
+						'label'   => 'Maps Tag Text',
+						'type'    => \Elementor\Controls_Manager::TEXT,
+						'default' => 'GOOGLE MAPS',
+					)
+				);
+
+				$repeater->add_control(
+					'maps_url',
+					array(
+						'label'       => 'Google Maps Link',
+						'type'        => \Elementor\Controls_Manager::URL,
+						'placeholder' => 'https://maps.google.com/…',
+						'description' => 'Nur wenn ausgefüllt erscheint der Maps-Tag mit Karten-Icon.',
+						'options'     => array( 'url', 'is_external', 'nofollow' ),
+					)
+				);
+
+				$repeater->add_control(
+					'text',
+					array(
+						'label'     => 'Text',
+						'type'      => \Elementor\Controls_Manager::TEXTAREA,
+						'default'   => '',
+						'rows'      => 4,
+						'separator' => 'before',
+					)
+				);
+
+				$repeater->add_control(
+					'contacts_heading',
+					array(
+						'label'     => 'Kontaktinfos unter dem Text (optional)',
+						'type'      => \Elementor\Controls_Manager::HEADING,
+						'separator' => 'before',
+					)
+				);
+
+				$icon_options = array(
+					'phone'    => 'Telefon',
+					'email'    => 'E-Mail',
+					'whatsapp' => 'WhatsApp',
+					'clock'    => 'Uhrzeit / Öffnungszeiten',
+					'pin'      => 'Standort / Pin',
+					'user'     => 'Person',
+					'globe'    => 'Web / Globe',
+				);
+
+				for ( $i = 1; $i <= 4; $i++ ) {
+					$repeater->add_control(
+						"contact_{$i}_icon",
+						array(
+							'label'   => "Kontakt {$i} Icon",
+							'type'    => \Elementor\Controls_Manager::SELECT,
+							'default' => $i === 1 ? 'phone' : ( $i === 2 ? 'email' : 'clock' ),
+							'options' => $icon_options,
+						)
+					);
+					$repeater->add_control(
+						"contact_{$i}_text",
+						array(
+							'label'       => "Kontakt {$i} Text",
+							'type'        => \Elementor\Controls_Manager::TEXT,
+							'label_block' => true,
+							'placeholder' => $i === 1 ? 'z. B. 05741 123456' : '',
+						)
+					);
+					$repeater->add_control(
+						"contact_{$i}_url",
+						array(
+							'label'       => "Kontakt {$i} Link",
+							'type'        => \Elementor\Controls_Manager::URL,
+							'placeholder' => 'tel:+49… / mailto:… / https://…',
+							'options'     => array( 'url', 'is_external', 'nofollow' ),
+						)
+					);
+				}
+
+				$this->add_control(
+					'cards',
+					array(
+						'label'       => 'Card-Items',
+						'type'        => \Elementor\Controls_Manager::REPEATER,
+						'fields'      => $repeater->get_controls(),
+						'default'     => array(
+							array(
+								'title'        => 'LÜBBECKE ★ HAUPTSTANDORT',
+								'tag_1_label'  => 'LÜBECKER STRASSE 4M',
+								'tag_1_style'  => 'accent',
+								'tag_2_label'  => '32312',
+								'tag_2_style'  => 'neutral',
+								'maps_label'   => 'GOOGLE MAPS',
+								'text'         => 'Unser Hauptstandort in Lübbecke – Theorie, Beratung und der Start für deine Ausbildung.',
+								'contact_1_icon' => 'phone',
+								'contact_1_text' => 'Telefon auf Anfrage',
+								'contact_2_icon' => 'clock',
+								'contact_2_text' => 'Theorie Di & Mi 19:00 Uhr',
+							),
+							array(
+								'title' => 'NACH ENSCHEDE',
+								'text'  => 'Über die Grenze nach Holland – und auch rein in Enschede. Du erlebst internationalen Verkehr, andere Straßenführung und gewinnst Sicherheit fernab der gewohnten Umgebung.',
+							),
+							array(
+								'title' => 'KÖLN – HAMBURG – BREMEN',
+								'text'  => 'Stadtverkehr kann man nicht in Lübbecke lernen. Deshalb fahren wir in echte Metropolen – mit dichtem Verkehr, komplexen Kreuzungen und allem, was dich in der Prüfung und danach erwartet.',
+							),
+							array(
+								'title' => 'OBERHAUSEN – CENTRO',
+								'text'  => 'Fahren und Erleben in einem: Die Fahrt zum Centro Oberhausen mit ca. einer Stunde Aufenthalt. Parkplatzsuche, viel Betrieb, enge Bereiche – und danach eine Belohnung.',
+							),
+						),
+						'title_field' => '{{{ title }}}',
+					)
+				);
+
+				$this->end_controls_section();
+
+				$this->start_controls_section(
+					'section_layout',
+					array( 'label' => 'Layout' )
+				);
+
+				$this->add_control(
+					'columns',
+					array(
+						'label'   => 'Desktop-Spalten',
+						'type'    => \Elementor\Controls_Manager::SELECT,
+						'default' => '4',
+						'options' => array(
+							'1' => '1',
+							'2' => '2',
+							'3' => '3',
+							'4' => '4',
+						),
+					)
+				);
+
+				$this->add_control(
+					'breakpoint',
+					array(
+						'label'       => 'Slideshow ab (px)',
+						'type'        => \Elementor\Controls_Manager::NUMBER,
+						'default'     => 768,
+						'description' => 'Unter dieser Breite wird die Slideshow aktiv.',
+					)
+				);
+
+				$this->end_controls_section();
+			}
+
+			protected function render() {
+				$settings = $this->get_settings_for_display();
+				$cards    = $settings['cards'] ?? array();
+
+				if ( empty( $cards ) ) {
+					return;
+				}
+
+				$items = array();
+				foreach ( $cards as $card ) {
+					$raw = array(
+						'image' => $card['image']['url'] ?? '',
+						'alt'   => ! empty( $card['image']['alt'] ) ? $card['image']['alt'] : ( $card['title'] ?? '' ),
+						'title' => $card['title'] ?? '',
+						'text'  => $card['text'] ?? '',
+					);
+
+					for ( $i = 1; $i <= 3; $i++ ) {
+						$raw[ "tag_{$i}_label" ] = $card[ "tag_{$i}_label" ] ?? '';
+						$raw[ "tag_{$i}_url" ]   = ! empty( $card[ "tag_{$i}_url" ]['url'] ) ? $card[ "tag_{$i}_url" ]['url'] : '';
+						$raw[ "tag_{$i}_style" ] = $card[ "tag_{$i}_style" ] ?? 'neutral';
+					}
+
+					$raw['maps_label'] = $card['maps_label'] ?? 'GOOGLE MAPS';
+					$raw['maps_url']   = ! empty( $card['maps_url']['url'] ) ? $card['maps_url']['url'] : '';
+
+					for ( $i = 1; $i <= 4; $i++ ) {
+						$raw[ "contact_{$i}_icon" ] = $card[ "contact_{$i}_icon" ] ?? 'phone';
+						$raw[ "contact_{$i}_text" ] = $card[ "contact_{$i}_text" ] ?? '';
+						$raw[ "contact_{$i}_url" ]  = ! empty( $card[ "contact_{$i}_url" ]['url'] ) ? $card[ "contact_{$i}_url" ]['url'] : '';
+					}
+
+					$items[] = fdelil_cards_normalize_item( $raw );
+				}
+
+				echo fdelil_cards_render(
+					$items,
+					array(
+						'columns'    => intval( $settings['columns'] ?? 4 ),
+						'breakpoint' => intval( $settings['breakpoint'] ?? 768 ),
+					)
+				);
+			}
+		}
+
+		$widgets_manager->register( new FDelil_Card_Grid_Widget() );
+	}
+);
+
+/* ---------------------------------------------------------
+   SHORTCODE
+   [fdelil_cards columns="2"]
+   [fdelil_card title="..." text="..." tag1="Adresse|URL|accent" maps="https://..." contact1="phone|05741…|tel:…"]
+--------------------------------------------------------- */
+
+add_shortcode( 'fdelil_cards', 'fdelil_cards_shortcode' );
+add_shortcode( 'fdelil_card', 'fdelil_card_item_shortcode' );
+
+function fdelil_card_parse_pipe( $value ) {
+	$parts = array_map( 'trim', explode( '|', (string) $value ) );
+	return array(
+		0 => $parts[0] ?? '',
+		1 => $parts[1] ?? '',
+		2 => $parts[2] ?? '',
+	);
+}
+
+function fdelil_card_item_shortcode( $atts, $content = null ) {
+	$atts = shortcode_atts(
+		array(
+			'image'     => '',
+			'title'     => '',
+			'text'      => '',
+			'alt'       => '',
+			'tag1'      => '',
+			'tag2'      => '',
+			'tag3'      => '',
+			'maps'      => '',
+			'maps_label'=> 'GOOGLE MAPS',
+			'contact1'  => '',
+			'contact2'  => '',
+			'contact3'  => '',
+			'contact4'  => '',
+		),
+		$atts,
+		'fdelil_card'
+	);
+
+	$text = $atts['text'] !== '' ? $atts['text'] : trim( (string) $content );
+	$raw  = array(
+		'image'      => $atts['image'],
+		'title'      => $atts['title'],
+		'text'       => $text,
+		'alt'        => $atts['alt'] ? $atts['alt'] : $atts['title'],
+		'maps_url'   => $atts['maps'],
+		'maps_label' => $atts['maps_label'],
+	);
+
+	foreach ( array( 1, 2, 3 ) as $i ) {
+		$p = fdelil_card_parse_pipe( $atts[ "tag{$i}" ] );
+		$raw[ "tag_{$i}_label" ] = $p[0];
+		$raw[ "tag_{$i}_url" ]   = $p[1];
+		$raw[ "tag_{$i}_style" ] = $p[2] ? $p[2] : ( 1 === $i ? 'accent' : 'neutral' );
+	}
+
+	foreach ( array( 1, 2, 3, 4 ) as $i ) {
+		$p = fdelil_card_parse_pipe( $atts[ "contact{$i}" ] );
+		$raw[ "contact_{$i}_icon" ] = $p[0] ? $p[0] : 'phone';
+		$raw[ "contact_{$i}_text" ] = $p[1] ? $p[1] : ( $p[0] && false === strpos( $atts[ "contact{$i}" ], '|' ) ? $p[0] : '' );
+		// support "text only" or "icon|text|url"
+		if ( $p[1] === '' && $p[0] !== '' && ! in_array( $p[0], array( 'phone', 'email', 'whatsapp', 'clock', 'pin', 'user', 'globe' ), true ) ) {
+			$raw[ "contact_{$i}_icon" ] = 'phone';
+			$raw[ "contact_{$i}_text" ] = $p[0];
+			$raw[ "contact_{$i}_url" ]  = $p[1];
+		} else {
+			$raw[ "contact_{$i}_url" ] = $p[2];
+		}
+	}
+
+	global $fdelil_cards_buffer;
+	if ( ! is_array( $fdelil_cards_buffer ) ) {
+		$fdelil_cards_buffer = array();
+	}
+	$fdelil_cards_buffer[] = fdelil_cards_normalize_item( $raw );
+
+	return '';
+}
+
+function fdelil_cards_shortcode( $atts, $content = null ) {
+	$atts = shortcode_atts(
+		array(
+			'columns'    => '4',
+			'breakpoint' => '768',
+		),
+		$atts,
+		'fdelil_cards'
+	);
+
+	global $fdelil_cards_buffer;
+	$fdelil_cards_buffer = array();
+
+	if ( $content ) {
+		do_shortcode( $content );
+	}
+
+	$items = $fdelil_cards_buffer;
+	$fdelil_cards_buffer = array();
+
+	if ( empty( $items ) ) {
+		return current_user_can( 'edit_posts' )
+			? '<p><em>Card Grid: Bitte Cards im Elementor-Widget hinzufügen oder [fdelil_card] nested verwenden.</em></p>'
+			: '';
+	}
+
+	return fdelil_cards_render(
+		$items,
+		array(
+			'columns'    => intval( $atts['columns'] ),
+			'breakpoint' => intval( $atts['breakpoint'] ),
+		)
+	);
+}
+
+/* ---------------------------------------------------------
+   RENDER
+--------------------------------------------------------- */
+
+function fdelil_cards_render( $items, $args = array() ) {
+	$columns    = max( 1, min( 4, intval( $args['columns'] ?? 4 ) ) );
+	$breakpoint = max( 480, intval( $args['breakpoint'] ?? 768 ) );
+	$id         = 'fdelil-cards-' . wp_unique_id();
+	$count      = count( $items );
+
+	if ( $count < 1 ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Big+Shoulders:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+	<style>
+	#<?php echo esc_attr( $id ); ?> {
+		--fdc-border: #373737;
+		--fdc-border-hover: #5a5a5a;
+		--fdc-accent: #FBEF03;
+		--fdc-text: #ffffff;
+		--fdc-muted: rgba(255,255,255,0.82);
+		--fdc-cols: <?php echo (int) $columns; ?>;
+		--fdc-pad: 2em;
+		--fdc-gap: 1em;
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+	#<?php echo esc_attr( $id ); ?> *,
+	#<?php echo esc_attr( $id ); ?> *::before,
+	#<?php echo esc_attr( $id ); ?> *::after { box-sizing: border-box; }
+
+	#<?php echo esc_attr( $id ); ?> .fdc-grid {
+		display: grid;
+		grid-template-columns: repeat(var(--fdc-cols), minmax(0, 1fr));
+		gap: var(--fdc-gap);
+		border: 0;
+		background: transparent;
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-track { display: contents; }
+
+	#<?php echo esc_attr( $id ); ?> .fdc-card {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 14px;
+		padding: var(--fdc-pad);
+		background: transparent;
+		border: 1px solid var(--fdc-border);
+		min-width: 0;
+		transition: box-shadow .2s ease, border-color .2s ease;
+	}
+
+	@media (max-width: 1024px) {
+		#<?php echo esc_attr( $id ); ?> {
+			--fdc-pad: 2em;
+			--fdc-gap: 2em;
+		}
+	}
+
+	#<?php echo esc_attr( $id ); ?> .fdc-card__media {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		overflow: hidden;
+		background: transparent;
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-card__media img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	#<?php echo esc_attr( $id ); ?> .fdc-card .h3-title,
+	#<?php echo esc_attr( $id ); ?> .fdc-card__title {
+		margin: 0;
+		color: var(--fdc-text);
+		font-family: "Bangers", cursive !important;
+		font-weight: 400 !important;
+		font-size: clamp(1.55rem, 2.4vw, 1.9rem) !important;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+		line-height: 1.1;
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-card__media + .h3-title,
+	#<?php echo esc_attr( $id ); ?> .fdc-card__media + .fdc-card__title {
+		margin-top: 0.85em;
+	}
+
+	#<?php echo esc_attr( $id ); ?> .fdc-card__tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		padding: 8px 12px;
+		font-family: "Big Shoulders", sans-serif !important;
+		font-weight: 700 !important;
+		font-size: 13px;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		text-decoration: none !important;
+		border-radius: 0 !important;
+		line-height: 1;
+		border: none !important;
+		box-shadow: none !important;
+		background-image: none !important;
+		transition: filter .15s ease, background-color .15s ease;
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-tag--accent {
+		background: var(--fdc-accent) !important;
+		color: #000 !important;
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-tag--neutral {
+		background: #efefef !important;
+		color: #000 !important;
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-tag svg {
+		width: 14px;
+		height: 14px;
+		flex-shrink: 0;
+		display: block;
+	}
+	#<?php echo esc_attr( $id ); ?> a.fdc-tag:hover,
+	#<?php echo esc_attr( $id ); ?> a.fdc-tag:focus {
+		filter: brightness(0.95);
+		background-image: none !important;
+		box-shadow: none !important;
+	}
+
+	#<?php echo esc_attr( $id ); ?> .fdc-card__text {
+		margin: 0;
+		color: var(--fdc-muted);
+		font-family: "Inter", system-ui, sans-serif !important;
+		font-size: 15px;
+		line-height: 1.55;
+		font-weight: 400;
+	}
+
+	#<?php echo esc_attr( $id ); ?> .fdc-card__contacts {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin-top: 2px;
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-contact {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		color: var(--fdc-text) !important;
+		font-family: "Inter", system-ui, sans-serif !important;
+		font-size: 14px;
+		line-height: 1.35;
+		text-decoration: none !important;
+		background: none !important;
+		background-image: none !important;
+		border: none !important;
+		box-shadow: none !important;
+		padding: 0;
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-contact__icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 18px;
+		height: 18px;
+		flex-shrink: 0;
+		color: var(--fdc-accent);
+	}
+	#<?php echo esc_attr( $id ); ?> .fdc-contact__icon svg {
+		width: 18px;
+		height: 18px;
+		display: block;
+	}
+	#<?php echo esc_attr( $id ); ?> a.fdc-contact:hover,
+	#<?php echo esc_attr( $id ); ?> a.fdc-contact:focus {
+		color: var(--fdc-accent) !important;
+		background: none !important;
+		background-image: none !important;
+	}
+
+	#<?php echo esc_attr( $id ); ?> .fdc-controls { display: none; }
+
+	@media (hover: hover) and (pointer: fine) {
+		#<?php echo esc_attr( $id ); ?> .fdc-card:hover {
+			box-shadow: inset 0 0 0 1px var(--fdc-border-hover);
+		}
+	}
+
+	@media (max-width: <?php echo (int) $breakpoint; ?>px) {
+		#<?php echo esc_attr( $id ); ?> {
+			--fdc-pad: 2em;
+			--fdc-gap: 1em;
+			--fdc-edge: 1em;
+			padding: var(--fdc-edge) 0;
+			box-sizing: border-box;
+			overflow: visible;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-grid {
+			display: block;
+			position: relative;
+			overflow: visible;
+			border: 0;
+			background: transparent;
+			gap: 0;
+			padding: 0;
+		}
+		/* Full-bleed Track: Cards können über den Viewport-Rand hinausgleiten */
+		#<?php echo esc_attr( $id ); ?> .fdc-track {
+			display: flex;
+			width: 100vw;
+			max-width: 100vw;
+			margin-left: calc(50% - 50vw);
+			gap: var(--fdc-gap);
+			padding-inline: var(--fdc-edge);
+			scroll-padding-inline: var(--fdc-edge);
+			overflow-x: auto;
+			overflow-y: hidden;
+			scroll-snap-type: x mandatory;
+			scroll-behavior: smooth;
+			-webkit-overflow-scrolling: touch;
+			scrollbar-width: none;
+			-ms-overflow-style: none;
+			/* Vertikal = Seite scrollen, horizontal = Cards — beides erlaubt */
+			touch-action: manipulation;
+			transform: none !important;
+			transition: none !important;
+			cursor: grab;
+			box-sizing: border-box;
+			background: transparent;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-track::-webkit-scrollbar {
+			display: none;
+			width: 0;
+			height: 0;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-card {
+			flex: 0 0 calc(100vw - (var(--fdc-edge) * 2));
+			width: calc(100vw - (var(--fdc-edge) * 2));
+			max-width: none;
+			scroll-snap-align: start;
+			scroll-snap-stop: always;
+			border: 1px solid var(--fdc-border) !important;
+			box-shadow: none !important;
+			padding: var(--fdc-pad);
+			gap: 12px;
+			background: transparent;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-card .h3-title,
+		#<?php echo esc_attr( $id ); ?> .fdc-card__title {
+			font-size: clamp(1.75rem, 6.5vw, 2.1rem) !important;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-card__media + .h3-title,
+		#<?php echo esc_attr( $id ); ?> .fdc-card__media + .fdc-card__title {
+			margin-top: 1em;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-card:hover {
+			box-shadow: none !important;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-controls {
+			display: grid;
+			grid-template-columns: 40px 1fr 40px;
+			align-items: center;
+			width: 100%;
+			gap: 12px;
+			margin-top: 18px;
+			padding-inline: var(--fdc-edge);
+			box-sizing: border-box;
+			user-select: none;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 40px;
+			height: 40px;
+			padding: 0;
+			border: 0 !important;
+			background: transparent !important;
+			background-image: none !important;
+			color: var(--fdc-accent) !important;
+			cursor: pointer;
+			box-shadow: none !important;
+			border-radius: 0 !important;
+			-webkit-appearance: none;
+			appearance: none;
+			z-index: 2;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-btn--prev {
+			justify-self: start;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-btn--next {
+			justify-self: end;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-btn:hover,
+		#<?php echo esc_attr( $id ); ?> .fdc-btn:focus,
+		#<?php echo esc_attr( $id ); ?> .fdc-btn:active {
+			background: transparent !important;
+			background-image: none !important;
+			color: var(--fdc-accent) !important;
+			box-shadow: none !important;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-btn svg {
+			display: block;
+			width: 14px;
+			height: 14px;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-scrollbar {
+			justify-self: stretch;
+			align-self: center;
+			min-width: 0;
+			padding: 10px 0;
+			cursor: pointer;
+			touch-action: none;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-scrollbar__track {
+			position: relative;
+			width: 100%;
+			height: 4px;
+			background: var(--fdc-border);
+			border-radius: 0;
+			overflow: hidden;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-scrollbar__thumb {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			min-width: 48px;
+			background: var(--fdc-accent);
+			border-radius: 0;
+			transform: translateX(0);
+			transition: background-color .15s ease;
+			will-change: transform, width;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-scrollbar.is-dragging .fdc-scrollbar__thumb {
+			background: #fff;
+		}
+		#<?php echo esc_attr( $id ); ?> .fdc-scrollbar.is-static .fdc-scrollbar__thumb {
+			width: 100% !important;
+			transform: none !important;
+			opacity: 0.35;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		#<?php echo esc_attr( $id ); ?> .fdc-track {
+			scroll-behavior: auto;
+			transition: none;
+		}
+	}
+	</style>
+
+	<div class="fdelil-cards" id="<?php echo esc_attr( $id ); ?>" data-count="<?php echo esc_attr( $count ); ?>" data-breakpoint="<?php echo esc_attr( $breakpoint ); ?>">
+		<div class="fdc-grid" aria-live="polite">
+			<div class="fdc-track">
+				<?php foreach ( $items as $index => $item ) : ?>
+					<article class="fdc-card" data-index="<?php echo esc_attr( $index ); ?>">
+						<?php if ( ! empty( $item['image'] ) ) : ?>
+							<div class="fdc-card__media">
+								<img src="<?php echo esc_url( $item['image'] ); ?>" alt="<?php echo esc_attr( $item['alt'] ?? '' ); ?>" loading="lazy" decoding="async">
+							</div>
+						<?php endif; ?>
+
+						<?php if ( ! empty( $item['title'] ) ) : ?>
+							<h3 class="h3-title fdc-card__title"><?php echo esc_html( $item['title'] ); ?></h3>
+						<?php endif; ?>
+
+						<?php if ( ! empty( $item['tags'] ) ) : ?>
+							<div class="fdc-card__tags">
+								<?php foreach ( $item['tags'] as $tag ) : ?>
+									<?php
+									$tag_class = 'fdc-tag fdc-tag--' . ( ( $tag['style'] ?? '' ) === 'accent' ? 'accent' : 'neutral' );
+									$label     = $tag['label'] ?? '';
+									$url       = $tag['url'] ?? '';
+									$has_icon  = ! empty( $tag['icon'] );
+									?>
+									<?php if ( $url ) : ?>
+										<a class="<?php echo esc_attr( $tag_class ); ?>" href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer">
+											<?php if ( $has_icon ) : ?>
+												<?php echo fdelil_cards_icon_svg( $tag['icon'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+											<?php endif; ?>
+											<span><?php echo esc_html( $label ); ?></span>
+										</a>
+									<?php else : ?>
+										<span class="<?php echo esc_attr( $tag_class ); ?>">
+											<?php if ( $has_icon ) : ?>
+												<?php echo fdelil_cards_icon_svg( $tag['icon'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+											<?php endif; ?>
+											<span><?php echo esc_html( $label ); ?></span>
+										</span>
+									<?php endif; ?>
+								<?php endforeach; ?>
+							</div>
+						<?php endif; ?>
+
+						<?php if ( ! empty( $item['text'] ) ) : ?>
+							<p class="fdc-card__text"><?php echo esc_html( wp_strip_all_tags( $item['text'] ) ); ?></p>
+						<?php endif; ?>
+
+						<?php if ( ! empty( $item['contacts'] ) ) : ?>
+							<div class="fdc-card__contacts">
+								<?php foreach ( $item['contacts'] as $contact ) : ?>
+									<?php
+									$c_text = $contact['text'] ?? '';
+									$c_url  = $contact['url'] ?? '';
+									$c_icon = $contact['icon'] ?? 'phone';
+									?>
+									<?php if ( $c_url ) : ?>
+										<a class="fdc-contact" href="<?php echo esc_url( $c_url ); ?>">
+											<span class="fdc-contact__icon"><?php echo fdelil_cards_icon_svg( $c_icon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+											<span><?php echo esc_html( $c_text ); ?></span>
+										</a>
+									<?php else : ?>
+										<div class="fdc-contact">
+											<span class="fdc-contact__icon"><?php echo fdelil_cards_icon_svg( $c_icon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+											<span><?php echo esc_html( $c_text ); ?></span>
+										</div>
+									<?php endif; ?>
+								<?php endforeach; ?>
+							</div>
+						<?php endif; ?>
+					</article>
+				<?php endforeach; ?>
+			</div>
+		</div>
+
+		<div class="fdc-controls" aria-label="Slideshow-Navigation">
+			<button type="button" class="fdc-btn fdc-btn--prev" aria-label="Vorherige Card">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 4L6 12l10 8z" fill="currentColor"/></svg>
+			</button>
+			<div class="fdc-scrollbar" role="scrollbar" aria-label="Scroll-Fortschritt" aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+				<div class="fdc-scrollbar__track">
+					<div class="fdc-scrollbar__thumb"></div>
+				</div>
+			</div>
+			<button type="button" class="fdc-btn fdc-btn--next" aria-label="Nächste Card">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4l10 8-10 8z" fill="currentColor"/></svg>
+			</button>
+		</div>
+	</div>
+
+	<script>
+	(function () {
+		var root = document.getElementById(<?php echo wp_json_encode( $id ); ?>);
+		if (!root || root.dataset.fdcReady === '1') return;
+		root.dataset.fdcReady = '1';
+
+		var track = root.querySelector('.fdc-track');
+		var cards = root.querySelectorAll('.fdc-card');
+		var scrollbar = root.querySelector('.fdc-scrollbar');
+		var scrollbarTrack = root.querySelector('.fdc-scrollbar__track');
+		var scrollbarThumb = root.querySelector('.fdc-scrollbar__thumb');
+		var btnPrev = root.querySelector('.fdc-btn--prev');
+		var btnNext = root.querySelector('.fdc-btn--next');
+		var breakpoint = parseInt(root.getAttribute('data-breakpoint') || '768', 10);
+		var count = cards.length || parseInt(root.getAttribute('data-count') || '0', 10);
+		var index = 0;
+		var scrollTicking = false;
+		var scroller = track;
+		var dragActive = false;
+		var dragMoved = false;
+		var dragStartX = 0;
+		var dragStartScroll = 0;
+
+		function unlockParentClip() {
+			if (!isMobile() || !root) return;
+			var el = root.parentElement;
+			for (var i = 0; i < 8 && el && el !== document.body; i++) {
+				var cs = window.getComputedStyle(el);
+				if (cs.overflowX === 'hidden' || cs.overflow === 'hidden' || cs.overflowX === 'clip') {
+					el.style.setProperty('overflow-x', 'visible', 'important');
+					if (cs.overflow === 'hidden' || cs.overflow === 'clip') {
+						el.style.setProperty('overflow-y', cs.overflowY === 'hidden' || cs.overflowY === 'clip' ? 'visible' : cs.overflowY, 'important');
+					}
+				}
+				el = el.parentElement;
+			}
+		}
+
+		function isMobile() {
+			return window.matchMedia('(max-width: ' + breakpoint + 'px)').matches;
+		}
+
+		function getGap() {
+			if (!track) return 0;
+			var styles = window.getComputedStyle(track);
+			return parseFloat(styles.columnGap || styles.gap) || 0;
+		}
+
+		function getStep() {
+			if (!cards.length) return 0;
+			return cards[0].getBoundingClientRect().width + getGap();
+		}
+
+		function syncScrollbar() {
+			if (!scrollbar || !scrollbarTrack || !scrollbarThumb || !scroller) return;
+
+			var scrollWidth = scroller.scrollWidth;
+			var clientWidth = scroller.clientWidth;
+			var maxScroll = scrollWidth - clientWidth;
+			var trackWidth = scrollbarTrack.clientWidth;
+
+			if (maxScroll <= 1 || trackWidth <= 0) {
+				scrollbar.classList.add('is-static');
+				scrollbar.setAttribute('aria-valuenow', '0');
+				return;
+			}
+
+			scrollbar.classList.remove('is-static');
+			var thumbWidth = Math.max(48, (clientWidth / scrollWidth) * trackWidth);
+			var travel = Math.max(0, trackWidth - thumbWidth);
+			var ratio = scroller.scrollLeft / maxScroll;
+			var thumbLeft = travel * ratio;
+
+			scrollbarThumb.style.width = thumbWidth + 'px';
+			scrollbarThumb.style.transform = 'translateX(' + thumbLeft + 'px)';
+			scrollbar.setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
+		}
+
+		function syncIndexFromScroll() {
+			index = indexFromScroll();
+			syncScrollbar();
+		}
+
+		function indexFromScroll() {
+			var step = getStep();
+			if (!scroller || step <= 0) return 0;
+			return Math.max(0, Math.min(count - 1, Math.round(scroller.scrollLeft / step)));
+		}
+
+		function goTo(nextIndex, instant) {
+			if (count < 1 || !scroller) return;
+			var target = Math.max(0, Math.min(count - 1, nextIndex));
+			index = target;
+
+			if (!isMobile()) {
+				scroller.scrollLeft = 0;
+				syncScrollbar();
+				return;
+			}
+
+			var left = Math.round(target * getStep());
+			if (instant) {
+				var prev = scroller.style.scrollBehavior;
+				scroller.style.scrollBehavior = 'auto';
+				scroller.scrollLeft = left;
+				scroller.style.scrollBehavior = prev || '';
+			} else if (typeof scroller.scrollTo === 'function') {
+				scroller.scrollTo({ left: left, behavior: 'smooth' });
+			} else {
+				scroller.scrollLeft = left;
+			}
+			syncScrollbar();
+		}
+
+		function scrollFromScrollbar(clientX) {
+			if (!scroller || !scrollbarTrack) return;
+			var rect = scrollbarTrack.getBoundingClientRect();
+			var trackWidth = rect.width;
+			var maxScroll = scroller.scrollWidth - scroller.clientWidth;
+			if (trackWidth <= 0 || maxScroll <= 0) return;
+
+			var thumbWidth = scrollbarThumb ? scrollbarThumb.offsetWidth : 48;
+			var travel = Math.max(0, trackWidth - thumbWidth);
+			var clickX = Math.max(0, Math.min(trackWidth, clientX - rect.left));
+			var targetLeft = travel > 0 ? ((clickX - thumbWidth / 2) / travel) * maxScroll : 0;
+
+			scroller.scrollLeft = Math.max(0, Math.min(maxScroll, targetLeft));
+			syncIndexFromScroll();
+		}
+
+		function onScroll() {
+			if (!isMobile()) return;
+			if (scrollTicking) return;
+			scrollTicking = true;
+			window.requestAnimationFrame(function () {
+				syncIndexFromScroll();
+				scrollTicking = false;
+			});
+		}
+
+		if (btnPrev) {
+			btnPrev.addEventListener('click', function () {
+				goTo(index - 1);
+			});
+		}
+		if (btnNext) {
+			btnNext.addEventListener('click', function () {
+				goTo(index + 1);
+			});
+		}
+
+		if (scrollbar && scrollbarTrack) {
+			scrollbarTrack.addEventListener('click', function (e) {
+				if (dragActive) return;
+				if (dragMoved) {
+					dragMoved = false;
+					return;
+				}
+				scrollFromScrollbar(e.clientX);
+			});
+
+			scrollbarTrack.addEventListener('pointerdown', function (e) {
+				if (!isMobile()) return;
+				dragActive = true;
+				dragMoved = false;
+				dragStartX = e.clientX;
+				dragStartScroll = scroller ? scroller.scrollLeft : 0;
+				scrollbar.classList.add('is-dragging');
+				if (scrollbarTrack.setPointerCapture) {
+					scrollbarTrack.setPointerCapture(e.pointerId);
+				}
+				e.preventDefault();
+			});
+
+			scrollbarTrack.addEventListener('pointermove', function (e) {
+				if (!dragActive || !scroller || !scrollbarTrack) return;
+				var maxScroll = scroller.scrollWidth - scroller.clientWidth;
+				var trackWidth = scrollbarTrack.clientWidth;
+				var thumbWidth = scrollbarThumb ? scrollbarThumb.offsetWidth : 48;
+				var travel = Math.max(0, trackWidth - thumbWidth);
+				if (travel <= 0 || maxScroll <= 0) return;
+
+				var deltaX = e.clientX - dragStartX;
+				if (Math.abs(deltaX) > 3) dragMoved = true;
+				var scrollDelta = (deltaX / travel) * maxScroll;
+				scroller.scrollLeft = Math.max(0, Math.min(maxScroll, dragStartScroll + scrollDelta));
+				syncIndexFromScroll();
+			});
+
+			function endDrag(e) {
+				if (!dragActive) return;
+				dragActive = false;
+				scrollbar.classList.remove('is-dragging');
+				if (scrollbarTrack.releasePointerCapture && e && e.pointerId) {
+					try { scrollbarTrack.releasePointerCapture(e.pointerId); } catch (err) {}
+				}
+			}
+
+			scrollbarTrack.addEventListener('pointerup', endDrag);
+			scrollbarTrack.addEventListener('pointercancel', endDrag);
+			scrollbarTrack.addEventListener('lostpointercapture', function () {
+				dragActive = false;
+				scrollbar.classList.remove('is-dragging');
+			});
+		}
+
+		if (scroller) {
+			scroller.addEventListener('scroll', onScroll, { passive: true });
+		}
+
+		window.addEventListener('resize', function () {
+			unlockParentClip();
+			goTo(index, true);
+			syncScrollbar();
+		});
+
+		unlockParentClip();
+		goTo(0, true);
+		syncScrollbar();
+	})();
+	</script>
+	<?php
+	return ob_get_clean();
+}

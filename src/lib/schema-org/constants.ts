@@ -66,9 +66,6 @@ export const META_AGENTUR_BUENDE =
 export const META_STANDORTE =
   'Ein Standort in Bünde, Einsatzgebiet OWL: Herford, Enger, Löhne, Bad Oeynhausen, Bielefeld. Keine Fake-Büros.'
 
-export const META_VORTEILE =
-  'Mehr Qualität bei gleichem Budget: weniger Abstimmung, ein Auftritt der zu dir passt, Nähe in OWL und Betreuung nach dem Launch, Webdesign aus Bünde.'
-
 export const META_WEBDESIGN =
   'Webseiten mit Raketenantrieb: maßgeschneidertes Webdesign aus Bünde für KMU in OWL. Design, Texte, Technik aus einer Hand, kein Baukasten. Erstgespräch in 24 h.'
 

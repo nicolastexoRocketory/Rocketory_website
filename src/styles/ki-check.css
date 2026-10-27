@@ -1,0 +1,255 @@
+/* KI-Check: hero + plain checker + analyzing on contact layout. */
+.rk-page-ki-check .rk-hero + .rk-split{
+  border-top:none;
+}
+#ki-check-hintergrund .rk-split-media--fill{
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+#ki-check-hintergrund .rk-split-photo-fill{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  border:1px solid var(--border);
+  aspect-ratio:var(--rk-media-ratio);
+  min-height:clamp(240px,52vw,360px);
+}
+#ki-check-hintergrund .rk-split-photo-fill .rk-split-photo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  max-height:none;
+  aspect-ratio:auto;
+  object-fit:cover;
+  object-position:right center;
+  border:0;
+}
+#ki-check-hintergrund .rk-split-caption{flex-shrink:0;}
+@media(min-width:900px){
+  #ki-check-hintergrund .rk-split-grid{
+    align-items:stretch;
+  }
+  #ki-check-hintergrund .rk-split-media--fill{
+    align-self:stretch;
+    height:100%;
+    min-height:100%;
+  }
+  #ki-check-hintergrund .rk-split-photo-fill{
+    flex:1 1 auto;
+    min-height:0;
+    aspect-ratio:auto;
+    height:100%;
+  }
+}
+.rk-page-ki-check #ki-check-hintergrund + .rk-contact-main--minimal{
+  min-height:auto;
+  padding-top:clamp(48px,8vw,80px);
+}
+.rk-page-ki-check .rk-contact-main--plain{
+  background:var(--bg);
+  min-height:0;
+}
+.rk-page-ki-check .rk-contact-main--plain .rk-contact-form-wrap{
+  border:1px solid var(--border);
+  box-shadow:none;
+  background:var(--bg-cool);
+}
+.rk-page-ki-check .rk-hero .rk-hero-img{
+  object-fit:cover;
+  object-position:center center;
+}
+.rk-page-ki-check .rk-ki-check-warn{
+  margin:0 0 clamp(12px,2vw,16px);
+  font-family:var(--font-sans);
+  font-size:clamp(0.625rem,0.8vw,0.6875rem);
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--red);
+}
+.rk-page-ki-check .rk-ki-check-risks{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin:clamp(20px,3vw,28px) 0 clamp(22px,3.5vw,30px);
+}
+.rk-page-ki-check .rk-ki-check-risk{
+  padding:clamp(14px,2vw,18px);
+  border:1px solid var(--border);
+  background:var(--bg-cool);
+}
+.rk-page-ki-check .rk-ki-check-risk-title{
+  margin:0 0 6px;
+  font-family:var(--font-sans);
+  font-size:clamp(0.875rem,1.05vw,0.9375rem);
+  font-weight:700;
+  letter-spacing:-0.01em;
+  color:var(--ink);
+}
+.rk-page-ki-check .rk-ki-check-risk p{
+  margin:0;
+  font-size:clamp(0.8125rem,1vw,0.875rem);
+  line-height:1.55;
+  color:var(--muted);
+}
+@media(min-width:700px){
+  .rk-page-ki-check .rk-ki-check-risks{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+.rk-page-ki-check .rk-ki-check-intro{
+  width:100%;
+  max-width:min(40rem,100%);
+  margin:0 auto clamp(28px,5vw,44px);
+  text-align:center;
+  color:var(--ink);
+}
+.rk-page-ki-check .rk-ki-check-kicker{
+  margin:0 0 clamp(14px,2.5vw,18px);
+  font-family:var(--font-sans);
+  font-size:clamp(0.625rem,0.8vw,0.6875rem);
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--red);
+}
+.rk-page-ki-check .rk-ki-check-title{
+  margin:0 0 clamp(14px,2.5vw,18px);
+  font-family:var(--font-sans);
+  font-weight:700;
+  font-size:clamp(2rem,6vw,3.25rem);
+  line-height:1.08;
+  letter-spacing:-0.04em;
+  color:var(--ink);
+}
+.rk-page-ki-check .rk-ki-check-title em{
+  font-family:var(--font-serif);
+  font-style:italic;
+  font-weight:400;
+  color:var(--accent);
+}
+.rk-page-ki-check .rk-ki-check-lead{
+  margin:0 auto;
+  max-width:36rem;
+  font-size:clamp(0.9375rem,1.4vw,1.0625rem);
+  line-height:1.65;
+  font-weight:300;
+  color:var(--muted);
+}
+.rk-page-ki-check .rk-ki-check-perks{
+  list-style:none;
+  margin:clamp(18px,3vw,24px) 0 0;
+  padding:0;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:clamp(12px,2.5vw,22px);
+}
+.rk-page-ki-check .rk-ki-check-perks li{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-sans);
+  font-size:clamp(0.75rem,0.95vw,0.8125rem);
+  font-weight:600;
+  letter-spacing:0.02em;
+  color:var(--muted);
+}
+.rk-page-ki-check .rk-ki-check-perk-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#22c55e;
+  flex-shrink:0;
+}
+.rk-page-ki-check .rk-form-head .rk-h2{
+  margin-bottom:0;
+}
+.rk-page-ki-check .rk-ki-check-analyzing{
+  min-height:clamp(220px,32vw,300px);
+  display:flex;
+  align-items:center;
+}
+.rk-page-ki-check .rk-ki-check-analyzing.is-active{
+  display:flex;
+}
+.rk-ki-check-analyzing-inner{
+  width:100%;
+}
+.rk-ki-check-analyzing-kicker{
+  margin:0 0 10px;
+  font-family:var(--font-sans);
+  font-size:clamp(0.625rem,0.8vw,0.6875rem);
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--red);
+}
+.rk-ki-check-analyzing-track{
+  margin:clamp(18px,3vw,24px) 0 clamp(16px,2.5vw,22px);
+  height:3px;
+  background:var(--border);
+  overflow:hidden;
+}
+.rk-ki-check-analyzing-bar{
+  height:100%;
+  width:0;
+  background:var(--ci-gradient, linear-gradient(90deg,#c1272d,#ff5c00));
+  transition:width .85s ease;
+}
+.rk-ki-check-analyzing-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:8px;
+}
+.rk-ki-check-analyzing-list li{
+  position:relative;
+  padding-left:22px;
+  font-size:clamp(0.8125rem,1vw,0.875rem);
+  color:var(--muted);
+  line-height:1.45;
+}
+.rk-ki-check-analyzing-list li::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:0.45em;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  border:1.5px solid var(--border);
+  background:transparent;
+}
+.rk-ki-check-analyzing-list li.is-active{
+  color:var(--ink);
+  font-weight:600;
+}
+.rk-ki-check-analyzing-list li.is-active::before{
+  border-color:var(--red);
+  background:var(--red);
+}
+.rk-ki-check-analyzing-list li.is-done{
+  color:var(--ink);
+}
+.rk-ki-check-analyzing-list li.is-done::before{
+  border-color:rgba(21,128,61,0.55);
+  background:rgba(21,128,61,0.85);
+}
+.rk-page-ki-check .rk-multistep-form.is-submitted .rk-form-head{
+  display:none;
+}
+.rk-page-ki-check #beitrag-im-fokus{
+  border-top:none;
+}
+@media(min-width:769px){
+  .rk-page-ki-check .rk-topic-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .rk-ki-check-analyzing-bar{transition:none;}
+}

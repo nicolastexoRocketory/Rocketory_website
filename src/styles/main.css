@@ -773,13 +773,16 @@ html{
   flex:1;
   padding:clamp(16px,2.2vw,20px);
 }
+.rk-svc-mega-card-body .rk-svc-mega-kicker{
+  margin:0;
+}
 .rk-svc-mega-card-title{
   font-family:var(--font-serif);
   font-weight:400;
   font-style:normal;
-  font-size:clamp(1.35rem,1.8vw,1.65rem);
+  font-size:clamp(1.15rem,1.55vw,1.4rem);
   letter-spacing:-0.03em;
-  line-height:1.1;
+  line-height:1.15;
   color:var(--ink);
 }
 .rk-svc-mega-card .rk-svc-mega-lead{

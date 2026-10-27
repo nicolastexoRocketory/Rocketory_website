@@ -1,0 +1,903 @@
+<?php
+/**
+ * Plugin Name: Fahrschule Delil Mobile-Navigation
+ * Description: Sticky Mobile-Menü (Vollbild-Panel) mit Logo und den unter Design → Menüs zugewiesenen Menüpunkten. Branding: Big Shoulders, Akzent #FBEF03. Funktion 1:1 wie TuS Mobile-Nav. Shortcode [fdelil_mobile_nav].
+ * Version: 1.1
+ * Author: Rocketory / Nicolas Zhigalov
+ * Author URI: https://rocketory.de
+ * Text Domain: fdelil-mobile-nav
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/* ============================================================
+   1) Menü-Position + Einstellungen
+   ============================================================ */
+
+add_action( 'after_setup_theme', 'fdelil_mn_register_menu' );
+function fdelil_mn_register_menu() {
+	register_nav_menu( 'fdelil_mobile', __( 'Fahrschule Delil Mobile-Navigation', 'fdelil-mobile-nav' ) );
+}
+
+function fdelil_mn_defaults() {
+	return array(
+		'logo_url'    => '/wp-content/uploads/2026/07/Delil-Logo-klein.png',
+		'logo_alt'    => 'Fahrschule Delil Logo',
+		'home_url'    => '',
+		'cta_url'     => '/anmeldung',
+		'cta_label'   => 'Anmeldung',
+		'close_label' => 'Schließen',
+	);
+}
+
+function fdelil_mn_get_opts() {
+	$saved = get_option( 'fdelil_mobile_nav_opts' );
+	if ( ! is_array( $saved ) ) {
+		$saved = array();
+	}
+	return wp_parse_args( $saved, fdelil_mn_defaults() );
+}
+
+/* ============================================================
+   2) Admin: Einstellungen unter Design → Mobile-Nav
+   ============================================================ */
+
+add_action( 'admin_menu', 'fdelil_mn_admin_menu' );
+function fdelil_mn_admin_menu() {
+	add_theme_page(
+		'Mobile-Navigation',
+		'Mobile-Navigation',
+		'manage_options',
+		'fdelil-mobile-nav',
+		'fdelil_mn_admin_page'
+	);
+}
+
+function fdelil_mn_admin_page() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$opts = fdelil_mn_get_opts();
+
+	if ( isset( $_POST['fdelil_mn_save'] ) && check_admin_referer( 'fdelil_mn_save', 'fdelil_mn_nonce' ) ) {
+		$opts['logo_url']    = esc_url_raw( wp_unslash( $_POST['logo_url'] ?? '' ) );
+		$opts['logo_alt']    = sanitize_text_field( wp_unslash( $_POST['logo_alt'] ?? '' ) );
+		$opts['home_url']    = esc_url_raw( wp_unslash( $_POST['home_url'] ?? '' ) );
+		$opts['cta_url']     = esc_url_raw( wp_unslash( $_POST['cta_url'] ?? '/anmeldung' ) );
+		$opts['cta_label']   = sanitize_text_field( wp_unslash( $_POST['cta_label'] ?? 'Anmeldung' ) );
+		$opts['close_label'] = sanitize_text_field( wp_unslash( $_POST['close_label'] ?? 'Schließen' ) );
+		update_option( 'fdelil_mobile_nav_opts', $opts );
+		echo '<div class="notice notice-success is-dismissible"><p>Gespeichert.</p></div>';
+	}
+
+	$menus     = wp_get_nav_menus();
+	$locations = get_nav_menu_locations();
+	$assigned  = isset( $locations['fdelil_mobile'] ) ? (int) $locations['fdelil_mobile'] : 0;
+	?>
+	<div class="wrap" style="max-width:720px;">
+		<h1>Fahrschule Delil – Mobile-Navigation</h1>
+		<p>Das Menü erscheint automatisch auf allen Seiten (sichtbar bis ca. 900&nbsp;px Breite). Menüpunkte unter <strong>Design → Menüs</strong> der Position <strong>„Fahrschule Delil Mobile-Navigation“</strong> zuweisen.</p>
+
+		<?php if ( ! $assigned ) : ?>
+			<div class="notice notice-warning"><p>Noch kein Menü zugewiesen. Bitte unter <a href="<?php echo esc_url( admin_url( 'nav-menus.php' ) ); ?>">Design → Menüs</a> die Position „Fahrschule Delil Mobile-Navigation“ befüllen.</p></div>
+		<?php else : ?>
+			<p><strong>Aktives Menü:</strong>
+				<?php
+				foreach ( $menus as $m ) {
+					if ( (int) $m->term_id === $assigned ) {
+						echo esc_html( $m->name );
+						break;
+					}
+				}
+				?>
+			</p>
+		<?php endif; ?>
+
+		<form method="post">
+			<?php wp_nonce_field( 'fdelil_mn_save', 'fdelil_mn_nonce' ); ?>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th><label for="logo_url">Logo-URL</label></th>
+					<td>
+						<input type="text" class="large-text" id="logo_url" name="logo_url" value="<?php echo esc_attr( $opts['logo_url'] ); ?>">
+						<p class="description">Rundes Delil-Logo in die Mediathek hochladen. Relativpfade wie <code>/wp-content/uploads/…</code> sind erlaubt.</p>
+						<?php if ( $opts['logo_url'] ) : ?>
+							<p><img src="<?php echo esc_url( $opts['logo_url'] ); ?>" alt="" style="max-height:72px;width:auto;background:#000;padding:8px;"></p>
+						<?php endif; ?>
+					</td>
+				</tr>
+				<tr>
+					<th><label for="logo_alt">Logo Alt-Text</label></th>
+					<td><input type="text" class="regular-text" id="logo_alt" name="logo_alt" value="<?php echo esc_attr( $opts['logo_alt'] ); ?>"></td>
+				</tr>
+				<tr>
+					<th><label for="home_url">Logo-Link (Startseite)</label></th>
+					<td>
+						<input type="url" class="large-text" id="home_url" name="home_url" value="<?php echo esc_attr( $opts['home_url'] ); ?>" placeholder="<?php echo esc_attr( home_url( '/' ) ); ?>">
+						<p class="description">Leer = Startseite der Website.</p>
+					</td>
+				</tr>
+				<tr>
+					<th><label for="cta_label">CTA-Button Text</label></th>
+					<td><input type="text" class="regular-text" id="cta_label" name="cta_label" value="<?php echo esc_attr( $opts['cta_label'] ); ?>"></td>
+				</tr>
+				<tr>
+					<th><label for="cta_url">CTA-Button Link</label></th>
+					<td><input type="text" class="large-text" id="cta_url" name="cta_url" value="<?php echo esc_attr( $opts['cta_url'] ); ?>"></td>
+				</tr>
+				<tr>
+					<th><label for="close_label">Schließen (Panel, Aria)</label></th>
+					<td><input type="text" class="regular-text" id="close_label" name="close_label" value="<?php echo esc_attr( $opts['close_label'] ); ?>"></td>
+				</tr>
+			</table>
+			<?php submit_button( 'Änderungen speichern', 'primary', 'fdelil_mn_save' ); ?>
+		</form>
+		<p>Shortcode (falls manuell benötigt): <code>[fdelil_mobile_nav]</code></p>
+	</div>
+	<?php
+}
+
+/* ============================================================
+   3) Walker: Top-Level-Links + Untermenüs als Drill-down
+   ============================================================ */
+
+class FDelil_Mobile_Nav_Walker extends Walker_Nav_Menu {
+	public $sub_panels = array();
+
+	public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
+		$title = apply_filters( 'the_title', $item->title, $item->ID );
+		$title = apply_filters( 'nav_menu_item_title', $title, $item, $args, $depth );
+		$url   = ! empty( $item->url ) ? $item->url : '#';
+		$has_children = in_array( 'menu-item-has-children', (array) $item->classes, true );
+
+		if ( 0 === (int) $depth ) {
+			if ( $has_children ) {
+				$sub_id = 'fdelilMnSub-' . (int) $item->ID;
+				$output .= '<button type="button" class="fdelil-mn__link fdelil-mn__drill" data-fdelil-mn-sub="' . esc_attr( $sub_id ) . '" aria-expanded="false" aria-controls="' . esc_attr( $sub_id ) . '">';
+				$output .= esc_html( $title );
+				$output .= ' <span aria-hidden="true">→</span></button>';
+				if ( ! isset( $this->sub_panels[ $sub_id ] ) ) {
+					$this->sub_panels[ $sub_id ] = array(
+						'title'  => $title,
+						'parent' => $item,
+						'items'  => array(),
+					);
+				} else {
+					$this->sub_panels[ $sub_id ]['title']  = $title;
+					$this->sub_panels[ $sub_id ]['parent'] = $item;
+				}
+			} else {
+				$output .= '<a class="fdelil-mn__link" href="' . esc_url( $url ) . '" data-fdelil-mn-close>';
+				$output .= esc_html( $title );
+				$output .= '</a>';
+			}
+		}
+	}
+
+	public function display_element( $element, &$children_elements, $max_depth, $depth, $args, &$output ) {
+		if ( ! $element ) {
+			return;
+		}
+		$id_field = $this->db_fields['id'];
+		$id       = $element->$id_field;
+
+		if ( 0 === (int) $depth && ! empty( $children_elements[ $id ] ) ) {
+			$sub_id = 'fdelilMnSub-' . (int) $id;
+			if ( ! isset( $this->sub_panels[ $sub_id ] ) ) {
+				$this->sub_panels[ $sub_id ] = array(
+					'title'  => $element->title,
+					'parent' => $element,
+					'items'  => array(),
+				);
+			}
+			foreach ( $children_elements[ $id ] as $child ) {
+				$this->sub_panels[ $sub_id ]['items'][] = $child;
+			}
+		}
+
+		parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
+	}
+
+	public function start_lvl( &$output, $depth = 0, $args = null ) {}
+
+	public function end_lvl( &$output, $depth = 0, $args = null ) {}
+
+	public function end_el( &$output, $item, $depth = 0, $args = null ) {}
+}
+
+/* ============================================================
+   4) Markup ausgeben
+   ============================================================ */
+
+function fdelil_mn_render( $instance = array() ) {
+	static $printed = false;
+	if ( $printed ) {
+		return '';
+	}
+	$printed = true;
+
+	$opts     = fdelil_mn_get_opts();
+	$home     = ! empty( $opts['home_url'] ) ? $opts['home_url'] : home_url( '/' );
+	$logo_url = $opts['logo_url'];
+	$logo_alt = $opts['logo_alt'];
+
+	$locations = get_nav_menu_locations();
+	$menu_id   = isset( $locations['fdelil_mobile'] ) ? (int) $locations['fdelil_mobile'] : 0;
+
+	$walker = new FDelil_Mobile_Nav_Walker();
+	$links  = '';
+
+	if ( $menu_id ) {
+		$links = wp_nav_menu(
+			array(
+				'menu'        => $menu_id,
+				'container'   => false,
+				'echo'        => false,
+				'fallback_cb' => false,
+				'depth'       => 2,
+				'items_wrap'  => '%3$s',
+				'walker'      => $walker,
+			)
+		);
+	}
+
+	if ( ! $links ) {
+		$links = '<a class="fdelil-mn__link" href="' . esc_url( $home ) . '" data-fdelil-mn-close">Startseite</a>';
+	}
+
+	ob_start();
+	?>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@600;700;800&display=swap" rel="stylesheet">
+
+	<style id="fdelil-mn-css">
+	.fdelil-mn {
+	  --fdelil-mn-bg: #000000;
+	  --fdelil-mn-accent: #FBEF03;
+	  --fdelil-mn-accent-hover: #e6db00;
+	  --fdelil-mn-text: #ffffff;
+	  --fdelil-mn-muted: rgba(255,255,255,0.55);
+	  --fdelil-mn-border: #373737;
+	  --fdelil-mn-h: 64px;
+	  --fdelil-mn-logo: 88px;
+	  --fdelil-mn-offset: calc(var(--fdelil-mn-h) + env(safe-area-inset-top, 0px));
+	  --fdelil-mn-pad: max(16px, env(safe-area-inset-left));
+	  --fdelil-mn-pad-r: max(16px, env(safe-area-inset-right));
+	  --fdelil-mn-font: "Big Shoulders", "Arial Narrow", Impact, sans-serif;
+	  font-family: var(--fdelil-mn-font);
+	  box-sizing: border-box;
+	}
+	.fdelil-mn *, .fdelil-mn *::before, .fdelil-mn *::after { box-sizing: border-box; }
+
+	.fdelil-mn__bar {
+	  display: none;
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  right: 0;
+	  z-index: 100050;
+	  width: 100%;
+	  max-width: 100%;
+	  margin: 0;
+	  background: var(--fdelil-mn-bg);
+	  height: var(--fdelil-mn-h);
+	  min-height: var(--fdelil-mn-h);
+	  padding: 0 var(--fdelil-mn-pad-r) 0 var(--fdelil-mn-pad);
+	  padding-top: env(safe-area-inset-top, 0px);
+	  align-items: center;
+	  justify-content: space-between;
+	  gap: 12px;
+	  border-bottom: 1px solid var(--fdelil-mn-border);
+	  overflow: visible;
+	  box-shadow: none;
+	}
+	.fdelil-mn__bar-spacer {
+	  display: none;
+	  width: 100%;
+	  height: var(--fdelil-mn-offset);
+	  pointer-events: none;
+	  visibility: hidden;
+	}
+	.admin-bar .fdelil-mn__bar { top: 32px; }
+	.admin-bar .fdelil-mn__bar-spacer { height: calc(var(--fdelil-mn-offset) + 32px); }
+	@media screen and (max-width: 782px) {
+	  .admin-bar .fdelil-mn__bar { top: 46px; }
+	  .admin-bar .fdelil-mn__bar-spacer { height: calc(var(--fdelil-mn-offset) + 46px); }
+	}
+	.fdelil-mn__logo {
+	  position: relative;
+	  z-index: 5;
+	  display: inline-flex;
+	  align-items: flex-start;
+	  align-self: flex-start;
+	  flex-shrink: 0;
+	  margin-top: 6px;
+	  text-decoration: none !important;
+	  line-height: 0;
+	}
+	.fdelil-mn__logo img {
+	  height: var(--fdelil-mn-logo);
+	  width: auto;
+	  max-width: none;
+	  display: block;
+	  object-fit: contain;
+	  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.35));
+	}
+	.fdelil-mn__logo-fallback {
+	  color: #fff;
+	  font-family: var(--fdelil-mn-font);
+	  font-weight: 800;
+	  font-size: 16px;
+	  letter-spacing: 0.04em;
+	  text-transform: uppercase;
+	  line-height: 1.1;
+	  padding-top: 12px;
+	}
+	.fdelil-mn__actions {
+	  display: inline-flex;
+	  align-items: center;
+	  gap: 10px;
+	  flex-shrink: 0;
+	  margin-left: auto;
+	}
+	.fdelil-mn__cta {
+	  display: inline-flex;
+	  align-items: center;
+	  justify-content: center;
+	  background: var(--fdelil-mn-accent) !important;
+	  background-image: none !important;
+	  color: #000000 !important;
+	  font-family: var(--fdelil-mn-font) !important;
+	  font-size: 14px;
+	  font-weight: 800;
+	  letter-spacing: 0.06em;
+	  text-transform: uppercase;
+	  text-decoration: none !important;
+	  padding: 10px 14px;
+	  border: 2px solid var(--fdelil-mn-accent) !important;
+	  border-radius: 0 !important;
+	  box-shadow: none !important;
+	  line-height: 1;
+	  white-space: nowrap;
+	  transition: background-color .15s ease, border-color .15s ease;
+	}
+	.fdelil-mn__cta:hover,
+	.fdelil-mn__cta:focus,
+	.fdelil-mn__cta:active {
+	  background: var(--fdelil-mn-accent-hover) !important;
+	  background-image: none !important;
+	  border-color: var(--fdelil-mn-accent-hover) !important;
+	  color: #000000 !important;
+	  box-shadow: none !important;
+	}
+	.fdelil-mn__toggle {
+	  display: inline-flex;
+	  align-items: center;
+	  justify-content: center;
+	  width: 44px;
+	  height: 44px;
+	  background: none !important;
+	  background-image: none !important;
+	  border: 1px solid var(--fdelil-mn-border) !important;
+	  border-radius: 0 !important;
+	  color: var(--fdelil-mn-text) !important;
+	  cursor: pointer;
+	  padding: 0;
+	  margin: 0;
+	  box-shadow: none !important;
+	  outline: none !important;
+	  -webkit-tap-highlight-color: transparent;
+	  -webkit-appearance: none;
+	  appearance: none;
+	  position: relative;
+	}
+	.fdelil-mn__toggle:hover,
+	.fdelil-mn__toggle:focus,
+	.fdelil-mn__toggle:focus-visible,
+	.fdelil-mn__toggle:active {
+	  border-color: var(--fdelil-mn-border) !important;
+	  background: none !important;
+	  background-image: none !important;
+	  color: #fff !important;
+	  box-shadow: none !important;
+	  outline: none !important;
+	}
+	@media (hover: hover) and (pointer: fine) {
+	  .fdelil-mn__toggle:hover {
+	    border-color: var(--fdelil-mn-accent) !important;
+	  }
+	}
+	.fdelil-mn__burger {
+	  position: relative;
+	  width: 22px;
+	  height: 16px;
+	  display: block;
+	}
+	.fdelil-mn__burger span {
+	  position: absolute;
+	  left: 0;
+	  right: 0;
+	  height: 2px;
+	  background: #fff;
+	  border-radius: 0;
+	  transition: transform .28s cubic-bezier(.4,0,.2,1),
+	              opacity .2s ease,
+	              top .28s cubic-bezier(.4,0,.2,1);
+	}
+	.fdelil-mn__burger span:nth-child(1) { top: 0; }
+	.fdelil-mn__burger span:nth-child(2) { top: 7px; }
+	.fdelil-mn__burger span:nth-child(3) { top: 14px; }
+	.fdelil-mn__toggle.is-open .fdelil-mn__burger span:nth-child(1) {
+	  top: 7px; transform: rotate(45deg);
+	}
+	.fdelil-mn__toggle.is-open .fdelil-mn__burger span:nth-child(2) {
+	  opacity: 0; transform: scaleX(0);
+	}
+	.fdelil-mn__toggle.is-open .fdelil-mn__burger span:nth-child(3) {
+	  top: 7px; transform: rotate(-45deg);
+	}
+	.fdelil-mn__dot {
+	  width: 20px;
+	  height: 20px;
+	  border-radius: 0;
+	  border: 1.5px solid var(--fdelil-mn-accent);
+	  display: inline-flex;
+	  align-items: center;
+	  justify-content: center;
+	}
+	.fdelil-mn__dot span {
+	  width: 6px;
+	  height: 6px;
+	  border-radius: 0;
+	  background: var(--fdelil-mn-accent);
+	}
+
+	/* Fullscreen Panel */
+	.fdelil-mn__panel {
+	  position: fixed;
+	  inset: 0;
+	  z-index: 100060;
+	  background: var(--fdelil-mn-bg);
+	  color: var(--fdelil-mn-text);
+	  display: flex;
+	  flex-direction: column;
+	  height: 100vh;
+	  height: 100dvh;
+	  transform: translateX(100%);
+	  transition: transform .35s cubic-bezier(.4,0,.2,1);
+	  pointer-events: none;
+	  overflow: hidden;
+	  padding-bottom: max(24px, env(safe-area-inset-bottom));
+	}
+	.fdelil-mn__panel.is-open {
+	  transform: translateX(0);
+	  pointer-events: auto;
+	}
+	.fdelil-mn__panel-head {
+	  display: flex;
+	  align-items: center;
+	  justify-content: space-between;
+	  gap: 12px;
+	  flex-shrink: 0;
+	  min-height: var(--fdelil-mn-h);
+	  padding: 12px var(--fdelil-mn-pad-r) 12px var(--fdelil-mn-pad);
+	  padding-top: max(12px, env(safe-area-inset-top));
+	  border-bottom: 1px solid var(--fdelil-mn-border);
+	}
+	.fdelil-mn__panel-head .fdelil-mn__logo {
+	  margin-top: 0;
+	  align-self: center;
+	}
+	.fdelil-mn__panel-head .fdelil-mn__logo img {
+	  height: 48px;
+	  filter: none;
+	}
+	.fdelil-mn__close {
+	  display: inline-flex;
+	  align-items: center;
+	  gap: 8px;
+	  background: none !important;
+	  background-image: none !important;
+	  border: none !important;
+	  color: var(--fdelil-mn-text) !important;
+	  font-family: var(--fdelil-mn-font) !important;
+	  font-size: 14px;
+	  font-weight: 700;
+	  letter-spacing: 0.06em;
+	  text-transform: uppercase;
+	  cursor: pointer;
+	  padding: 8px 4px;
+	  margin: 0;
+	  box-shadow: none !important;
+	}
+	.fdelil-mn__close:hover,
+	.fdelil-mn__close:focus {
+	  color: var(--fdelil-mn-accent) !important;
+	  background: none !important;
+	  background-image: none !important;
+	}
+
+	.fdelil-mn__subnav {
+	  display: none;
+	  flex-shrink: 0;
+	  justify-content: flex-end;
+	  padding: 14px var(--fdelil-mn-pad-r) 8px var(--fdelil-mn-pad);
+	}
+	.fdelil-mn__panel.is-sub-open .fdelil-mn__subnav { display: flex; }
+	.fdelil-mn__back {
+	  background: none !important;
+	  background-image: none !important;
+	  border: none !important;
+	  color: var(--fdelil-mn-text) !important;
+	  font-family: var(--fdelil-mn-font) !important;
+	  font-size: 14px;
+	  font-weight: 700;
+	  letter-spacing: 0.06em;
+	  text-transform: uppercase;
+	  cursor: pointer;
+	  padding: 0;
+	  margin: 0;
+	  box-shadow: none !important;
+	}
+	.fdelil-mn__back:hover,
+	.fdelil-mn__back:focus {
+	  color: var(--fdelil-mn-accent) !important;
+	}
+
+	.fdelil-mn__stack {
+	  position: relative;
+	  flex: 1;
+	  min-height: 0;
+	  overflow: hidden;
+	}
+	.fdelil-mn__view {
+	  position: absolute;
+	  inset: 0;
+	  display: flex;
+	  flex-direction: column;
+	  background: var(--fdelil-mn-bg);
+	  transform: translateX(100%);
+	  transition: transform .35s cubic-bezier(.4,0,.2,1);
+	  visibility: hidden;
+	  pointer-events: none;
+	}
+	.fdelil-mn__view--main {
+	  z-index: 1;
+	  transform: translateX(0);
+	  visibility: visible;
+	  pointer-events: auto;
+	}
+	.fdelil-mn__panel.is-sub-open .fdelil-mn__view--main {
+	  transform: translateX(-18%);
+	  pointer-events: none;
+	}
+	.fdelil-mn__view--sub { z-index: 2; }
+	.fdelil-mn__view--sub.is-active {
+	  transform: translateX(0);
+	  visibility: visible;
+	  pointer-events: auto;
+	}
+
+	.fdelil-mn__links {
+	  display: flex;
+	  flex-direction: column;
+	  flex: 1;
+	  min-height: 0;
+	  overflow-y: auto;
+	  -webkit-overflow-scrolling: touch;
+	  overscroll-behavior: contain;
+	  padding: 0 0 16px;
+	}
+	.fdelil-mn__link {
+	  display: flex;
+	  align-items: center;
+	  justify-content: space-between;
+	  width: 100%;
+	  font-family: var(--fdelil-mn-font) !important;
+	  font-weight: 700 !important;
+	  font-size: clamp(1.35rem, 5.5vw, 2rem);
+	  letter-spacing: 0.04em;
+	  text-transform: uppercase;
+	  line-height: 1.15;
+	  color: var(--fdelil-mn-text) !important;
+	  text-decoration: none !important;
+	  background: none !important;
+	  background-image: none !important;
+	  border: none !important;
+	  border-bottom: 1px solid var(--fdelil-mn-border) !important;
+	  border-radius: 0 !important;
+	  text-align: left;
+	  padding: 18px var(--fdelil-mn-pad-r) 18px var(--fdelil-mn-pad);
+	  cursor: pointer;
+	  margin: 0;
+	  box-shadow: none !important;
+	  -webkit-appearance: none;
+	  appearance: none;
+	}
+	.fdelil-mn__link span {
+	  font-size: 0.75rem;
+	  font-weight: 700;
+	  letter-spacing: 0.06em;
+	  opacity: 0.7;
+	  color: var(--fdelil-mn-accent);
+	}
+	.fdelil-mn__link:hover,
+	.fdelil-mn__link:focus {
+	  color: var(--fdelil-mn-accent) !important;
+	  background: rgba(251,239,3,0.06) !important;
+	  background-image: none !important;
+	  box-shadow: none !important;
+	}
+
+	.fdelil-mn__sub-title {
+	  margin: 0;
+	  padding: 8px var(--fdelil-mn-pad-r) 16px var(--fdelil-mn-pad);
+	  font-family: var(--fdelil-mn-font);
+	  font-size: clamp(1.1rem, 4vw, 1.4rem);
+	  font-weight: 800;
+	  letter-spacing: 0.06em;
+	  text-transform: uppercase;
+	  color: var(--fdelil-mn-accent);
+	}
+
+	.fdelil-mn__panel.is-open .fdelil-mn__view--main .fdelil-mn__links > * {
+	  opacity: 0;
+	  transform: translateY(0.4em);
+	  transition: opacity .28s ease, transform .28s ease;
+	}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > * {
+	  opacity: 1;
+	  transform: translateY(0);
+	}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(1){transition-delay:50ms;}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(2){transition-delay:90ms;}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(3){transition-delay:130ms;}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(4){transition-delay:170ms;}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(5){transition-delay:210ms;}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(6){transition-delay:250ms;}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(7){transition-delay:290ms;}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(8){transition-delay:330ms;}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(9){transition-delay:370ms;}
+	.fdelil-mn__panel.is-open.is-reveal .fdelil-mn__view--main .fdelil-mn__links > *:nth-child(10){transition-delay:410ms;}
+
+	@media (max-width: 900px) {
+	  .fdelil-mn__bar { display: flex; }
+	  .fdelil-mn__bar-spacer { display: block; }
+	}
+	@media (prefers-reduced-motion: reduce) {
+	  .fdelil-mn__panel, .fdelil-mn__view { transition: none; }
+	  .fdelil-mn__panel.is-open .fdelil-mn__view--main .fdelil-mn__links > * {
+	    opacity: 1; transform: none; transition: none;
+	  }
+	}
+	</style>
+
+	<div class="fdelil-mn" id="fdelilMobileNav">
+	  <div class="fdelil-mn__bar-spacer" aria-hidden="true"></div>
+	  <div class="fdelil-mn__bar">
+	    <a class="fdelil-mn__logo" href="<?php echo esc_url( $home ); ?>" aria-label="<?php echo esc_attr( $logo_alt ); ?>">
+	      <?php if ( $logo_url ) : ?>
+	        <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $logo_alt ); ?>" width="88" height="88" decoding="async">
+	      <?php else : ?>
+	        <span class="fdelil-mn__logo-fallback">Fahrschule Delil</span>
+	      <?php endif; ?>
+	    </a>
+	    <div class="fdelil-mn__actions">
+	      <a class="fdelil-mn__cta" href="<?php echo esc_url( $opts['cta_url'] ? $opts['cta_url'] : '/anmeldung' ); ?>">
+	        <?php echo esc_html( $opts['cta_label'] ? $opts['cta_label'] : 'Anmeldung' ); ?>
+	      </a>
+	      <button type="button" class="fdelil-mn__toggle" id="fdelilMnToggle" aria-expanded="false" aria-controls="fdelilMnPanel" aria-label="<?php esc_attr_e( 'Menü öffnen', 'fdelil-mobile-nav' ); ?>">
+	        <span class="fdelil-mn__burger" aria-hidden="true">
+	          <span></span><span></span><span></span>
+	        </span>
+	      </button>
+	    </div>
+	  </div>
+
+	  <div class="fdelil-mn__panel" id="fdelilMnPanel" inert>
+	    <div class="fdelil-mn__panel-head">
+	      <a class="fdelil-mn__logo" href="<?php echo esc_url( $home ); ?>" data-fdelil-mn-close aria-label="<?php echo esc_attr( $logo_alt ); ?>">
+	        <?php if ( $logo_url ) : ?>
+	          <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $logo_alt ); ?>" width="48" height="48" decoding="async">
+	        <?php else : ?>
+	          <span class="fdelil-mn__logo-fallback">Fahrschule Delil</span>
+	        <?php endif; ?>
+	      </a>
+	      <button type="button" class="fdelil-mn__close" id="fdelilMnClose" aria-label="<?php echo esc_attr( $opts['close_label'] ); ?>">
+	        <?php echo esc_html( $opts['close_label'] ); ?>
+	        <span class="fdelil-mn__dot" aria-hidden="true"><span></span></span>
+	      </button>
+	    </div>
+
+	    <div class="fdelil-mn__subnav" aria-hidden="true">
+	      <button type="button" class="fdelil-mn__back" data-fdelil-mn-back>← Zurück</button>
+	    </div>
+
+	    <div class="fdelil-mn__stack">
+	      <div class="fdelil-mn__view fdelil-mn__view--main is-active" id="fdelilMnMain">
+	        <nav class="fdelil-mn__links" aria-label="<?php esc_attr_e( 'Mobile Navigation', 'fdelil-mobile-nav' ); ?>">
+	          <?php echo $links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Walker escaped. ?>
+	        </nav>
+	      </div>
+
+	      <?php foreach ( $walker->sub_panels as $sub_id => $panel ) : ?>
+	        <div class="fdelil-mn__view fdelil-mn__view--sub" id="<?php echo esc_attr( $sub_id ); ?>" aria-hidden="true">
+	          <p class="fdelil-mn__sub-title"><?php echo esc_html( $panel['title'] ); ?></p>
+	          <nav class="fdelil-mn__links">
+	            <?php if ( ! empty( $panel['parent']->url ) && '#' !== $panel['parent']->url ) : ?>
+	              <a class="fdelil-mn__link" href="<?php echo esc_url( $panel['parent']->url ); ?>" data-fdelil-mn-close><?php echo esc_html( $panel['title'] ); ?> <span>Übersicht</span></a>
+	            <?php endif; ?>
+	            <?php foreach ( $panel['items'] as $child ) : ?>
+	              <a class="fdelil-mn__link" href="<?php echo esc_url( $child->url ); ?>" data-fdelil-mn-close><?php echo esc_html( $child->title ); ?></a>
+	            <?php endforeach; ?>
+	          </nav>
+	        </div>
+	      <?php endforeach; ?>
+	    </div>
+	  </div>
+	</div>
+
+	<script id="fdelil-mn-js">
+	(function () {
+	  if (window.__fdelilMnBound) return;
+	  window.__fdelilMnBound = true;
+
+	  function ready(fn) {
+	    if (document.readyState !== 'loading') fn();
+	    else document.addEventListener('DOMContentLoaded', fn);
+	  }
+
+	  ready(function () {
+	    var root = document.getElementById('fdelilMobileNav');
+	    if (!root) return;
+	    var btn = document.getElementById('fdelilMnToggle');
+	    var panel = document.getElementById('fdelilMnPanel');
+	    var closeBtn = document.getElementById('fdelilMnClose');
+	    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	    function resetSubs(skipFocus) {
+	      var active = panel.querySelector('.fdelil-mn__view--sub.is-active');
+	      var trigger = active ? panel.querySelector('[data-fdelil-mn-sub="' + active.id + '"]') : null;
+	      panel.classList.remove('is-sub-open');
+	      var subnav = panel.querySelector('.fdelil-mn__subnav');
+	      if (subnav) subnav.setAttribute('aria-hidden', 'true');
+	      panel.querySelectorAll('.fdelil-mn__view--sub').forEach(function (v) {
+	        v.classList.remove('is-active');
+	        v.setAttribute('aria-hidden', 'true');
+	      });
+	      panel.querySelectorAll('[data-fdelil-mn-sub]').forEach(function (b) {
+	        b.setAttribute('aria-expanded', 'false');
+	      });
+	      if (!skipFocus && trigger) trigger.focus({ preventScroll: true });
+	    }
+
+	    function closeMenu() {
+	      resetSubs(true);
+	      panel.classList.remove('is-open', 'is-reveal');
+	      panel.setAttribute('inert', '');
+	      btn.classList.remove('is-open');
+	      btn.setAttribute('aria-expanded', 'false');
+	      btn.setAttribute('aria-label', 'Menü öffnen');
+	      document.body.style.overflow = '';
+	      /* Kein sticky Focus-Ring nach Touch: blur statt focus */
+	      if (typeof btn.blur === 'function') {
+	        btn.blur();
+	      }
+	    }
+
+	    function openMenu() {
+	      panel.classList.add('is-open');
+	      panel.removeAttribute('inert');
+	      btn.classList.add('is-open');
+	      btn.setAttribute('aria-expanded', 'true');
+	      btn.setAttribute('aria-label', 'Menü schließen');
+	      document.body.style.overflow = 'hidden';
+	      if (!reduce.matches) {
+	        panel.classList.remove('is-reveal');
+	        requestAnimationFrame(function () {
+	          requestAnimationFrame(function () { panel.classList.add('is-reveal'); });
+	        });
+	      } else {
+	        panel.classList.add('is-reveal');
+	      }
+	    }
+
+	    btn.addEventListener('click', function () {
+	      panel.classList.contains('is-open') ? closeMenu() : openMenu();
+	    });
+	    if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+
+	    panel.querySelectorAll('[data-fdelil-mn-close]').forEach(function (el) {
+	      el.addEventListener('click', closeMenu);
+	    });
+
+	    panel.querySelectorAll('[data-fdelil-mn-sub]').forEach(function (drill) {
+	      drill.addEventListener('click', function () {
+	        var id = drill.getAttribute('data-fdelil-mn-sub');
+	        var sub = document.getElementById(id);
+	        if (!sub) return;
+	        resetSubs(true);
+	        sub.classList.add('is-active');
+	        sub.setAttribute('aria-hidden', 'false');
+	        panel.classList.add('is-sub-open');
+	        var subnav = panel.querySelector('.fdelil-mn__subnav');
+	        if (subnav) subnav.setAttribute('aria-hidden', 'false');
+	        drill.setAttribute('aria-expanded', 'true');
+	      });
+	    });
+
+	    panel.querySelectorAll('[data-fdelil-mn-back]').forEach(function (b) {
+	      b.addEventListener('click', function () { resetSubs(false); });
+	    });
+
+	    document.addEventListener('keydown', function (e) {
+	      if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+	        if (panel.classList.contains('is-sub-open')) resetSubs(false);
+	        else closeMenu();
+	      }
+	    });
+	  });
+	})();
+	</script>
+	<?php
+	return ob_get_clean();
+}
+
+/* ============================================================
+   5) Automatisch auf allen Seiten + Shortcode + Widget
+   ============================================================ */
+
+add_action( 'wp_body_open', 'fdelil_mn_auto_print', 5 );
+add_action( 'wp_footer', 'fdelil_mn_auto_print_fallback', 5 );
+
+function fdelil_mn_auto_print() {
+	if ( is_admin() ) {
+		return;
+	}
+	echo fdelil_mn_render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+function fdelil_mn_auto_print_fallback() {
+	if ( ! did_action( 'wp_body_open' ) ) {
+		echo fdelil_mn_render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+}
+
+add_shortcode( 'fdelil_mobile_nav', 'fdelil_mn_shortcode' );
+function fdelil_mn_shortcode() {
+	return '<!-- Fahrschule Delil Mobile-Nav wird automatisch ausgegeben -->';
+}
+
+class FDelil_Mobile_Nav_Widget extends WP_Widget {
+	public function __construct() {
+		parent::__construct(
+			'fdelil_mobile_nav_widget',
+			'Fahrschule Delil Mobile-Navigation',
+			array( 'description' => 'Sticky Mobile-Menü mit Logo (wird zusätzlich automatisch siteweit ausgegeben).' )
+		);
+	}
+
+	public function widget( $args, $instance ) {
+		echo $args['before_widget'];
+		echo '<p style="margin:0;font-size:12px;opacity:.6;">Delil Mobile-Nav ist aktiv (automatische Ausgabe).</p>';
+		echo $args['after_widget'];
+	}
+
+	public function form( $instance ) {
+		echo '<p>Einstellungen unter <strong>Design → Mobile-Navigation</strong>. Menü unter <strong>Design → Menüs</strong> der Position „Fahrschule Delil Mobile-Navigation“ zuweisen.</p>';
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		return $old_instance;
+	}
+}
+
+add_action(
+	'widgets_init',
+	function () {
+		register_widget( 'FDelil_Mobile_Nav_Widget' );
+	}
+);
