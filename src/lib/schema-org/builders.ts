@@ -323,7 +323,7 @@ export function buildAgenturBuendePageSchema(): SchemaNode[] {
         '@type': 'ImageObject',
         url: `${SITE_URL}/assets/images/buende/buende-a30.webp`,
       },
-      significantLink: [`${SITE_URL}/standorte`, `${SITE_URL}/kontakt`, `${SITE_URL}/angebote`],
+      significantLink: [`${SITE_URL}/standorte`, `${SITE_URL}/kontakt`, `${SITE_URL}/leistungen`],
     },
     buildBreadcrumbTrail([
       { name: 'Startseite', path: '/' },
@@ -399,17 +399,17 @@ export function buildStandortePageSchema(): SchemaNode[] {
   ]
 }
 
-export function buildAngebotePageSchema(): SchemaNode[] {
+export function buildLeistungenPageSchema(): SchemaNode[] {
   const description =
-    'Maßgeschneiderte Webseiten als statisches HTML, WordPress oder CMS mit Next.js & Payload, transparent kalkuliert und langfristig betreut.'
+    'Webdesign, SEO und Wartung aus einer Hand: klarer Überblick über Leistungen, inklusive Grundlagen und optionale Erweiterungen.'
 
   return [
-    baseWebPage('/angebote', 'Angebote, Rocketory', description),
-    buildBreadcrumb('/angebote', 'Angebote'),
+    baseWebPage('/leistungen', 'Leistungen | Rocketory', description),
+    buildBreadcrumb('/leistungen', 'Leistungen'),
     {
       '@type': 'OfferCatalog',
-      '@id': `${SITE_URL}/angebote#catalog`,
-      name: 'Rocketory Angebote',
+      '@id': `${SITE_URL}/leistungen#catalog`,
+      name: 'Rocketory Leistungen',
       itemListElement: CORE_SERVICES.map((service, index) => ({
         '@type': 'Offer',
         position: index + 1,
@@ -423,6 +423,9 @@ export function buildAngebotePageSchema(): SchemaNode[] {
     },
   ]
 }
+
+/** @deprecated Use buildLeistungenPageSchema */
+export const buildAngebotePageSchema = buildLeistungenPageSchema
 
 export function buildWebdesignPageSchema(): SchemaNode[] {
   const description = META_WEBDESIGN
@@ -468,7 +471,7 @@ export function buildWebdesignPageSchema(): SchemaNode[] {
       ),
       mainEntity: { '@id': `${SITE_URL}/webdesign#service` },
       significantLink: [
-        `${SITE_URL}/angebote`,
+        `${SITE_URL}/leistungen`,
         `${SITE_URL}/agentur/buende`,
         `${SITE_URL}/kontakt`,
         `${SITE_URL}/technologien`,
@@ -476,7 +479,7 @@ export function buildWebdesignPageSchema(): SchemaNode[] {
     },
     buildBreadcrumbTrail([
       { name: 'Startseite', path: '/' },
-      { name: 'Angebote', path: '/angebote' },
+      { name: 'Leistungen', path: '/leistungen' },
       { name: 'Webdesign', path: '/webdesign' },
     ]),
     {
@@ -542,7 +545,7 @@ export function buildSeoPageSchema(): SchemaNode[] {
     },
     buildBreadcrumbTrail([
       { name: 'Startseite', path: '/' },
-      { name: 'Angebote', path: '/angebote' },
+      { name: 'Leistungen', path: '/leistungen' },
       { name: 'SEO & Reichweite', path: '/seo' },
     ]),
     {
@@ -607,7 +610,7 @@ export function buildWartungPageSchema(): SchemaNode[] {
     },
     buildBreadcrumbTrail([
       { name: 'Startseite', path: '/' },
-      { name: 'Angebote', path: '/angebote' },
+      { name: 'Leistungen', path: '/leistungen' },
       { name: 'Wartung & Sicherheit', path: '/wartung' },
     ]),
     {

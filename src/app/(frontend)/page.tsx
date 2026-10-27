@@ -7,8 +7,6 @@ import { getPublishedPosts, injectPostsIntoHomepage } from '@/lib/posts'
 import { getPublishedProjects, injectProjectsIntoAgentur } from '@/lib/projects'
 import { buildHomePageSchema } from '@/lib/schema-org'
 
-import '@/styles/agentur.css'
-
 export const revalidate = 3600
 
 export const metadata = buildPageMetadata({
@@ -32,8 +30,18 @@ export default async function LandingPage() {
     <>
       <link
         rel="preload"
+        href="/assets/images/nasa-shuttle-launch-mobile.webp"
+        as="image"
+        type="image/webp"
+        media="(max-width: 768px)"
+        fetchPriority="high"
+      />
+      <link
+        rel="preload"
         href="/assets/images/team-raketenstart.webp"
         as="image"
+        type="image/webp"
+        media="(min-width: 769px)"
         fetchPriority="high"
       />
       <PageSchema nodes={buildHomePageSchema()} />

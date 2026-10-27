@@ -1,7 +1,16 @@
 (function () {
   var MOBILE_MQ = window.matchMedia('(max-width: 768px)');
 
-  function getPerView() {
+  function parsePerView(root) {
+    var raw = root.getAttribute('data-rk-per-view');
+    if (!raw) return null;
+    var value = parseInt(raw, 10);
+    return value > 0 ? value : null;
+  }
+
+  function getPerView(root) {
+    var fixed = parsePerView(root);
+    if (fixed) return fixed;
     return MOBILE_MQ.matches ? 1 : 3;
   }
 
@@ -22,11 +31,11 @@
     if (!viewport || !track || !dotsWrap || !slides.length) return;
 
     function getPageCount() {
-      return Math.max(1, Math.ceil(slides.length / getPerView()));
+      return Math.max(1, Math.ceil(slides.length / getPerView(root)));
     }
 
     function layoutSlides() {
-      var perView = getPerView();
+      var perView = getPerView(root);
       var viewportWidth = viewport.clientWidth;
       var trackStyle = window.getComputedStyle(track);
       var gap = parseFloat(trackStyle.columnGap || trackStyle.gap) || 0;
@@ -39,7 +48,7 @@
     }
 
     function getPageOffset(pageIndex) {
-      var perView = getPerView();
+      var perView = getPerView(root);
       var slideIndex = pageIndex * perView;
       var targetSlide = slides[slideIndex];
       return targetSlide ? targetSlide.offsetLeft : 0;

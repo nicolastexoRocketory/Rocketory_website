@@ -2,18 +2,18 @@ export const LEGACY_PAGE_ROUTES: Record<string, string> = {
   'index.html': '/',
   'kontakt.html': '/kontakt',
   'ki-check.html': '/ki-check',
-  'angebote.html': '/angebote',
+  'angebote.html': '/leistungen',
+  'leistungen.html': '/leistungen',
   'webdesign.html': '/webdesign',
   'seo.html': '/seo',
   'wartung.html': '/wartung',
   'technologien.html': '/technologien',
   'agentur.html': '/agentur',
   'agentur/buende.html': '/agentur/buende',
-  'team.html': '/team',
   'standorte.html': '/standorte',
   'blog.html': '/blog',
   'projekte.html': '/projekte',
-  'referenzen.html': '/blog',
+  'referenzen.html': '/projekte',
   'impressum.html': '/impressum',
   'datenschutz.html': '/datenschutz',
 }
@@ -62,8 +62,8 @@ export function transformLinks(html: string): string {
   result = result.replace(/href="\.\.\/projekte\/([^"]+)\.html"/g, 'href="/projekte/$1"')
   result = result.replace(/href="agentur\/buende\.html(#[^"]*)?"/g, 'href="/agentur/buende$1"')
   result = result.replace(/href="\.\.\/agentur\/buende\.html(#[^"]*)?"/g, 'href="/agentur/buende$1"')
-  result = result.replace(/href="\.\.\/referenzen\.html"/g, 'href="/blog"')
-  result = result.replace(/href="referenzen\.html"/g, 'href="/blog"')
+  result = result.replace(/href="\.\.\/referenzen\.html"/g, 'href="/projekte"')
+  result = result.replace(/href="referenzen\.html"/g, 'href="/projekte"')
   result = result.replace(/href="\.\.\/index\.html(#[^"]*)"/g, 'href="/$1"')
   result = result.replace(/href="\.\.\/index\.html"/g, 'href="/"')
   result = result.replace(/href="index\.html(#[^"]*)"/g, 'href="/$1"')

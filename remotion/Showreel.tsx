@@ -24,10 +24,9 @@ const offers = [
 ] as const
 
 const usps = [
-  { num: '01', title: 'Alles aus einer Hand', line: 'Ein Ansprechpartner. Ein Prozess. Ein Ergebnis.' },
-  { num: '02', title: 'Kein Baukasten', line: 'Jede Webseite wird für deinen Betrieb gebaut.' },
-  { num: '03', title: 'Lokal verankert', line: 'Aus Bünde für KMU und Handwerk in OWL.' },
-  { num: '04', title: 'Langfristig gedacht', line: 'Sauber, pflegeleicht, auch nach dem Launch.' },
+  { num: '01', title: 'Webseite als Basis für Wachstum', line: 'Fundament zuerst. Reichweite darauf.' },
+  { num: '02', title: 'Beratung auf Augenhöhe', line: 'Ehrlich empfohlen. Ohne Verkaufsdruck.' },
+  { num: '03', title: 'Auftritt, der Kunden überzeugt', line: 'Wie dein Betrieb. Klar auf dem Handy.' },
 ] as const
 
 const leads = [

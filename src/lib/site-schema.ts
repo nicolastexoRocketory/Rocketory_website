@@ -9,10 +9,10 @@ export type MainNavItem = {
 /** Hauptnavigation, entspricht der Sitelink-Struktur für Markensuchen. */
 export const MAIN_SITE_NAV: MainNavItem[] = [
   {
-    name: 'Angebote',
-    path: '/angebote',
+    name: 'Leistungen',
+    path: '/leistungen',
     description:
-      'Maßgeschneiderte Webseiten als statisches HTML, WordPress oder CMS mit Next.js & Payload, transparent kalkuliert und langfristig betreut.',
+      'Webdesign, SEO und Wartung aus einer Hand: klarer Überblick, faire Kalkulation, persönlich betreut.',
   },
   {
     name: 'Technologien',

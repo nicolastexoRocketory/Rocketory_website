@@ -2083,6 +2083,13 @@ html.is-in-app-browser .rk-hero .rk-hero-img--static.rk-hero-media--mobile,
 .rk-split-dark .rk-h2 em.rk-serif-ink{color:rgba(245,244,240,0.92);-webkit-text-fill-color:rgba(245,244,240,0.92);}
 .rk-usp-dark .rk-h2 em,
 .rk-split-dark .rk-h2 em{color:rgba(245,244,240,0.92);-webkit-text-fill-color:rgba(245,244,240,0.92);}
+#angebote-teaser.rk-split-dark .rk-h2 em{
+  background:var(--ci-gradient);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  color:transparent;
+}
 #beitrag-im-fokus.rk-tone-orange .rk-h2 em,
 #blog-fokus.rk-tone-orange .rk-h2 em{color:#fff;-webkit-text-fill-color:#fff;}
 .rk-h1-sub{
@@ -3328,6 +3335,7 @@ html.is-in-app-browser .rk-hero .rk-hero-img--static.rk-hero-media--mobile,
 
   #leistungen .rk-usp-grid,
   #angebote-leistungen .rk-usp-grid,
+  #nutzen .rk-usp-grid,
   #kernvorteile .rk-bento-grid,
   #werte .rk-home-bento-grid,
   #werte .rk-trust-grid{
@@ -3350,12 +3358,14 @@ html.is-in-app-browser .rk-hero .rk-hero-img--static.rk-hero-media--mobile,
 
   #leistungen .rk-usp-grid::-webkit-scrollbar,
   #angebote-leistungen .rk-usp-grid::-webkit-scrollbar,
+  #nutzen .rk-usp-grid::-webkit-scrollbar,
   #kernvorteile .rk-bento-grid::-webkit-scrollbar,
   #werte .rk-home-bento-grid::-webkit-scrollbar,
   #werte .rk-trust-grid::-webkit-scrollbar{display:none;}
 
   #leistungen .rk-usp-grid > .rk-usp-cell,
   #angebote-leistungen .rk-usp-grid > .rk-usp-cell,
+  #nutzen .rk-usp-grid > .rk-usp-cell,
   .rk-usp-carousel .rk-usp-cell,
   #kernvorteile .rk-bento-grid > .rk-bento-cell,
   #kernvorteile .rk-bento-grid > .rk-vt-pin,
@@ -3402,6 +3412,7 @@ html.is-in-app-browser .rk-hero .rk-hero-img--static.rk-hero-media--mobile,
 
   #leistungen .rk-usp-grid > .rk-usp-cell,
   #angebote-leistungen .rk-usp-grid > .rk-usp-cell,
+  #nutzen .rk-usp-grid > .rk-usp-cell,
   .rk-usp-carousel .rk-usp-cell,
   #werte .rk-home-bento-grid > .rk-home-bento-cell,
   .rk-usp-carousel .rk-home-bento-cell,
@@ -3820,6 +3831,120 @@ a.rk-usp-cell{
   object-position:center;
 }
 .rk-split-caption{margin-top:12px;font-size:clamp(0.6875rem,0.9vw,0.75rem);color:var(--muted);letter-spacing:0.02em;}
+/* ── Page hero (Startseite #ueber-uns + Shared) ── */
+.rk-page-hero{
+  padding:calc(var(--rk-nav-h) + clamp(40px,8vw,72px)) 0 clamp(36px,6vw,56px);
+  border-bottom:1px solid var(--border);
+}
+.rk-page-hero--embed{
+  padding-top:clamp(40px,8vw,72px);
+}
+.rk-page-hero--dark{
+  background:var(--hero-bg);color:var(--hero-text);
+  border-bottom-color:rgba(255,255,255,0.08);
+}
+.rk-page-kicker{
+  font-family:var(--font-sans);font-size:clamp(0.625rem,0.8vw,0.6875rem);
+  font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--orange);margin-bottom:clamp(12px,2vw,16px);
+}
+.rk-page-hero--dark .rk-page-kicker{color:rgba(245,244,240,0.72);}
+.rk-page-title{
+  font-family:var(--font-sans);font-weight:700;
+  font-size:clamp(2.25rem,7vw,3.75rem);line-height:1.05;letter-spacing:-0.04em;
+  color:var(--ink);margin-bottom:clamp(14px,2.5vw,20px);
+}
+.rk-page-hero--dark .rk-page-title{color:var(--hero-text);}
+.rk-page-title em{
+  font-family:var(--font-serif);font-style:italic;font-weight:400;
+  color:var(--orange);
+}
+.rk-page-hero--dark .rk-page-title em{color:rgba(245,244,240,0.92);}
+.rk-page-lead{
+  font-size:clamp(0.9375rem,1.4vw,1.125rem);line-height:1.65;font-weight:300;
+  color:var(--muted);max-width:560px;
+}
+.rk-page-hero--dark .rk-page-lead{color:var(--hero-muted);}
+.rk-page-tags{
+  display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(22px,3.5vw,28px);
+}
+.rk-page-tag{
+  font-size:clamp(0.6875rem,0.85vw,0.75rem);letter-spacing:0.04em;
+  text-transform:uppercase;color:var(--hero-muted);
+  border:1px solid rgba(255,255,255,0.16);padding:6px 12px;
+}
+.rk-page-hero--split .rk-page-hero-grid{
+  display:grid;grid-template-columns:1fr;gap:clamp(28px,5vw,40px);align-items:center;
+}
+.rk-page-hero--split .rk-page-hero-copy{min-width:0;order:2;}
+.rk-page-hero--split .rk-page-hero-media{
+  order:1;
+  margin:0;border-radius:4px;overflow:hidden;
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 24px 64px rgba(0,0,0,0.35);
+}
+#ueber-uns.rk-page-hero--dark .rk-hero-cta{
+  margin-top:clamp(22px,3.5vw,28px);
+  align-items:flex-start;
+}
+#ueber-uns.rk-page-hero--dark .rk-hero-cta .rk-btn-solid{
+  margin-top:0;
+  padding:clamp(9px,1.2vw,11px) clamp(16px,2vw,22px);
+  font-size:clamp(1rem,1.25vw,1.125rem);
+}
+#ueber-uns.rk-page-hero--split .rk-page-hero-media{
+  overflow:visible;
+  border:none;
+  box-shadow:none;
+  border-radius:0;
+}
+#ueber-uns.rk-page-hero--split .rk-team-photo{
+  border-radius:4px;
+  overflow:visible;
+}
+#ueber-uns.rk-page-hero--split .rk-team-photo > .rk-split-photo{
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 24px 64px rgba(0,0,0,0.35);
+}
+.rk-page-hero--split .rk-page-hero-media img{
+  display:block;width:100%;height:auto;aspect-ratio:var(--rk-media-ratio);object-fit:cover;object-position:center;
+}
+.rk-page-hero--split .rk-page-hero-media .rk-team-photo{
+  position:relative;
+  width:100%;
+  height:100%;
+}
+.rk-page-hero--split .rk-page-hero-media .rk-team-photo > .rk-split-photo,
+.rk-page-hero--split .rk-page-hero-media img.rk-split-photo{
+  width:100%;
+  height:100%;
+  max-height:none;
+  aspect-ratio:auto;
+  object-fit:cover;
+  display:block;
+}
+@media(min-width:900px){
+  .rk-page-hero--split .rk-page-hero-grid{
+    grid-template-columns:minmax(0,1fr) minmax(0,0.92fr);
+    gap:clamp(32px,5vw,56px);
+  }
+  .rk-page-hero--split .rk-page-hero-copy,
+  .rk-page-hero--split .rk-page-hero-media{order:unset;}
+  .rk-page-hero--split .rk-page-hero-media img{
+    aspect-ratio:var(--rk-media-ratio);
+    height:auto;
+    object-fit:cover;
+    object-position:center;
+  }
+  #ueber-uns.rk-page-hero--split .rk-page-hero-media img.rk-split-photo{
+    aspect-ratio:auto;
+    height:100%;
+    max-height:min(520px,58vh);
+    object-fit:cover;
+  }
+}
+
 .rk-team-photo{
   position:relative;
   width:100%;
@@ -4172,9 +4297,15 @@ a.rk-usp-cell{
 #angebote-leistungen .rk-angebote-leistungen{margin-top:clamp(20px,4vw,32px);}
 #leistungen.rk-tone-a + #angebote-teaser.rk-split-dark{border-top:none;}
 #angebote-teaser.rk-split-dark + #ki-vo-bridge{border-top:none;}
-#ki-vo-bridge + #beitrag-im-fokus.rk-tone-orange{border-top:none;}
+#ki-vo-bridge + #ueber-uns{border-top:none;}
+#ueber-uns + #beitrag-im-fokus.rk-tone-orange{border-top:none;}
 #inklusive.rk-tone-b + #paket-bedarfsbezogen.rk-split-dark{border-top:none;}
-#angebote-teaser.rk-split-dark .rk-featured-kicker{color:var(--red);}
+#angebote-teaser.rk-split-dark .rk-featured-kicker{color:rgba(245,244,240,0.72);}
+#angebote-teaser .rk-split-photo{
+  aspect-ratio:1024/640;
+  object-fit:contain;
+  background:#0a0a0a;
+}
 #paket-bedarfsbezogen.rk-split-dark .rk-dot-cta:hover .dot-ring,
 #paket-bedarfsbezogen.rk-split-dark .rk-dot-cta:focus-visible .dot-ring{border-color:var(--red)!important;}
 #paket-bedarfsbezogen.rk-split-dark .rk-dot-cta:hover .dot-ring span,
@@ -4397,6 +4528,32 @@ a.rk-usp-cell{
 .rk-featured-foot{
   margin-top:clamp(28px,4vw,36px);
   display:flex;justify-content:flex-start;
+}
+
+/* ── Referenzen-Vorschau (Homepage / Agentur) ── */
+.rk-ag-posts{border-bottom:1px solid var(--border);}
+.rk-ag-posts-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:16px;margin-bottom:clamp(28px,4vw,40px);flex-wrap:wrap;
+}
+.rk-ag-posts-kicker{
+  font-size:clamp(0.625rem,0.8vw,0.6875rem);font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:10px;
+}
+.rk-ag-posts-all{
+  flex-shrink:0;font-family:var(--font-sans);font-size:clamp(0.75rem,0.9vw,0.8125rem);
+  font-weight:700;letter-spacing:0.02em;color:var(--ink);text-decoration:none;
+  white-space:nowrap;transition:color .2s ease;
+}
+.rk-ag-posts-all:hover{color:var(--red);}
+.rk-ag-posts .rk-featured-slider{margin-top:0;}
+.rk-ag-posts-cta{
+  margin-top:clamp(28px,4vw,40px);
+  display:flex;
+  justify-content:flex-start;
+}
+@media(min-width:768px){
+  .rk-ag-posts-cta{display:none;}
 }
 
 /* ── Blog slider (homepage) ── */

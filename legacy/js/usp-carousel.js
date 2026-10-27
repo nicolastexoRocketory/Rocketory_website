@@ -4,6 +4,9 @@
   var SELECTORS = [
     '#leistungen .rk-usp-grid',
     '#angebote-leistungen .rk-usp-grid',
+    '#leistungen-verteiler .rk-usp-grid',
+    '.rk-page-hero--leistungen .rk-usp-grid',
+    '#nutzen .rk-usp-grid',
     '#kernvorteile .rk-bento-grid',
     '#werte .rk-home-bento-grid',
   ]

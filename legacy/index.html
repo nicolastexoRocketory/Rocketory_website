@@ -19,7 +19,7 @@
           playsinline
           webkit-playsinline
           preload="none"
-          poster="/api/media/file/nasa-shuttle-launch.webp"
+          poster="/assets/images/nasa-shuttle-launch-mobile.webp"
           disablepictureinpicture
           controlslist="nofullscreen nodownload noremoteplayback"
           x5-playsinline
@@ -29,11 +29,12 @@
           <source src="assets/videos/hero-mobile.mp4?v=3" type="video/mp4">
         </video>
         <img
-          src="/api/media/file/nasa-shuttle-launch.webp"
+          src="/assets/images/nasa-shuttle-launch-mobile.webp"
           alt=""
-          width="1024"
-          height="589"
+          width="900"
+          height="518"
           class="rk-hero-img rk-hero-media--mobile rk-hero-img--static"
+          fetchpriority="high"
           decoding="async"
           aria-hidden="true">
         <img
@@ -43,7 +44,6 @@
           height="682"
           id="rkHeroBg"
           class="rk-hero-img rk-hero-media--desktop"
-          fetchpriority="high"
           decoding="async"
           aria-hidden="true">
       </div>
@@ -54,9 +54,9 @@
           <p class="rk-hero-tag">Webdesign aus Bünde</p>
           <h1 class="rk-h1">Webseiten mit Raketenantrieb<br><em>für mehr Kunden und Sichtbarkeit.</em></h1>
           <ul class="rk-hero-usps">
-            <li>Hochwertiges modernes Design</li>
             <li>Mehr Reichweite &amp; neue Mitarbeiter generieren</li>
             <li>Nachhaltige Beratung auf Augenhöhe</li>
+            <li>Hochwertiges modernes Design</li>
           </ul>
           <div class="rk-hero-cta">
             <a href="kontakt.html" class="rk-btn-solid rk-hero-cta-btn" aria-label="Projekt anfragen, Kontakt">
@@ -129,38 +129,30 @@
     <section class="rk-section rk-usp rk-tone-a" id="leistungen">
       <div class="rk-inner">
       <h2 class="rk-h2">Eine Agentur.<br><em>Kein Chaos.</em></h2>
-      <div class="rk-usp-grid">
+      <div class="rk-usp-grid rk-card-grid-3">
         <div class="rk-usp-cell">
           <span class="rk-usp-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           </span>
           <p class="rk-usp-num">01</p>
-          <h4>Alles aus einer Hand</h4>
-          <p>Design, Technik, Texte, Bilder und <a href="wartung.html" class="rk-text-link">Hosting</a>. Ein Ansprechpartner, ein Prozess, ein Ergebnis. Alle <a href="index.html#leistungen" class="rk-text-link">Leistungen</a> und <a href="index.html#inklusive" class="rk-text-link">Inklusivleistungen</a> im Überblick.</p>
+          <h4>Webseite als Basis für Wachstum</h4>
+          <p>Dein digitaler Auftritt ist das Fundament: damit Kunden dich verstehen, dir vertrauen und anfragen. Darauf bauen Sichtbarkeit, Reichweite und langfristiges Wachstum auf, nicht umgekehrt. Mehr unter <a href="webdesign.html" class="rk-text-link">Webdesign</a>.</p>
+        </div>
+        <div class="rk-usp-cell">
+          <span class="rk-usp-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </span>
+          <p class="rk-usp-num">02</p>
+          <h4>Beratung auf Augenhöhe</h4>
+          <p>Wir sagen klar, was sinnvoll ist und was nicht. Ein fester Ansprechpartner, ehrliche Empfehlungen, ohne Verkaufsdruck. Im <a href="kontakt.html" class="rk-text-link">Erstgespräch</a> klären wir Umfang und nächste Schritte.</p>
         </div>
         <div class="rk-usp-cell">
           <span class="rk-usp-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/><path d="M5 19l2-2"/><path d="M19 5l-2 2"/></svg>
           </span>
-          <p class="rk-usp-num">02</p>
-          <h4>Kein Baukasten</h4>
-          <p>Individuelle Umsetzung statt Template. Als <a href="technologien.html#statisch" class="rk-text-link">statisches HTML</a>, <a href="technologien.html#wordpress" class="rk-text-link">WordPress</a> oder <a href="technologien.html#cms-payload" class="rk-text-link">CMS mit Next.js und Payload</a>. Jede Webseite wird für den jeweiligen Auftritt gebaut. Mehr dazu unter <a href="webdesign.html" class="rk-text-link">Webdesign</a>.</p>
-        </div>
-        <div class="rk-usp-cell">
-          <span class="rk-usp-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.4-7-10a7 7 0 1114 0c0 5.6-7 10-7 10z"/><circle cx="12" cy="11" r="2.5"/></svg>
-          </span>
           <p class="rk-usp-num">03</p>
-          <h4>Lokal verankert</h4>
-          <p>Wir kennen den Markt in der Region und denken bei jedem Projekt an die Kunden dahinter. Sitz in <a href="agentur/buende.html" class="rk-text-link">Bünde</a>, Einsatzgebiet OWL. Einblicke unter <a href="projekte.html" class="rk-text-link">Projekte</a>.</p>
-        </div>
-        <div class="rk-usp-cell">
-          <span class="rk-usp-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 7-7"/><path d="M14 8h6v6"/></svg>
-          </span>
-          <p class="rk-usp-num">04</p>
-          <h4>Langfristig gedacht</h4>
-          <p>Technisch sauber, pflegeleicht und auf Wachstum ausgelegt. Auch nach dem Launch mit <a href="wartung.html" class="rk-text-link">Wartung und Sicherheit</a>. <a href="kontakt.html" class="rk-text-link">Lass uns reden</a>, wenn du langfristig planst.</p>
+          <h4>Auftritt, der Kunden überzeugt</h4>
+          <p>Keine Seite von der Stange. Sie wirkt wie dein Betrieb, bleibt auf dem Handy klar und macht den ersten Eindruck, der zählt: Hier bin ich richtig. Beispiele unter <a href="projekte.html" class="rk-text-link">Projekte</a>.</p>
         </div>
       </div>
       </div>
@@ -170,23 +162,24 @@
       <div class="rk-inner">
         <div class="rk-split-grid">
           <div class="rk-split-text">
-            <p class="rk-featured-kicker">Angebote · Pakete &amp; Leistungen</p>
-            <h2 class="rk-h2">Dein Business verdient<br><em>einen Auftritt, der hält.</em></h2>
-            <div class="rk-split-body">Jede Webseite entsteht bei uns maßgeschneidert, Design, Texte und Technik aus einer Hand. Transparent kalkuliert, fair umgesetzt und langfristig betreut.</div>
-            <a href="angebote.html" class="rk-dot-cta">
-              <span class="rk-dot-cta-label">Alle Angebote ansehen</span>
+            <p class="rk-featured-kicker">Leistungen · Überblick</p>
+            <h2 class="rk-h2">Deine Webseite ist<br><em>die Basis für digitales Wachstum.</em></h2>
+            <div class="rk-split-body">Eine Webseite, die Kunden verstehen und der sie vertrauen, als Basis für nachhaltiges Wachstum. Fair kalkuliert, persönlich betreut, ohne Überraschungen.</div>
+            <a href="leistungen.html" class="rk-dot-cta">
+              <span class="rk-dot-cta-label">Alle Leistungen ansehen</span>
               <div class="dot-ring" aria-hidden="true"><span></span></div>
             </a>
           </div>
-          <div class="rk-split-media">
+          <div class="rk-split-media" data-rk-ai-image="true" data-rk-ai-badge="dark">
             <img
               class="rk-split-photo"
-              src="assets/images/angebote-team-office.webp"
-              alt="Team bei der Entwicklung von Webseiten am Schreibtisch"
+              src="assets/images/website-wachstum.webp"
+              alt="Laptop mit Webseite und Wachstumskennzahlen zu Sichtbarkeit, Anfragen, Umsatz und Vertrauen"
               width="1024"
-              height="682"
-              loading="lazy">
-            <p class="rk-split-caption">Solide Technik als Fundament, von HTML bis Next.js &amp; Payload.</p>
+              height="640"
+              loading="lazy"
+              data-rk-ai-image="true">
+            <p class="rk-split-caption">Persönlich geplant und gebaut, damit dein Auftritt langfristig trägt.</p>
           </div>
         </div>
       </div>
@@ -209,30 +202,20 @@
       </div>
     </section>
 
-    <section class="rk-section rk-featured rk-featured-focus rk-tone-orange" id="beitrag-im-fokus">
+    <section class="rk-page-hero rk-page-hero--dark rk-page-hero--split rk-page-hero--embed" id="ueber-uns" aria-label="Team und Über uns">
       <div class="rk-inner">
-        <div class="rk-featured-layout">
-          <div class="rk-featured-intro">
-            <p class="rk-featured-kicker">Blog · Beitrag im Fokus</p>
-            <h2 class="rk-h2">Beitrag im Fokus.<br><em>Was gerade wichtig ist.</em></h2>
-            <p class="rk-featured-desc">Praxiswissen aus echten Projekten, der aktuelle Fokus-Beitrag aus unserem Blog.</p>
+        <div class="rk-page-hero-grid">
+          <div class="rk-page-hero-copy">
+            <p class="rk-page-kicker">Team · Über uns</p>
+            <h2 class="rk-page-title">Die Menschen<br><em>hinter Rocketory</em></h2>
+            <p class="rk-page-lead">Rocketory ist keine anonyme Agentur aus dem Nichts. Wir sitzen in Bünde, kennen den Markt vor Ort und stehen mit Namen und Gesicht hinter jedem Auftrag. Du sprichst direkt mit den Menschen, die deine Webseite bauen.</p>
+            <div class="rk-hero-cta">
+              <a href="agentur.html" class="rk-btn-solid rk-hero-cta-btn" aria-label="Über Uns, Agentur">
+                <span class="rk-btn-solid-label">Über Uns</span>
+              </a>
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="rk-section rk-split rk-tone-a" id="ueber-uns">
-      <div class="rk-inner">
-        <div class="rk-split-grid">
-          <div class="rk-split-text">
-            <h2 class="rk-h2">Die Menschen <em>hinter Rocketory</em></h2>
-            <div class="rk-split-body">Rocketory ist keine anonyme Agentur aus dem Nichts. Wir sitzen in Bünde, kennen den Markt vor Ort und stehen mit Namen und Gesicht hinter jedem Auftrag. <details class="rk-readmore"><summary><span class="rk-readmore-label">Mehr anzeigen</span></summary><div class="rk-readmore-body"><p>Du sprichst direkt mit den Menschen, die deine Webseite bauen. Kein Weiterreichen, kein Ticket-System, kein Warten auf Rückrufe. Starte mit einem <a href="kontakt.html" class="rk-text-link">kostenlosen Erstgespräch</a>.</p><p>Wir begleiten Unternehmen von der ersten Idee bis zum Launch und darüber hinaus mit professionellem <a href="wartung.html" class="rk-text-link">Hosting, Updates und Support</a>. Ob schlanke Visitenkarte mit <a href="technologien.html#statisch" class="rk-text-link">statischem HTML</a>, flexibles <a href="technologien.html#wordpress" class="rk-text-link">WordPress-CMS</a> oder <a href="technologien.html#cms-payload" class="rk-text-link">CMS mit Next.js &amp; Payload</a>: Wir empfehlen ehrlich, was wirtschaftlich zu deinem Vorhaben passt.</p><p>Im <a href="index.html#beitrag-im-fokus" class="rk-text-link">aktuellen Blog-Beitrag</a> und unter <a href="projekte.html" class="rk-text-link">Projekte</a> teilen wir Learnings aus echten Projekten, zu Performance, SEO und lokalem Webdesign aus Bünde.</p></div></details></div>
-            <a href="team.html" class="rk-dot-cta">
-              <span class="rk-dot-cta-label">Über Uns</span>
-              <div class="dot-ring" aria-hidden="true"><span></span></div>
-            </a>
-          </div>
-          <div class="rk-split-media">
+          <figure class="rk-page-hero-media">
             <div class="rk-team-photo">
               <img
                 class="rk-split-photo"
@@ -242,65 +225,52 @@
                 height="558"
                 loading="lazy">
               <div class="rk-team-hotspots" aria-label="Team-Mitglieder">
-                <button
-                  type="button"
-                  class="rk-team-hotspot rk-team-hotspot--card-right"
-                  style="--x:18%;--y:68%;"
-                  aria-expanded="false"
-                  aria-controls="rk-team-card-klaus"
-                  aria-label="Klaus, Strategie und Kommunikation">
+                <button type="button" class="rk-team-hotspot rk-team-hotspot--card-right" style="--x:18%;--y:68%;" aria-expanded="false" aria-controls="rk-home-team-card-klaus" aria-label="Klaus, Strategie und Kommunikation">
                   <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
                   <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
-                  <span class="rk-team-hotspot-card" id="rk-team-card-klaus" role="tooltip">
+                  <span class="rk-team-hotspot-card" id="rk-home-team-card-klaus" role="tooltip">
                     <strong class="rk-team-hotspot-name">Klaus</strong>
                     <span class="rk-team-hotspot-role">Strategie &amp; Kommunikation</span>
                   </span>
                 </button>
-                <button
-                  type="button"
-                  class="rk-team-hotspot"
-                  style="--x:40%;--y:70%;"
-                  aria-expanded="false"
-                  aria-controls="rk-team-card-giuliana"
-                  aria-label="Giuliana, Brand Design und Webgrafik">
+                <button type="button" class="rk-team-hotspot" style="--x:40%;--y:70%;" aria-expanded="false" aria-controls="rk-home-team-card-giuliana" aria-label="Giuliana, Brand Design und Webgrafik">
                   <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
                   <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
-                  <span class="rk-team-hotspot-card" id="rk-team-card-giuliana" role="tooltip">
+                  <span class="rk-team-hotspot-card" id="rk-home-team-card-giuliana" role="tooltip">
                     <strong class="rk-team-hotspot-name">Giuliana</strong>
                     <span class="rk-team-hotspot-role">Brand Design &amp; Webgrafik</span>
                   </span>
                 </button>
-                <button
-                  type="button"
-                  class="rk-team-hotspot"
-                  style="--x:58%;--y:68%;"
-                  aria-expanded="false"
-                  aria-controls="rk-team-card-nicolas"
-                  aria-label="Nicolas, Digital und Webdesign Manager">
+                <button type="button" class="rk-team-hotspot" style="--x:58%;--y:66%;" aria-expanded="false" aria-controls="rk-home-team-card-nicolas" aria-label="Nicolas, Digital und Webdesign Manager">
                   <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
                   <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
-                  <span class="rk-team-hotspot-card" id="rk-team-card-nicolas" role="tooltip">
+                  <span class="rk-team-hotspot-card" id="rk-home-team-card-nicolas" role="tooltip">
                     <strong class="rk-team-hotspot-name">Nicolas</strong>
                     <span class="rk-team-hotspot-role">Digital &amp; Webdesign Manager</span>
                   </span>
                 </button>
-                <button
-                  type="button"
-                  class="rk-team-hotspot rk-team-hotspot--card-left"
-                  style="--x:78%;--y:68%;"
-                  aria-expanded="false"
-                  aria-controls="rk-team-card-artem"
-                  aria-label="Artem, Videografie und Postproduktion">
+                <button type="button" class="rk-team-hotspot" style="--x:78%;--y:68%;" aria-expanded="false" aria-controls="rk-home-team-card-artem" aria-label="Artem, Videografie und Postproduktion">
                   <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
                   <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
-                  <span class="rk-team-hotspot-card" id="rk-team-card-artem" role="tooltip">
+                  <span class="rk-team-hotspot-card" id="rk-home-team-card-artem" role="tooltip">
                     <strong class="rk-team-hotspot-name">Artem</strong>
                     <span class="rk-team-hotspot-role">Videografie &amp; Postproduktion</span>
                   </span>
                 </button>
               </div>
             </div>
-            <p class="rk-split-caption">Persönlich, lokal, erreichbar, aus Bünde für die Region.</p>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="rk-section rk-featured rk-featured-focus rk-tone-orange" id="beitrag-im-fokus">
+      <div class="rk-inner">
+        <div class="rk-featured-layout">
+          <div class="rk-featured-intro">
+            <p class="rk-featured-kicker">Blog · Beitrag im Fokus</p>
+            <h2 class="rk-h2">Beitrag im Fokus.<br><em>Was gerade wichtig ist.</em></h2>
+            <p class="rk-featured-desc">Praxiswissen aus echten Projekten, der aktuelle Fokus-Beitrag aus unserem Blog.</p>
           </div>
         </div>
       </div>
@@ -478,7 +448,7 @@
         <div class="rk-inkl-desc">
           <div>
             <p>Authentische Bilder und Clips von deinem Team, deinen Räumen oder Produkten, professionell produziert vor Ort oder im Studio, abgestimmt auf deine Webseite.</p>
-            <a href="angebote.html#foto-video" class="rk-inkl-row-link rk-text-link">Mehr erfahren →</a>
+            <a href="leistungen.html#foto-video" class="rk-inkl-row-link rk-text-link">Mehr erfahren →</a>
           </div>
         </div>
       </div>
@@ -515,7 +485,7 @@
                 playsinline
                 webkit-playsinline
                 preload="none"
-                poster="/api/media/file/nasa-shuttle-launch.webp"
+                poster="/assets/images/nasa-shuttle-launch.webp"
                 disablepictureinpicture
                 controlslist="nofullscreen nodownload noremoteplayback"
                 x5-playsinline
@@ -525,10 +495,11 @@
               </video>
               <img
                 class="rk-home-bento-bg-fallback"
-                src="/api/media/file/nasa-shuttle-launch.webp"
+                src="/assets/images/nasa-shuttle-launch.webp"
                 alt=""
-                width="1024"
-                height="589"
+                width="1280"
+                height="736"
+                loading="lazy"
                 decoding="async">
             </div>
             <span class="rk-trust-icon" aria-hidden="true">
@@ -548,7 +519,7 @@
             <p>Rocketory ist eine Unit der FairFlock GmbH und Schwesteragentur von Viralista. Kein Ein-Mann-Setup ohne Rückhalt. Du arbeitest mit einer Struktur, die Verantwortung trägt und langfristig denkt.</p>
           </article>
 
-          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t2 rk-home-bento-cell--photo" style="--rk-bento-bg:url('/assets/images/bedarfsbezogen.jpg')">
+          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t2 rk-home-bento-cell--photo" style="--rk-bento-bg:url('/assets/images/bedarfsbezogen.webp')">
             <span class="rk-trust-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
             </span>
@@ -557,7 +528,7 @@
             <p>Klare Pakete, nachvollziehbare Preise und ehrliche Empfehlungen. Wenn etwas nicht zu deinem Vorhaben passt, sagen wir das, lieber im <a href="kontakt.html" class="rk-text-link">Gespräch</a> als im Kleingedruckten.</p>
           </article>
 
-          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t3 rk-home-bento-cell--photo" style="--rk-bento-bg:url('/assets/images/nasa-shuttle-launch.png')">
+          <article class="rk-home-bento-cell rk-trust-item rk-home-bento-cell--t3 rk-home-bento-cell--photo" style="--rk-bento-bg:url('/assets/images/nasa-shuttle-launch.webp')">
             <span class="rk-trust-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
             </span>

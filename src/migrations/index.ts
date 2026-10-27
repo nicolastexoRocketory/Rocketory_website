@@ -4,6 +4,9 @@ import * as migration_20260710_083820_email_settings_extras from './20260710_083
 import * as migration_20260715_media_image_sizes from './20260715_media_image_sizes';
 import * as migration_20260817_media_is_ai_generated from './20260817_media_is_ai_generated';
 import * as migration_20260817_media_site_path from './20260817_media_site_path';
+import * as migration_20261027_posts_bottom_gallery from './20261027_posts_bottom_gallery';
+import * as migration_20261027_content_sections from './20261027_content_sections';
+import * as migration_20261027_content_intro from './20261027_content_intro';
 
 export const migrations = [
   {
@@ -35,5 +38,20 @@ export const migrations = [
     up: migration_20260817_media_site_path.up,
     down: migration_20260817_media_site_path.down,
     name: '20260817_media_site_path',
+  },
+  {
+    up: migration_20261027_posts_bottom_gallery.up,
+    down: migration_20261027_posts_bottom_gallery.down,
+    name: '20261027_posts_bottom_gallery',
+  },
+  {
+    up: migration_20261027_content_sections.up,
+    down: migration_20261027_content_sections.down,
+    name: '20261027_content_sections',
+  },
+  {
+    up: migration_20261027_content_intro.up,
+    down: migration_20261027_content_intro.down,
+    name: '20261027_content_intro',
   },
 ];

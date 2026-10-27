@@ -3,6 +3,10 @@
   padding:calc(var(--rk-nav-h) + clamp(40px,8vw,72px)) 0 clamp(36px,6vw,56px);
   border-bottom:1px solid var(--border);
 }
+/* Eingebettet mitten auf der Seite (z. B. Startseite): ohne Nav-Offset */
+.rk-page-hero--embed{
+  padding-top:clamp(40px,8vw,72px);
+}
 .rk-page-hero--dark{
   background:var(--hero-bg);color:var(--hero-text);
   border-bottom-color:rgba(255,255,255,0.08);
@@ -161,6 +165,88 @@
 .rk-page-hero--blog + .rk-ref-section--dark{
   padding-top:clamp(8px,1.5vw,16px);
 }
+
+/* Leistungen: Listing-Hero + USP-Grid im selben dunklen Block
+   Akzente bewusst hell/neutral – kein aggressives Rot auf Dunkel. */
+.rk-page-hero--leistungen{
+  align-items:flex-start;
+  min-height:0;
+  text-align:left;
+  padding-bottom:clamp(48px,8vw,80px);
+}
+.rk-page-hero--leistungen > .rk-inner{
+  width:100%;
+}
+.rk-page-hero--leistungen .rk-page-hero-blog-inner{
+  margin-bottom:clamp(36px,6vw,56px);
+}
+.rk-page-hero--leistungen .rk-page-kicker{
+  color:rgba(245,244,240,0.72);
+}
+.rk-page-hero--leistungen .rk-page-title em{
+  background:var(--ci-gradient);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  color:transparent;
+}
+.rk-page-hero--leistungen .rk-usp-grid{
+  width:100%;
+  margin-top:0;
+  text-align:left;
+}
+.rk-page-hero--leistungen .rk-usp-cell{
+  border-top-color:rgba(255,255,255,0.12);
+}
+.rk-page-hero--leistungen .rk-usp-cell:nth-child(odd){
+  border-right-color:rgba(255,255,255,0.12);
+}
+.rk-page-hero--leistungen .rk-usp-cell h4{
+  color:var(--hero-text);
+}
+.rk-page-hero--leistungen .rk-usp-cell > p:not(.rk-usp-num){
+  color:var(--hero-muted);
+}
+.rk-page-hero--leistungen .rk-usp-num{
+  color:rgba(245,244,240,0.55);
+}
+.rk-page-hero--leistungen .rk-usp-icon{
+  color:rgba(245,244,240,0.88);
+  background:rgba(255,255,255,0.06);
+  border-color:rgba(255,255,255,0.16);
+}
+.rk-page-hero--leistungen .rk-usp-cell:hover,
+.rk-page-hero--leistungen .rk-usp-cell:focus-within{
+  background:rgba(255,255,255,0.05);
+  border-top-color:rgba(255,255,255,0.22);
+}
+.rk-page-hero--leistungen .rk-usp-cell:hover:not(:nth-child(4n)),
+.rk-page-hero--leistungen .rk-usp-cell:focus-within:not(:nth-child(4n)){
+  border-right-color:rgba(255,255,255,0.22);
+}
+.rk-page-hero--leistungen .rk-usp-cell:hover h4,
+.rk-page-hero--leistungen .rk-usp-cell:focus-within h4{
+  color:#F5F4F0;
+}
+.rk-page-hero--leistungen .rk-usp-cell:hover > p:not(.rk-usp-num),
+.rk-page-hero--leistungen .rk-usp-cell:focus-within > p:not(.rk-usp-num){
+  color:rgba(245,244,240,0.82);
+}
+.rk-page-hero--leistungen .rk-usp-cell:hover .rk-usp-icon,
+.rk-page-hero--leistungen .rk-usp-cell:focus-within .rk-usp-icon{
+  color:#fff;
+  background:rgba(255,255,255,0.1);
+  border-color:rgba(255,255,255,0.28);
+}
+.rk-page-hero--leistungen .rk-usp-cell > .rk-text-link{
+  color:rgba(245,244,240,0.88);
+}
+.rk-page-hero--leistungen .rk-usp-cell > .rk-text-link:hover{
+  color:#fff;
+}
+.rk-page-hero--leistungen + #inklusive{
+  border-top:none;
+}
 .rk-ref-section--dark{
   background:var(--hero-bg,#0A0F1E);
   color:var(--hero-text,#F5F4F0);
@@ -213,6 +299,7 @@
 /* ── Blog taxonomy filter ── */
 .rk-post-filter{
   display:flex;flex-wrap:wrap;gap:10px;
+  justify-content:center;
   margin-bottom:clamp(24px,4vw,32px);
   padding-bottom:clamp(20px,3vw,28px);
   border-bottom:1px solid var(--border);
@@ -667,6 +754,55 @@ body.rk-author-modal-open{overflow:hidden;}
 .rk-blog-content .rk-media-figure img{
   display:block;width:100%;height:auto;border-radius:12px;
 }
+/* Bildergalerie am Beitragsende */
+.rk-blog-gallery{
+  margin:clamp(40px,6vw,64px) 0 0;
+  padding:clamp(16px,2.5vw,24px);
+  border:1px solid var(--border);
+  background:var(--bg-cool);
+  border-radius:12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.65);
+}
+.rk-blog-gallery-slider{
+  --rk-blog-per-view:1;
+}
+.rk-blog-gallery .rk-featured-slider-viewport{
+  background:transparent;
+  border:none;
+  box-shadow:none;
+  overflow:hidden;
+}
+.rk-blog-gallery-slide{
+  margin:0;
+  min-width:0;
+}
+.rk-blog-gallery-slide img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:min(72vh,720px);
+  aspect-ratio:16 / 10;
+  object-fit:contain;
+  object-position:center;
+  background:color-mix(in srgb,var(--ink) 6%,var(--bg-cool));
+  border:1px solid var(--border);
+  border-radius:8px;
+}
+.rk-blog-gallery-caption{
+  margin:10px 0 0;
+  font-family:var(--font-sans);
+  font-size:clamp(0.8125rem,1vw,0.875rem);
+  line-height:1.5;
+  color:var(--muted);
+}
+.rk-blog-gallery-slide .rk-media-caption{
+  display:none; /* Fallback, falls Caption doch aus Media kommt */
+}
+.rk-blog-gallery .rk-featured-slider-nav{
+  margin-top:clamp(14px,2vw,18px);
+  justify-content:center;
+}
+
 .rk-blog-footer{
   margin:clamp(48px,6vw,64px) 0 0;
   padding-top:clamp(28px,4vw,36px);border-top:1px solid var(--border);

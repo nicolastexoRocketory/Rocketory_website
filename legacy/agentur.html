@@ -6,33 +6,72 @@
   <title>Agentur | Rocketory</title>
   <link rel="stylesheet" href="assets/css/main.css?v=11">
   <link rel="stylesheet" href="assets/css/references.css?v=6">
-  <link rel="stylesheet" href="assets/css/agentur.css?v=6">
+  <link rel="stylesheet" href="assets/css/agentur.css?v=41">
 </head>
 <body>
 <div class="rk-shell">
-  <div class="rk">
+  <div class="rk rk-page-team">
     <div id="rk-nav-mount"></div>
 
-    <!-- ─── HERO ─────────────────────────────────────────────────────────── -->
+    <!-- ─── HERO (wie Team-Seite) ─────────────────────────────────────────── -->
     <header class="rk-page-hero rk-page-hero--dark rk-page-hero--split">
       <div class="rk-inner">
         <div class="rk-page-hero-grid">
           <div class="rk-page-hero-copy">
-            <p class="rk-page-kicker">Agentur</p>
-            <h1 class="rk-page-title">Rocketory aus Bünde.<br><em>Webseiten mit Raketenantrieb.</em></h1>
-            <p class="rk-page-lead">Als Schwesteragentur von VIRALISTA starten wir seit 2026 für dich mit Webdesign durch. Wir sind keine anonyme Remote-Agentur, sondern ein Team mit Standort in Ostwestfalen. Du sprichst direkt mit den Menschen, die dein Projekt umsetzen. Ehrlich, persönlich, ohne Verkaufsdruck.</p>
+            <p class="rk-page-kicker">Team · Über uns</p>
+            <h1 class="rk-page-title">Die Menschen<br><em>hinter Rocketory</em></h1>
+            <p class="rk-page-lead">Rocketory ist keine anonyme Agentur aus dem Nichts. Wir sitzen in Bünde, kennen den Markt vor Ort und stehen mit Namen und Gesicht hinter jedem Auftrag. Du sprichst direkt mit den Menschen, die deine Webseite bauen.</p>
             <div class="rk-page-tags">
+              <span class="rk-page-tag">Aus Bünde, OWL</span>
               <span class="rk-page-tag">FairFlock GmbH</span>
               <span class="rk-page-tag">Schwesteragentur Viralista</span>
-              <span class="rk-page-tag">Aus Bünde, OWL</span>
               <span class="rk-page-tag">Ein Ansprechpartner</span>
             </div>
           </div>
           <figure class="rk-page-hero-media">
-            <picture>
-              <source media="(max-width: 768px)" srcset="assets/images/mobile-hero.png">
-              <img src="assets/images/Raketenstart.png" alt="Raketenstart, Rocketory Webdesign aus Bünde" width="1920" height="1080" loading="eager">
-            </picture>
+            <div class="rk-team-photo">
+              <img
+                class="rk-split-photo"
+                src="assets/images/team-rocketory.webp"
+                alt="Das Rocketory Team: Klaus, Giuliana, Nicolas und Artem"
+                width="1024"
+                height="558"
+                loading="eager">
+              <div class="rk-team-hotspots" aria-label="Team-Mitglieder">
+                <button type="button" class="rk-team-hotspot rk-team-hotspot--card-right" style="--x:18%;--y:68%;" aria-expanded="false" aria-controls="rk-ag-team-card-klaus" aria-label="Klaus, Strategie und Kommunikation">
+                  <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-card" id="rk-ag-team-card-klaus" role="tooltip">
+                    <strong class="rk-team-hotspot-name">Klaus</strong>
+                    <span class="rk-team-hotspot-role">Strategie &amp; Kommunikation</span>
+                  </span>
+                </button>
+                <button type="button" class="rk-team-hotspot" style="--x:40%;--y:70%;" aria-expanded="false" aria-controls="rk-ag-team-card-giuliana" aria-label="Giuliana, Brand Design und Webgrafik">
+                  <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-card" id="rk-ag-team-card-giuliana" role="tooltip">
+                    <strong class="rk-team-hotspot-name">Giuliana</strong>
+                    <span class="rk-team-hotspot-role">Brand Design &amp; Webgrafik</span>
+                  </span>
+                </button>
+                <button type="button" class="rk-team-hotspot" style="--x:58%;--y:66%;" aria-expanded="false" aria-controls="rk-ag-team-card-nicolas" aria-label="Nicolas, Digital und Webdesign Manager">
+                  <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-card" id="rk-ag-team-card-nicolas" role="tooltip">
+                    <strong class="rk-team-hotspot-name">Nicolas</strong>
+                    <span class="rk-team-hotspot-role">Digital &amp; Webdesign Manager</span>
+                  </span>
+                </button>
+                <button type="button" class="rk-team-hotspot" style="--x:78%;--y:68%;" aria-expanded="false" aria-controls="rk-ag-team-card-artem" aria-label="Artem, Videografie und Postproduktion">
+                  <span class="rk-team-hotspot-dot" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-ring" aria-hidden="true"></span>
+                  <span class="rk-team-hotspot-card" id="rk-ag-team-card-artem" role="tooltip">
+                    <strong class="rk-team-hotspot-name">Artem</strong>
+                    <span class="rk-team-hotspot-role">Videografie &amp; Postproduktion</span>
+                  </span>
+                </button>
+              </div>
+            </div>
           </figure>
         </div>
       </div>
@@ -82,94 +121,25 @@
           <article class="rk-ag-manifest-card" id="philosophie">
             <p class="rk-ag-manifest-kicker">Unsere Philosophie</p>
             <h2 class="rk-ag-manifest-headline">Zuhören zuerst.<br><em class="rk-serif-ink">Umsetzen, was passt.</em></h2>
-            <p class="rk-ag-manifest-copy">Gute Webseiten entstehen nicht aus Templates, sondern aus echtem Verständnis für das Business dahinter. Webseiten mit Raketenantrieb: Wir beraten ehrlich und bauen nur, was wirklich Sinn ergibt.</p>
+            <p class="rk-ag-manifest-copy">Wir möchten nicht nur ein statisches Produkt abgeben, sondern eine Basis für Unternehmen schaffen, die genau auf Ihre Ziele abgestimmt ist und mehr.</p>
           </article>
           <div class="rk-ag-manifest-divider" aria-hidden="true"></div>
           <article class="rk-ag-manifest-card" id="mission">
             <p class="rk-ag-manifest-kicker">Unsere Mission</p>
             <h2 class="rk-ag-manifest-headline">Auftritte, die halten.<br><em class="rk-serif-ink">Menschlich betreut.</em></h2>
-            <p class="rk-ag-manifest-copy">Lokalen Unternehmen einen digitalen Auftritt geben, der technisch sauber und langfristig tragfähig ist, ohne Agentur-Blabla. Aus Bünde, für die Region und darüber hinaus.</p>
+            <p class="rk-ag-manifest-copy">Lange haben wir uns überlegt, welche Säulen wir nutzen können, um so nachhaltig für unsere Kunden wie möglich zu arbeiten.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- ─── ÜBER BÜNDE ─────────────────────────────────────────────────────── -->
-    <section class="rk-section rk-split rk-tone-b" id="ueber-buende" aria-label="Über Bünde">
-      <div class="rk-inner">
-        <div class="rk-split-grid">
-          <div class="rk-split-text">
-            <h2 class="rk-h2">Über <em>Bünde.</em></h2>
-            <p class="rk-split-body">Unser Büro liegt in Bünde, Zigarrenstadt im Kreis Herford, Ostwestfalen-Lippe. Von hier aus betreuen wir KMU, Handwerk und lokale Dienstleister in der Region: persönlich, mit Adresse vor Ort statt anonymer Remote-Agentur.</p>
-            <ul class="rk-ag-buende-facts" aria-label="Bünde auf einen Blick">
-              <li><span class="rk-ag-buende-label">Büro</span><span>Zimmerstr. 16, 32257 Bünde</span></li>
-              <li><span class="rk-ag-buende-label">Region</span><span>OWL · Kreis Herford · NRW</span></li>
-              <li><span class="rk-ag-buende-label">Schwerpunkt</span><span>KMU, Handwerk, lokale Dienstleister</span></li>
-            </ul>
-            <div class="rk-loc-cta-row">
-              <a href="agentur/buende.html" class="rk-dot-cta">
-                <span class="rk-dot-cta-label">Standort Bünde im Detail</span>
-                <div class="dot-ring" aria-hidden="true"><span></span></div>
-              </a>
-            </div>
-          </div>
-          <div class="rk-split-media">
-            <div class="rk-ag-map-wrap">
-              <div class="rk-ag-map-frame rk-ag-map-frame--fill">
-                <iframe
-                  title="Karte: Bünde, Ostwestfalen-Lippe"
-                  data-rk-google-maps-embed
-                  data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25135.8!2d8.5864!3d52.1984!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47ba74da50b9f0e9%3A0x422e0d927eb334fc!2s32257%20B%C3%BCnde!5e0!3m2!1sde!2sde!4v1710000000000!5m2!1sde!2sde"
-                  width="100%"
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                  allowfullscreen></iframe>
-                <div class="rk-map-consent" data-rk-consent-gate="external">
-                  <div class="rk-map-consent-inner">
-                    <p class="rk-map-consent-title">Google Maps erst nach Einwilligung</p>
-                    <p class="rk-map-consent-text">Zum Laden der Karte werden Daten an Google übertragen. Du kannst auch den externen Link darunter nutzen.</p>
-                    <div class="rk-map-consent-actions">
-                      <button type="button" class="rk-map-consent-btn rk-map-consent-btn--primary" data-rk-consent-accept-external>Karte laden</button>
-                      <button type="button" class="rk-map-consent-btn" data-rk-consent-open>Einstellungen</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p class="rk-ag-map-note">
-                Rocketory, Webdesign &amp; SEO aus Bünde für die Region OWL.
-                <a class="rk-ag-map-link" data-rk-google-maps-link href="https://www.google.com/maps/search/?api=1&amp;query=52.1984,8.5864" target="_blank" rel="noopener noreferrer">In Google Maps öffnen</a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- ─── ÜBER UNS ───────────────────────────────────────────────────────── -->
-    <section class="rk-section rk-split rk-tone-a" id="ueber-uns">
+    <section class="rk-section rk-split rk-split-dark" id="ueber-uns">
       <div class="rk-inner">
         <div class="rk-split-grid">
           <div class="rk-split-text">
-            <h2 class="rk-h2">Agentur-Geschichte.<br><em class="rk-serif-ink">So ist Rocketory entstanden.</em></h2>
+            <h2 class="rk-h2">Agentur-Geschichte.<br><em>So ist Rocketory entstanden.</em></h2>
             <div class="rk-split-body">ROCKETORY ist das Ergebnis der Digitalisierungs-Strategie unserer Dachmarke. Als neueste Unit der FairFlock GmbH, gegründet 2013 als Merchandiser in Bünde, schließen wir für unsere bestehenden und neue Kunde eine wichtige Lücke: das professionelle Webdesign. <details class="rk-readmore"><summary><span class="rk-readmore-label">Mehr anzeigen</span></summary><div class="rk-readmore-body"><p>Als junge Schwesteragentur von VIRALISTA, die seit 2025 vielen Partnern zu mehr Sichtbarkeit auf social media verhelfen, erzählen wir die digitalen Geschichten auf eindrucksvollen und professionellen Webseiten fort. Genau diesen Wunsch hatten viele begeisterte Kunden geäußert und so entstand unsere Webdesign-Agentur, die ganz eng mit VIRALISTA und der Dachmarke FairFlock zusammenarbeitet.</p><p>Der Name ROCKETORY, eine Wortneuschöpfung aus ROCKET und FACTORY, verbindet ehrliche, vertrauensvolle Arbeit mit kreativen Ideen, die für einen Raketenantrieb in deinem Business sorgen. Lass uns gemeinsam starten!</p></div></details></div>
-            <ul class="rk-ag-contact-list" aria-label="Kontakt und Erreichbarkeit">
-              <li>
-                <span class="rk-ag-contact-label">Unternehmen</span>
-                <span>FairFlock GmbH · Rocketory · Schwesteragentur Viralista</span>
-              </li>
-              <li>
-                <span class="rk-ag-contact-label">Standort</span>
-                <span>Bünde, Ostwestfalen-Lippe</span>
-              </li>
-              <li>
-                <span class="rk-ag-contact-label">E-Mail</span>
-                <a href="mailto:beratung@rocketory.de" class="rk-text-link">beratung@rocketory.de</a>
-              </li>
-              <li>
-                <span class="rk-ag-contact-label">Erreichbarkeit</span>
-                <span>Mo bis Fr · Antwort in der Regel innerhalb von 24 Stunden</span>
-              </li>
-            </ul>
             <a href="kontakt.html" class="rk-dot-cta">
               <span class="rk-dot-cta-label">Erstgespräch anfragen</span>
               <div class="dot-ring" aria-hidden="true"><span></span></div>
@@ -178,12 +148,154 @@
           <div class="rk-split-media">
             <img
               class="rk-split-photo"
-              src="assets/images/team-rocketory.webp"
-              alt="Das Rocketory Team"
+              src="assets/images/team-rocketory-standing.webp"
+              alt="Das Rocketory Team: Klaus, Nicolas, Giuliana und Artem"
               width="1024"
-              height="571"
+              height="622"
               loading="lazy">
             <p class="rk-split-caption">Persönlich, lokal, erreichbar, aus Bünde für die Region.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TEAM ──────────────────────────────────────────────────────────── -->
+    <section class="rk-team-stage" id="team-portraits" aria-label="Team">
+      <div class="rk-inner rk-team-stage-inner">
+      <div class="rk-team-cols">
+        <article class="rk-team-col">
+          <div class="rk-team-col-media" aria-hidden="true">
+            <picture>
+              <source type="image/webp" srcset="assets/images/team/team-member-4.webp">
+              <img src="assets/images/team/team-member-4.jpg" alt="Nicolas" width="900" height="1400" loading="lazy" decoding="async">
+            </picture>
+          </div>
+          <div class="rk-team-col-copy">
+            <h2 class="rk-team-col-name">Nicolas</h2>
+            <p class="rk-team-col-role">Digital &amp; Webdesign Manager</p>
+          </div>
+        </article>
+        <article class="rk-team-col">
+          <div class="rk-team-col-media" aria-hidden="true">
+            <picture>
+              <source type="image/webp" srcset="assets/images/team/team-member-2.webp">
+              <img src="assets/images/team/team-member-2.jpg" alt="Giuliana" width="900" height="1400" loading="lazy" decoding="async">
+            </picture>
+          </div>
+          <div class="rk-team-col-copy">
+            <h2 class="rk-team-col-name">Giuliana</h2>
+            <p class="rk-team-col-role">Brand Design &amp; Webgrafik</p>
+          </div>
+        </article>
+        <article class="rk-team-col">
+          <div class="rk-team-col-media" aria-hidden="true">
+            <picture>
+              <source type="image/webp" srcset="assets/images/team/team-member-1.webp">
+              <img src="assets/images/team/team-member-1.jpg" alt="Klaus" width="900" height="1400" loading="lazy" decoding="async">
+            </picture>
+          </div>
+          <div class="rk-team-col-copy">
+            <h2 class="rk-team-col-name">Klaus</h2>
+            <p class="rk-team-col-role">Strategie &amp; Kommunikation</p>
+          </div>
+        </article>
+        <article class="rk-team-col">
+          <div class="rk-team-col-media" aria-hidden="true">
+            <picture>
+              <source type="image/webp" srcset="assets/images/team/team-member-3.webp">
+              <img src="assets/images/team/team-member-3.jpg" alt="Artem" width="900" height="1400" loading="lazy" decoding="async">
+            </picture>
+          </div>
+          <div class="rk-team-col-copy">
+            <h2 class="rk-team-col-name">Artem</h2>
+            <p class="rk-team-col-role">Videografie &amp; Postproduktion</p>
+          </div>
+        </article>
+      </div>
+      </div>
+    </section>
+
+    <!-- ─── ÜBER BÜNDE (Vollbild) ──────────────────────────────────────────── -->
+    <section class="rk-interstitial" id="ueber-buende" data-rk-interstitial-parallax aria-label="Hier sind wir">
+      <div class="rk-interstitial-bg" aria-hidden="true">
+        <picture>
+          <source type="image/webp" srcset="assets/images/buende/buende-a30.webp">
+          <img src="assets/images/buende/buende-a30.jpg" alt="" width="1920" height="1233" loading="lazy">
+        </picture>
+      </div>
+      <div class="rk-interstitial-overlay" aria-hidden="true"></div>
+      <div class="rk-inner rk-interstitial-inner">
+        <aside class="rk-glass-note" aria-label="Standort Bünde">
+          <p class="rk-interstitial-eyebrow">Bünde · OWL · Vor Ort erreichbar</p>
+          <p class="rk-interstitial-text">Hier sind wir. Webdesign-Agentur in Bünde, <em>mitten in Ostwestfalen-Lippe.</em></p>
+          <a href="agentur/buende.html" class="rk-dot-cta rk-interstitial-cta" aria-label="Standort Bünde im Detail">
+            <span class="rk-dot-cta-label">Standort Bünde im Detail</span>
+            <div class="dot-ring" aria-hidden="true"><span></span></div>
+          </a>
+        </aside>
+      </div>
+    </section>
+
+
+    <!-- ─── KONTAKT & MAPS ─────────────────────────────────────────────────── -->
+    <section class="rk-section rk-split rk-tone-c" id="standort-kontakt" aria-label="Kontakt und Anfahrt">
+      <div class="rk-inner">
+        <div class="rk-section-card">
+          <div class="rk-split-grid">
+            <div class="rk-split-text">
+              <h2 class="rk-h2">Kontakt &amp;<br><em>Anfahrt.</em></h2>
+              <p class="rk-split-body">Du erreichst uns direkt, ohne Ticket-System. Schreib uns oder komm nach Absprache in die Remise nach Bünde.</p>
+              <div class="rk-ag-contact-soft" aria-label="Kontaktdaten">
+                <p class="rk-ag-contact-soft-item">
+                  <span class="rk-ag-contact-soft-label">Adresse</span>
+                  <span class="rk-ag-contact-soft-value">Zimmerstr. 16, 32257 Bünde</span>
+                </p>
+                <p class="rk-ag-contact-soft-item">
+                  <span class="rk-ag-contact-soft-label">Erreichbarkeit</span>
+                  <span class="rk-ag-contact-soft-value">Mo bis Fr · Antwort in der Regel innerhalb von 24 Stunden</span>
+                </p>
+                <p class="rk-ag-contact-soft-item">
+                  <span class="rk-ag-contact-soft-label">E-Mail</span>
+                  <a class="rk-ag-contact-soft-value rk-text-link" href="mailto:beratung@rocketory.de">beratung@rocketory.de</a>
+                </p>
+                <p class="rk-ag-contact-soft-item">
+                  <span class="rk-ag-contact-soft-label">Unternehmen</span>
+                  <span class="rk-ag-contact-soft-value">FairFlock GmbH · Rocketory · Schwesteragentur Viralista</span>
+                </p>
+              </div>
+              <a href="kontakt.html" class="rk-dot-cta">
+                <span class="rk-dot-cta-label">Erstgespräch anfragen</span>
+                <div class="dot-ring" aria-hidden="true"><span></span></div>
+              </a>
+            </div>
+            <div class="rk-split-media">
+              <div class="rk-ag-map-wrap">
+                <div class="rk-ag-map-frame rk-ag-map-frame--fill">
+                  <iframe
+                    title="Karte: Bünde, Ostwestfalen-Lippe"
+                    data-rk-google-maps-embed
+                    data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25135.8!2d8.5864!3d52.1984!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47ba74da50b9f0e9%3A0x422e0d927eb334fc!2s32257%20B%C3%BCnde!5e0!3m2!1sde!2sde!4v1710000000000!5m2!1sde!2sde"
+                    width="100%"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen></iframe>
+                  <div class="rk-map-consent" data-rk-consent-gate="external">
+                    <div class="rk-map-consent-inner">
+                      <p class="rk-map-consent-title">Google Maps erst nach Einwilligung</p>
+                      <p class="rk-map-consent-text">Zum Laden der Karte werden Daten an Google übertragen. Du kannst auch den externen Link darunter nutzen.</p>
+                      <div class="rk-map-consent-actions">
+                        <button type="button" class="rk-map-consent-btn rk-map-consent-btn--primary" data-rk-consent-accept-external>Karte laden</button>
+                        <button type="button" class="rk-map-consent-btn" data-rk-consent-open>Einstellungen</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p class="rk-ag-map-note">
+                  Rocketory, Webdesign &amp; SEO aus Bünde für die Region OWL.
+                  <a class="rk-ag-map-link" data-rk-google-maps-link href="https://www.google.com/maps/search/?api=1&amp;query=Zimmerstra%C3%9Fe+16,+32257+B%C3%BCnde" target="_blank" rel="noopener noreferrer">In Google Maps öffnen</a>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -275,6 +387,7 @@
 <script src="js/includes.js"></script>
 <script src="js/nav.js"></script>
 <script src="js/readmore.js"></script>
+<script src="js/interstitial-bg.js"></script>
 <script src="js/blog-slider.js"></script>
 </body>
 </html>

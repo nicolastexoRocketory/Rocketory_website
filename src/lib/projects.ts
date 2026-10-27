@@ -1,6 +1,8 @@
 import type { Project } from '@/payload-types'
 
+import { buildBottomGalleryHtml } from './bottom-gallery'
 import { buildPostSchemaJsonLd } from './build-post-schema-jsonld'
+import { resolveArticleBodyHtml } from './content-sections'
 import { getBlogSidebarHtml, normalizeBlogArticleHtml } from './blog-content'
 import { injectContentListing } from './content-listing'
 import { buildAccessibleImageMarkup, getPostHeroMedia } from './media-a11y'
@@ -81,7 +83,7 @@ export async function getPublishedProjectBySlug(slug: string) {
       and: [{ slug: { equals: slug } }, { status: { equals: 'published' } }],
     },
     limit: 1,
-    depth: 1,
+    depth: 2,
   })
 
   return result.docs[0] ?? null
@@ -227,7 +229,14 @@ export function buildProjectPageContent(project: Project): string {
   const image = getProjectHeroImage(project)
   const heroMedia = getPostHeroMedia(project)
   const lead = project.excerpt || project.schema?.blogPosting?.description || ''
-  const bodyHtml = normalizeArticleHtml(project.legacyHtml)
+  const bodyHtml = normalizeArticleHtml(
+    resolveArticleBodyHtml({
+      contentSections: project.contentSections,
+      contentIntro: project.contentIntro,
+      legacyHtml: project.legacyHtml,
+    }),
+  )
+  const galleryHtml = buildBottomGalleryHtml(project, 'project-gallery')
   const readTime = project.readTime ? `<span class="rk-blog-read">${escapeHtml(project.readTime)}</span>` : ''
 
   const coverImage = buildAccessibleImageMarkup({
@@ -277,6 +286,8 @@ export function buildProjectPageContent(project: Project): string {
               ${bodyHtml}
             </div>
 
+            ${galleryHtml}
+
             <footer class="rk-blog-footer">
               <a class="rk-blog-back" href="/projekte">← Alle Projekte</a>
               <a href="/kontakt" class="rk-dot-cta">
@@ -299,7 +310,7 @@ export function getProjectJsonLd(project: Project) {
   return buildPostSchemaJsonLd(project.schema)[0] ?? null
 }
 
-export const PROJECT_PAGE_SCRIPTS = ['/js/scroll.js', '/js/readmore.js']
+export const PROJECT_PAGE_SCRIPTS = ['/js/scroll.js', '/js/readmore.js', '/js/blog-slider.js']
 
 export function getProjectPageData(project: Project) {
   return {

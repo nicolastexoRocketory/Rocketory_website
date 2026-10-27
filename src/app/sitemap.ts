@@ -5,21 +5,24 @@ import { SITE_URL } from '@/lib/metadata'
 import { getPublishedPostSlugs } from '@/lib/posts'
 import { getPublishedProjectSlugs } from '@/lib/projects'
 
+/**
+ * Reihenfolge + Priority: wichtige Akquise-Seiten zuerst.
+ * Hinweis: Google nutzt priority nur schwach; Discovery und interne Verlinkung zählen mehr.
+ */
 const STATIC_ROUTES = [
   { path: '', priority: 1 },
-  { path: '/agentur', priority: 0.8 },
-  { path: '/agentur/buende', priority: 0.85 },
-  { path: '/team', priority: 0.75 },
-  { path: '/standorte', priority: 0.85 },
-  { path: '/angebote', priority: 0.8 },
-  { path: '/webdesign', priority: 0.7 },
-  { path: '/seo', priority: 0.7 },
-  { path: '/wartung', priority: 0.7 },
-  { path: '/technologien', priority: 0.8 },
-  { path: '/blog', priority: 0.8 },
-  { path: '/projekte', priority: 0.8 },
-  { path: '/kontakt', priority: 0.7 },
-  { path: '/ki-check', priority: 0.75 },
+  { path: '/webdesign', priority: 0.9 },
+  { path: '/seo', priority: 0.9 },
+  { path: '/wartung', priority: 0.9 },
+  { path: '/leistungen', priority: 0.9 },
+  { path: '/kontakt', priority: 0.9 },
+  { path: '/projekte', priority: 0.85 },
+  { path: '/agentur', priority: 0.85 },
+  { path: '/agentur/buende', priority: 0.8 },
+  { path: '/standorte', priority: 0.8 },
+  { path: '/technologien', priority: 0.75 },
+  { path: '/blog', priority: 0.75 },
+  { path: '/ki-check', priority: 0.7 },
   { path: '/impressum', priority: 0.3 },
   { path: '/datenschutz', priority: 0.3 },
 ] as const
@@ -40,17 +43,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority,
     })),
-    ...blogSlugs.map((slug) => ({
-      url: `${SITE_URL}/blog/${slug}`,
-      lastModified,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    })),
     ...projectSlugs.map((slug) => ({
       url: `${SITE_URL}/projekte/${slug}`,
       lastModified,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
+    })),
+    ...blogSlugs.map((slug) => ({
+      url: `${SITE_URL}/blog/${slug}`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
     })),
   ]
 }

@@ -94,7 +94,23 @@
       var source = video.querySelector('source[src]')
       if (source) video.setAttribute('src', source.getAttribute('src'))
     }
-    video.setAttribute('preload', 'metadata')
+    /* Keep preload=none until we intentionally start playback (LCP/poster first). */
+    video.setAttribute('preload', 'auto')
+  }
+
+  function afterLcp(fn) {
+    var run = function () {
+      try {
+        fn()
+      } catch (e) {
+        /* ignore */
+      }
+    }
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(run, { timeout: 1800 })
+      return
+    }
+    window.setTimeout(run, 1200)
   }
 
   function setupHero(hero) {
@@ -108,8 +124,10 @@
       return
     }
 
-    primeVideo(video)
-    tryPlay(video)
+    afterLcp(function () {
+      primeVideo(video)
+      tryPlay(video)
+    })
   }
 
   function setupBentoVideo(cell) {
@@ -123,8 +141,10 @@
       return
     }
 
-    primeVideo(video)
-    tryPlay(video)
+    afterLcp(function () {
+      primeVideo(video)
+      tryPlay(video)
+    })
   }
 
   function boot() {

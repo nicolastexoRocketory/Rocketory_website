@@ -257,9 +257,36 @@ export interface Post {
    */
   excerpt?: string | null;
   /**
-   * Vollständiger HTML-Inhalt. KI-Prompts findest du im Tab „Prompts“.
+   * Optionaler Fließtext vor dem Inhaltsverzeichnis. HTML (p, strong, a, …) ist erlaubt.
    */
-  legacyHtml: string;
+  contentIntro?: string | null;
+  /**
+   * Jeder Abschnittstitel wird zum Punkt im Inhaltsverzeichnis und verlinkt auf den Text darunter.
+   */
+  contentSections?:
+    | {
+        title: string;
+        /**
+         * Abschnittstext. HTML (p, ul, strong, figure, …) ist erlaubt und wird unverändert ausgegeben.
+         */
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nur nötig, wenn keine Inhaltsabschnitte gesetzt sind (z. B. ältere Beiträge). Bei gesetzten Abschnitten wird dieses Feld ignoriert.
+   */
+  legacyHtml?: string | null;
+  /**
+   * Optional. Diese Bilder erscheinen am Ende des Beitrags als Slideshow.
+   */
+  bottomGallery?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   author: {
     name: string;
     jobTitle?: string | null;
@@ -402,9 +429,36 @@ export interface Project {
    */
   excerpt?: string | null;
   /**
-   * Vollständiger HTML-Inhalt. KI-Prompts findest du im Tab „Prompts“.
+   * Optionaler Fließtext vor dem Inhaltsverzeichnis. HTML (p, strong, a, …) ist erlaubt.
    */
-  legacyHtml: string;
+  contentIntro?: string | null;
+  /**
+   * Jeder Abschnittstitel wird zum Punkt im Inhaltsverzeichnis und verlinkt auf den Text darunter.
+   */
+  contentSections?:
+    | {
+        title: string;
+        /**
+         * Abschnittstext. HTML (p, ul, strong, figure, …) ist erlaubt und wird unverändert ausgegeben.
+         */
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nur nötig, wenn keine Inhaltsabschnitte gesetzt sind (z. B. ältere Beiträge). Bei gesetzten Abschnitten wird dieses Feld ignoriert.
+   */
+  legacyHtml?: string | null;
+  /**
+   * Optional. Diese Bilder erscheinen am Ende des Beitrags als Slideshow.
+   */
+  bottomGallery?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   author: {
     name: string;
     jobTitle?: string | null;
@@ -733,7 +787,22 @@ export interface PostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   excerpt?: T;
+  contentIntro?: T;
+  contentSections?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
   legacyHtml?: T;
+  bottomGallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
   author?:
     | T
     | {
@@ -813,7 +882,22 @@ export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   excerpt?: T;
+  contentIntro?: T;
+  contentSections?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
   legacyHtml?: T;
+  bottomGallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
   author?:
     | T
     | {

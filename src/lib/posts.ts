@@ -1,6 +1,8 @@
 import type { Post } from '@/payload-types'
 
+import { buildBottomGalleryHtml } from './bottom-gallery'
 import { buildPostSchemaJsonLd } from './build-post-schema-jsonld'
+import { resolveArticleBodyHtml } from './content-sections'
 import { normalizeExternalUrl } from './normalize-external-url'
 import {
   getBlogSidebarHtml,
@@ -86,7 +88,7 @@ export async function getPublishedPostBySlug(slug: string) {
       and: [{ slug: { equals: slug } }, { status: { equals: 'published' } }],
     },
     limit: 1,
-    depth: 1,
+    depth: 2,
   })
 
   return result.docs[0] ?? null
@@ -279,7 +281,14 @@ export function buildBlogPostPageContent(post: Post): string {
   const image = getPostHeroImage(post)
   const heroMedia = getPostHeroMedia(post)
   const lead = post.excerpt || post.schema?.blogPosting?.description || ''
-  const bodyHtml = normalizeArticleHtml(post.legacyHtml)
+  const bodyHtml = normalizeArticleHtml(
+    resolveArticleBodyHtml({
+      contentSections: post.contentSections,
+      contentIntro: post.contentIntro,
+      legacyHtml: post.legacyHtml,
+    }),
+  )
+  const galleryHtml = buildBottomGalleryHtml(post, 'post-gallery')
   const readTime = post.readTime ? `<span class="rk-blog-read">${escapeHtml(post.readTime)}</span>` : ''
 
   const coverImage = buildAccessibleImageMarkup({
@@ -328,6 +337,8 @@ export function buildBlogPostPageContent(post: Post): string {
               ${bodyHtml}
             </div>
 
+            ${galleryHtml}
+
             <footer class="rk-blog-footer">
               <a class="rk-blog-back" href="/blog">← Alle Beiträge</a>
               <a href="/kontakt" class="rk-dot-cta">
@@ -350,7 +361,7 @@ export function getBlogPostJsonLd(post: Post) {
   return buildPostSchemaJsonLd(post.schema)[0] ?? null
 }
 
-export const BLOG_PAGE_SCRIPTS = ['/js/scroll.js', '/js/readmore.js']
+export const BLOG_PAGE_SCRIPTS = ['/js/scroll.js', '/js/readmore.js', '/js/blog-slider.js']
 
 export function getBlogPostPageData(post: Post) {
   return {

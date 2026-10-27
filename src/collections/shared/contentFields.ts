@@ -9,6 +9,32 @@ type ContentCollectionOptions = {
   excerptDescription: string
 }
 
+const bottomGalleryField: Field = {
+  name: 'bottomGallery',
+  type: 'array',
+  label: 'Bilder unten (Slideshow)',
+  labels: { singular: 'Bild', plural: 'Bilder' },
+  admin: {
+    description:
+      'Optional. Diese Bilder erscheinen am Ende des Beitrags als Slideshow.',
+    initCollapsed: false,
+  },
+  fields: [
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      required: true,
+      label: 'Bild',
+    },
+    {
+      name: 'caption',
+      type: 'text',
+      label: 'Bildunterschrift (optional)',
+    },
+  ],
+}
+
 export function buildContentCollectionFields(options: ContentCollectionOptions): Field[] {
   return [
     {
@@ -40,16 +66,78 @@ export function buildContentCollectionFields(options: ContentCollectionOptions):
               },
             },
             {
+              name: 'contentIntro',
+              type: 'textarea',
+              label: 'Einleitung (vor dem Inhaltsverzeichnis)',
+              admin: {
+                rows: 6,
+                description:
+                  'Optionaler Fließtext vor dem Inhaltsverzeichnis. HTML (p, strong, a, …) ist erlaubt.',
+              },
+            },
+            {
+              name: 'contentSections',
+              type: 'array',
+              label: 'Inhaltsabschnitte',
+              labels: { singular: 'Abschnitt', plural: 'Abschnitte' },
+              admin: {
+                description:
+                  'Jeder Abschnittstitel wird zum Punkt im Inhaltsverzeichnis und verlinkt auf den Text darunter.',
+                initCollapsed: false,
+              },
+              fields: [
+                {
+                  name: 'title',
+                  type: 'text',
+                  required: true,
+                  label: 'Titel (Inhaltsverzeichnis)',
+                },
+                {
+                  name: 'body',
+                  type: 'textarea',
+                  required: true,
+                  label: 'Text',
+                  admin: {
+                    rows: 12,
+                    description:
+                      'Abschnittstext. HTML (p, ul, strong, figure, …) ist erlaubt und wird unverändert ausgegeben.',
+                  },
+                },
+              ],
+            },
+            {
               name: 'legacyHtml',
               type: 'code',
-              label: 'Artikeltext (HTML)',
-              required: true,
+              label: 'Artikeltext (HTML, Fallback)',
+              required: false,
+              defaultValue: '',
+              validate: (value: unknown, { siblingData }: { siblingData?: Record<string, unknown> }) => {
+                const sections = siblingData?.contentSections
+                const hasSections =
+                  Array.isArray(sections) &&
+                  sections.some(
+                    (section) =>
+                      section &&
+                      typeof section === 'object' &&
+                      typeof (section as { title?: unknown }).title === 'string' &&
+                      String((section as { title?: unknown }).title).trim() &&
+                      typeof (section as { body?: unknown }).body === 'string' &&
+                      String((section as { body?: unknown }).body).trim(),
+                  )
+                if (hasSections) return true
+                if (typeof value === 'string' && value.trim()) return true
+                return 'Bitte mindestens einen Inhaltsabschnitt anlegen oder den HTML-Fallback nutzen.'
+              },
               admin: {
                 language: 'html',
                 description:
-                  'Vollständiger HTML-Inhalt. KI-Prompts findest du im Tab „Prompts“.',
+                  'Nur nötig, wenn keine Inhaltsabschnitte gesetzt sind (z. B. ältere Beiträge). Bei gesetzten Abschnitten wird dieses Feld ignoriert.',
+                condition: (_, siblingData) =>
+                  !Array.isArray(siblingData?.contentSections) ||
+                  siblingData.contentSections.length === 0,
               },
             },
+            bottomGalleryField,
           ],
         },
         {

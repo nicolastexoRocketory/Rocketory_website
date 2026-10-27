@@ -98,6 +98,17 @@ export async function collectUsedMediaFilenames(payload: Payload): Promise<Set<s
       collectAssetSitePathsFromText(doc.legacyHtml, assetPaths)
     }
 
+    if ('contentIntro' in doc && doc.contentIntro) {
+      collectMediaFilenamesFromText(doc.contentIntro, used)
+      collectAssetSitePathsFromText(doc.contentIntro, assetPaths)
+    }
+
+    for (const section of doc.contentSections || []) {
+      if (!section?.body) continue
+      collectMediaFilenamesFromText(section.body, used)
+      collectAssetSitePathsFromText(section.body, assetPaths)
+    }
+
     const heroImage = doc.heroImage
     if (heroImage && typeof heroImage === 'object' && heroImage.filename) {
       used.add(heroImage.filename)
