@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TuS N-Lübbecke Magazin
  * Description: PDF-Magazin mit Umblätter-Animation (Desktop) bzw. Seitenwechsler (Mobile), Zoom und Archiv. Shortcode [magazin].
- * Version: 3.8
+ * Version: 3.9
  * Author: Rocketory / Nicolas Zhigalov
  * Author URI: https://rocketory.de
  * Text Domain: tusn-magazin
@@ -1063,6 +1063,13 @@ function tusn_magazin_print_styles() {
 			.tusn-magazin__page-img {
 				box-shadow: none;
 			}
+			/* Horizontal wischen = blättern; vertikal weiter scrollen. */
+			.tusn-magazin__zoom-viewport {
+				touch-action: pan-y;
+			}
+			.tusn-magazin.is-zoomed .tusn-magazin__zoom-viewport {
+				touch-action: none;
+			}
 			.tusn-magazin__controls {
 				padding-left: 8px;
 				padding-right: 8px;
@@ -1097,6 +1104,8 @@ function tusn_magazin_frontend_js() {
 		mobileDoubleTapZoom: 1.75,
 		doubleTapMs: 320,
 		doubleTapSlop: 36,
+		swipeMinDx: 48,
+		swipeRatio: 1.25,
 		batchPages: 2,
 		zoomHintMs: 2400,
 		zoomHintStorageKey: 'tusn-magazin-zoom-hint-seen',
@@ -1864,11 +1873,22 @@ function tusn_magazin_frontend_js() {
 				if ((moveX * moveX + moveY * moveY) > 100) {
 					self.tapMoved = true;
 				}
+				// Mobile: klarer Horizontal-Swipe → Scroll blockieren.
+				if (
+					!self.isPanning
+					&& self.zoom <= 1.01
+					&& isMobileViewport()
+					&& event.pointerType !== 'mouse'
+					&& Math.abs(moveX) > 12
+					&& Math.abs(moveX) > Math.abs(moveY) * CONFIG.swipeRatio
+				) {
+					event.preventDefault();
+				}
 				if (!self.isPanning) return;
 				self.panX = self.panOriginX + (event.clientX - self.panStartX);
 				self.panY = self.panOriginY + (event.clientY - self.panStartY);
 				self.applyZoom();
-			});
+			}, { passive: false });
 
 			var endPan = function (event) {
 				if (!self.isPanning) return;
@@ -1882,19 +1902,40 @@ function tusn_magazin_frontend_js() {
 			this.dom.zoomViewport.addEventListener('pointerup', function (event) {
 				endPan(event);
 
-				// Mobile: dblclick ist unzuverlässig → eigenen Doppeltipp erkennen.
-				// Nur auf der Seite/Viewer – nicht über die Navigation.
 				if (!isMobileViewport()) return;
 				if (event.pointerType === 'mouse') return;
 				if (event.target && event.target.closest && event.target.closest('.tusn-magazin__controls')) {
 					self.lastTapAt = 0;
 					return;
 				}
+
+				var swipeDx = event.clientX - self.tapStartX;
+				var swipeDy = event.clientY - self.tapStartY;
+
+				// Mobile-Swipe zum Blättern – nur ohne Zoom, nur Finger.
+				if (
+					self.reader
+					&& self.zoom <= 1.01
+					&& self.tapMoved
+					&& Math.abs(swipeDx) >= CONFIG.swipeMinDx
+					&& Math.abs(swipeDx) > Math.abs(swipeDy) * CONFIG.swipeRatio
+				) {
+					self.lastTapAt = 0;
+					if (swipeDx < 0) {
+						self.reader.next();
+					} else {
+						self.reader.prev();
+					}
+					self.updateControls();
+					return;
+				}
+
 				if (self.tapMoved) {
 					self.lastTapAt = 0;
 					return;
 				}
 
+				// Mobile: dblclick ist unzuverlässig → eigenen Doppeltipp erkennen.
 				var now = Date.now();
 				var dx = Math.abs(event.clientX - self.lastTapX);
 				var dy = Math.abs(event.clientY - self.lastTapY);
