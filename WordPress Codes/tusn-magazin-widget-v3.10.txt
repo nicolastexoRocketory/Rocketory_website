@@ -1305,19 +1305,34 @@ function tusn_magazin_frontend_js() {
 		this.images = payload.images.slice();
 		this.totalPages = payload.total || this.images.length;
 		this.index = 0;
+		this.stage = null;
 		this.img = null;
+		this.incoming = null;
 		this.animating = false;
+		this.pendingIndex = null;
 		this.slideTimer = null;
 	}
 
 	MobileReader.prototype.mount = function () {
 		this.viewer.innerHTML = '';
 		this.viewer.removeAttribute('aria-hidden');
+		this.stage = document.createElement('div');
+		this.stage.className = 'tusn-magazin__slide-stage';
+
 		this.img = document.createElement('img');
-		this.img.className = 'tusn-magazin__page-img';
+		this.img.className = 'tusn-magazin__page-img is-active is-center';
 		this.img.alt = '';
 		this.img.src = this.images[0] || '';
-		this.viewer.appendChild(this.img);
+
+		this.incoming = document.createElement('img');
+		this.incoming.className = 'tusn-magazin__page-img is-incoming is-center is-no-anim';
+		this.incoming.alt = '';
+		this.incoming.setAttribute('aria-hidden', 'true');
+		this.incoming.style.visibility = 'hidden';
+
+		this.stage.appendChild(this.img);
+		this.stage.appendChild(this.incoming);
+		this.viewer.appendChild(this.stage);
 	};
 
 	MobileReader.prototype.destroy = function () {
@@ -1327,8 +1342,11 @@ function tusn_magazin_frontend_js() {
 		}
 		this.viewer.innerHTML = '';
 		this.viewer.setAttribute('aria-hidden', 'true');
+		this.stage = null;
 		this.img = null;
+		this.incoming = null;
 		this.animating = false;
+		this.pendingIndex = null;
 	};
 
 	MobileReader.prototype.getIndex = function () {
@@ -1343,15 +1361,12 @@ function tusn_magazin_frontend_js() {
 		return this.images.length;
 	};
 
-	MobileReader.prototype.clearSlideClasses = function () {
-		if (!this.img) return;
-		this.img.classList.remove(
-			'is-slide-out-left',
-			'is-slide-out-right',
-			'is-slide-prep-left',
-			'is-slide-prep-right',
-			'is-slide-in'
-		);
+	MobileReader.prototype.resetLayers = function () {
+		if (!this.img || !this.incoming) return;
+		this.img.className = 'tusn-magazin__page-img is-active is-center';
+		this.incoming.className = 'tusn-magazin__page-img is-incoming is-center is-no-anim';
+		this.incoming.style.visibility = 'hidden';
+		this.incoming.removeAttribute('src');
 	};
 
 	MobileReader.prototype.setImages = function (images, total) {
@@ -1362,7 +1377,6 @@ function tusn_magazin_frontend_js() {
 		}
 		this.index = clamp(this.index, 0, Math.max(0, this.images.length - 1));
 		var nextSrc = this.images[this.index] || '';
-		// Sichtbare Seite nicht neu setzen → kein Flackern beim Nachladen.
 		if (this.img && nextSrc && nextSrc !== visibleSrc && !this.animating) {
 			this.img.src = nextSrc;
 		}
@@ -1370,7 +1384,10 @@ function tusn_magazin_frontend_js() {
 
 	MobileReader.prototype.goTo = function (nextIndex, animate) {
 		nextIndex = clamp(nextIndex, 0, this.images.length - 1);
-		if (!this.img || !this.images[nextIndex] || nextIndex === this.index) {
+		if (!this.img || !this.incoming || !this.images[nextIndex]) {
+			return;
+		}
+		if (nextIndex === this.index && !this.animating) {
 			return;
 		}
 
@@ -1379,74 +1396,80 @@ function tusn_magazin_frontend_js() {
 			reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		} catch (e) {}
 
-		if (!animate || reducedMotion || this.animating) {
-			if (this.animating && animate) {
-				return;
+		if (!animate || reducedMotion) {
+			if (this.slideTimer) {
+				clearTimeout(this.slideTimer);
+				this.slideTimer = null;
 			}
-			this.clearSlideClasses();
+			this.animating = false;
+			this.pendingIndex = null;
 			this.index = nextIndex;
 			this.img.src = this.images[nextIndex];
+			this.resetLayers();
 			return;
 		}
 
+		// Während Animation: Ziel merken und am Ende in einem Rutsch nachziehen.
+		if (this.animating) {
+			this.pendingIndex = nextIndex;
+			return;
+		}
+
+		this.animateTo(nextIndex);
+	};
+
+	MobileReader.prototype.animateTo = function (nextIndex) {
 		var self = this;
-		var img = this.img;
 		var direction = nextIndex > this.index ? 1 : -1;
-		var outClass = direction > 0 ? 'is-slide-out-left' : 'is-slide-out-right';
-		var prepClass = direction > 0 ? 'is-slide-prep-right' : 'is-slide-prep-left';
-		var doneOut = false;
+		var leaveClass = direction > 0 ? 'is-leave-left' : 'is-leave-right';
+		var enterClass = direction > 0 ? 'is-enter-right' : 'is-enter-left';
+		var finished = false;
 
 		this.animating = true;
-		this.clearSlideClasses();
-		img.classList.add(outClass);
+		this.pendingIndex = null;
 
-		var finishIn = function () {
-			if (!self.animating) return;
-			img.removeEventListener('transitionend', onInEnd);
-			self.clearSlideClasses();
-			self.animating = false;
+		this.incoming.className = 'tusn-magazin__page-img is-incoming is-no-anim ' + enterClass;
+		this.incoming.src = this.images[nextIndex];
+		this.incoming.style.visibility = 'visible';
+		void this.incoming.offsetWidth;
+
+		requestAnimationFrame(function () {
+			self.img.classList.remove('is-center');
+			self.img.classList.add(leaveClass);
+			self.incoming.classList.remove('is-no-anim', enterClass);
+			self.incoming.classList.add('is-center');
+		});
+
+		var settle = function () {
+			if (finished) return;
+			finished = true;
 			if (self.slideTimer) {
 				clearTimeout(self.slideTimer);
 				self.slideTimer = null;
 			}
-		};
-
-		var onInEnd = function (event) {
-			if (event && event.propertyName && event.propertyName !== 'transform') {
-				return;
-			}
-			finishIn();
-		};
-
-		var startIn = function () {
-			if (doneOut) return;
-			doneOut = true;
-			img.removeEventListener('transitionend', onOutEnd);
+			self.incoming.removeEventListener('transitionend', onEnd);
 			self.index = nextIndex;
-			img.src = self.images[nextIndex];
-			self.clearSlideClasses();
-			img.classList.add(prepClass);
-			void img.offsetWidth;
-			requestAnimationFrame(function () {
-				img.classList.remove(prepClass);
-				img.classList.add('is-slide-in');
-				img.addEventListener('transitionend', onInEnd);
-				if (self.slideTimer) {
-					clearTimeout(self.slideTimer);
-				}
-				self.slideTimer = setTimeout(finishIn, CONFIG.slideMs + 80);
-			});
+			self.img.src = self.images[nextIndex];
+			self.resetLayers();
+			self.animating = false;
+
+			if (self.pendingIndex !== null && self.pendingIndex !== self.index) {
+				var queued = self.pendingIndex;
+				self.pendingIndex = null;
+				self.animateTo(queued);
+			}
 		};
 
-		var onOutEnd = function (event) {
-			if (event && event.propertyName && event.propertyName !== 'transform') {
+		var onEnd = function (event) {
+			if (event && event.target !== self.incoming) return;
+			if (event && event.propertyName && event.propertyName !== 'transform' && event.propertyName !== 'opacity') {
 				return;
 			}
-			startIn();
+			settle();
 		};
 
-		img.addEventListener('transitionend', onOutEnd);
-		this.slideTimer = setTimeout(startIn, CONFIG.slideMs + 40);
+		this.incoming.addEventListener('transitionend', onEnd);
+		this.slideTimer = setTimeout(settle, CONFIG.slideMs + 40);
 	};
 
 	MobileReader.prototype.prev = function () {
