@@ -9,7 +9,7 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT_DIR/scripts/lib/mittwald-ssh.sh"
 
 REMOTE_PATH="${MITTWALD_REMOTE_PATH:-/home/p-jscfah/html/rocketory}"
-GIT_REMOTE="${MITTWALD_GIT_REMOTE:-git@github.com:nicolastexo/Rocketory-Landingpage.git}"
+GIT_REMOTE="${MITTWALD_GIT_REMOTE:-git@github.com:nicolastexoRocketory/Rocketory_website.git}"
 GIT_BRANCH="${MITTWALD_GIT_BRANCH:-main}"
 
 trap mittwald_cleanup_ssh_wrapper EXIT
@@ -44,7 +44,7 @@ export GIT_SSH_COMMAND="ssh -i \$GITHUB_DEPLOY_KEY -o IdentitiesOnly=yes -o Stri
 echo ""
 echo "=== ADD THIS DEPLOY KEY ON GITHUB (read-only) ==="
 cat "\${GITHUB_DEPLOY_KEY}.pub"
-echo "=== GitHub → Rocketory-Landingpage → Settings → Deploy keys ==="
+echo "=== GitHub → nicolastexoRocketory/Rocketory_website → Settings → Deploy keys ==="
 echo ""
 
 git fetch origin "\$GIT_BRANCH"

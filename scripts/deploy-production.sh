@@ -13,7 +13,7 @@ source "$ROOT_DIR/scripts/lib/mittwald-ssh.sh"
 
 REMOTE_PATH="${MITTWALD_REMOTE_PATH:-/home/p-jscfah/html/rocketory}"
 SITE_URL="${NEXT_PUBLIC_SITE_URL:-https://rocketory.de}"
-GIT_REMOTE="${MITTWALD_GIT_REMOTE:-git@github.com:nicolastexo/Rocketory-Landingpage.git}"
+GIT_REMOTE="${MITTWALD_GIT_REMOTE:-git@github.com:nicolastexoRocketory/Rocketory_website.git}"
 GIT_BRANCH="${MITTWALD_GIT_BRANCH:-main}"
 
 trap mittwald_cleanup_ssh_wrapper EXIT
