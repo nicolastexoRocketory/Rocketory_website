@@ -153,7 +153,7 @@ export function buildGlobalSchemaNodes(): SchemaNode[] {
         '@type': 'ImageObject',
         url: `${SITE_URL}/assets/images/logo_1.png`,
       },
-      image: `${SITE_URL}/assets/images/team-rocketory-standing.webp`,
+      image: `${SITE_URL}/assets/images/team-rocketory.webp`,
       email: ORG_EMAIL,
       telephone: ORG_PHONE,
       address: LEGAL_ADDRESS,
@@ -169,7 +169,7 @@ export function buildGlobalSchemaNodes(): SchemaNode[] {
       url: SITE_URL,
       image: [
         `${SITE_URL}/assets/images/buende/buende-a30.webp`,
-        `${SITE_URL}/assets/images/team-rocketory-standing.webp`,
+        `${SITE_URL}/assets/images/team-rocketory.webp`,
       ],
       email: ORG_EMAIL,
       telephone: ORG_PHONE,
