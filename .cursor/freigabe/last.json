@@ -1,0 +1,1615 @@
+{
+  "savedAt": "2026-10-27T09:51:00.782Z",
+  "verdict": "allow",
+  "headline": "Risikoarm — keine Freigabe nötig",
+  "command": "python3 <<'PY'\nfrom pathlib import Path\npath = Path('/Users/nicolastexo/Documents/Rocketory Landingpage/legacy/index.html')\ntext = path.read_text()\nstart_blog = text.index('    <section class=\"rk-section rk-featured rk-featured-focus rk-tone-orange\" id=\"beitrag-im-fokus\">')\nstart_team = text.index('    <section class=\"rk-page-hero rk-page-hero--dark rk-page-hero--split rk-page-hero--embed\" id=\"ueber-uns\"')\nstart_next = text.index('    <section class=\"rk-section rk-ag-posts rk-tone-c\" id=\"projekte-preview\"')\nblog = text[start_blog:start_team]\nteam = text[start_team:start_next]\nnew = text[:start_blog] + team + blog + text[start_next:]\npath.write_text(new)\nprint('swapped', len(blog), len(team))\n# verify order\nidx_b = new.index('id=\"beitrag-im-fokus\"')\nidx_u = new.index('id=\"ueber-uns\"')\nprint('ueber before blog', idx_u < idx_b)\nPY\n",
+  "gates": [],
+  "notes": [
+    {
+      "id": "n17",
+      "tokenIds": [
+        "t0"
+      ],
+      "start": 0,
+      "end": 7,
+      "line": 1,
+      "code": "python3",
+      "title": "Python",
+      "summary": "Python wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Python.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n18",
+      "tokenIds": [
+        "t2"
+      ],
+      "start": 8,
+      "end": 10,
+      "line": 1,
+      "code": "<<",
+      "title": "Umleitung",
+      "summary": "Liest Eingabe aus einer Datei.",
+      "detail": "Kann Dateien überschreiben. Zusammen mit sudo oder Pfaden außerhalb des Projekts prüfenswert.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n19",
+      "tokenIds": [
+        "t3"
+      ],
+      "start": 10,
+      "end": 14,
+      "line": 1,
+      "code": "'PY'",
+      "title": "Argument",
+      "summary": "Übergibt „PY“ an python3.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t4",
+      "tokenIds": [
+        "t4"
+      ],
+      "start": 14,
+      "end": 15,
+      "line": 1,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n20",
+      "tokenIds": [
+        "t5"
+      ],
+      "start": 15,
+      "end": 19,
+      "line": 2,
+      "code": "from",
+      "title": "Befehl „from“",
+      "summary": "Befehl „from“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „from“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n21",
+      "tokenIds": [
+        "t7"
+      ],
+      "start": 20,
+      "end": 27,
+      "line": 2,
+      "code": "pathlib",
+      "title": "Argument",
+      "summary": "Übergibt „pathlib“ an from.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n22",
+      "tokenIds": [
+        "t9"
+      ],
+      "start": 28,
+      "end": 34,
+      "line": 2,
+      "code": "import",
+      "title": "Argument",
+      "summary": "Übergibt „import“ an from.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n23",
+      "tokenIds": [
+        "t11"
+      ],
+      "start": 35,
+      "end": 39,
+      "line": 2,
+      "code": "Path",
+      "title": "Argument",
+      "summary": "Übergibt „Path“ an from.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t12",
+      "tokenIds": [
+        "t12"
+      ],
+      "start": 39,
+      "end": 40,
+      "line": 2,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n24",
+      "tokenIds": [
+        "t13"
+      ],
+      "start": 40,
+      "end": 44,
+      "line": 3,
+      "code": "path",
+      "title": "Befehl „path“",
+      "summary": "Befehl „path“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „path“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n25",
+      "tokenIds": [
+        "t15"
+      ],
+      "start": 45,
+      "end": 46,
+      "line": 3,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an path.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n26",
+      "tokenIds": [
+        "t17"
+      ],
+      "start": 47,
+      "end": 51,
+      "line": 3,
+      "code": "Path",
+      "title": "Argument",
+      "summary": "Übergibt „Path“ an path.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n27",
+      "tokenIds": [
+        "t18"
+      ],
+      "start": 51,
+      "end": 52,
+      "line": 3,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n28",
+      "tokenIds": [
+        "t19"
+      ],
+      "start": 52,
+      "end": 122,
+      "line": 3,
+      "code": "'/Users/nicolastexo/Documents/Rocketory Landingpage/legacy/index.html'",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf /Users/nicolastexo/Documents/Rocketory Landingpage/legacy/index.html im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n29",
+      "tokenIds": [
+        "t20"
+      ],
+      "start": 122,
+      "end": 123,
+      "line": 3,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t21",
+      "tokenIds": [
+        "t21"
+      ],
+      "start": 123,
+      "end": 124,
+      "line": 3,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n30",
+      "tokenIds": [
+        "t22"
+      ],
+      "start": 124,
+      "end": 128,
+      "line": 4,
+      "code": "text",
+      "title": "Befehl „text“",
+      "summary": "Befehl „text“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „text“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n31",
+      "tokenIds": [
+        "t24"
+      ],
+      "start": 129,
+      "end": 130,
+      "line": 4,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an text.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n32",
+      "tokenIds": [
+        "t26"
+      ],
+      "start": 131,
+      "end": 145,
+      "line": 4,
+      "code": "path.read_text",
+      "title": "Argument",
+      "summary": "Übergibt „path.read_text“ an text.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n33",
+      "tokenIds": [
+        "t27"
+      ],
+      "start": 145,
+      "end": 146,
+      "line": 4,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n34",
+      "tokenIds": [
+        "t28"
+      ],
+      "start": 146,
+      "end": 147,
+      "line": 4,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t29",
+      "tokenIds": [
+        "t29"
+      ],
+      "start": 147,
+      "end": 148,
+      "line": 4,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n35",
+      "tokenIds": [
+        "t30"
+      ],
+      "start": 148,
+      "end": 158,
+      "line": 5,
+      "code": "start_blog",
+      "title": "Befehl „start_blog“",
+      "summary": "Befehl „start_blog“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „start_blog“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n36",
+      "tokenIds": [
+        "t32"
+      ],
+      "start": 159,
+      "end": 160,
+      "line": 5,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an start_blog.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n37",
+      "tokenIds": [
+        "t34"
+      ],
+      "start": 161,
+      "end": 171,
+      "line": 5,
+      "code": "text.index",
+      "title": "Argument",
+      "summary": "Übergibt „text.index“ an start_blog.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n38",
+      "tokenIds": [
+        "t35"
+      ],
+      "start": 171,
+      "end": 172,
+      "line": 5,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n39",
+      "tokenIds": [
+        "t36"
+      ],
+      "start": 172,
+      "end": 273,
+      "line": 5,
+      "code": "'    <section class=\"rk-section rk-featured rk-featured-focus rk-tone-orange\" id=\"beitrag-im-fokus\">'",
+      "title": "Argument",
+      "summary": "Übergibt „    <section class=\"rk-section rk-featured rk-featured-focus rk-tone-orange\" id=\"beitrag-im-fokus\">“ an start_blog.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n40",
+      "tokenIds": [
+        "t37"
+      ],
+      "start": 273,
+      "end": 274,
+      "line": 5,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t38",
+      "tokenIds": [
+        "t38"
+      ],
+      "start": 274,
+      "end": 275,
+      "line": 5,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n41",
+      "tokenIds": [
+        "t39"
+      ],
+      "start": 275,
+      "end": 285,
+      "line": 6,
+      "code": "start_team",
+      "title": "Befehl „start_team“",
+      "summary": "Befehl „start_team“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „start_team“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n42",
+      "tokenIds": [
+        "t41"
+      ],
+      "start": 286,
+      "end": 287,
+      "line": 6,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an start_team.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n43",
+      "tokenIds": [
+        "t43"
+      ],
+      "start": 288,
+      "end": 298,
+      "line": 6,
+      "code": "text.index",
+      "title": "Argument",
+      "summary": "Übergibt „text.index“ an start_team.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n44",
+      "tokenIds": [
+        "t44"
+      ],
+      "start": 298,
+      "end": 299,
+      "line": 6,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n45",
+      "tokenIds": [
+        "t45"
+      ],
+      "start": 299,
+      "end": 408,
+      "line": 6,
+      "code": "'    <section class=\"rk-page-hero rk-page-hero--dark rk-page-hero--split rk-page-hero--embed\" id=\"ueber-uns\"'",
+      "title": "Argument",
+      "summary": "Übergibt „    <section class=\"rk-page-hero rk-page-hero--dark rk-page-hero--split rk-page-hero--embed\" id=\"ueber-uns\"“ an start_team.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n46",
+      "tokenIds": [
+        "t46"
+      ],
+      "start": 408,
+      "end": 409,
+      "line": 6,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t47",
+      "tokenIds": [
+        "t47"
+      ],
+      "start": 409,
+      "end": 410,
+      "line": 6,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n47",
+      "tokenIds": [
+        "t48"
+      ],
+      "start": 410,
+      "end": 420,
+      "line": 7,
+      "code": "start_next",
+      "title": "Befehl „start_next“",
+      "summary": "Befehl „start_next“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „start_next“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n48",
+      "tokenIds": [
+        "t50"
+      ],
+      "start": 421,
+      "end": 422,
+      "line": 7,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an start_next.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n49",
+      "tokenIds": [
+        "t52"
+      ],
+      "start": 423,
+      "end": 433,
+      "line": 7,
+      "code": "text.index",
+      "title": "Argument",
+      "summary": "Übergibt „text.index“ an start_next.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n50",
+      "tokenIds": [
+        "t53"
+      ],
+      "start": 433,
+      "end": 434,
+      "line": 7,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n51",
+      "tokenIds": [
+        "t54"
+      ],
+      "start": 434,
+      "end": 511,
+      "line": 7,
+      "code": "'    <section class=\"rk-section rk-ag-posts rk-tone-c\" id=\"projekte-preview\"'",
+      "title": "Argument",
+      "summary": "Übergibt „    <section class=\"rk-section rk-ag-posts rk-tone-c\" id=\"projekte-preview\"“ an start_next.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n52",
+      "tokenIds": [
+        "t55"
+      ],
+      "start": 511,
+      "end": 512,
+      "line": 7,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t56",
+      "tokenIds": [
+        "t56"
+      ],
+      "start": 512,
+      "end": 513,
+      "line": 7,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n53",
+      "tokenIds": [
+        "t57"
+      ],
+      "start": 513,
+      "end": 517,
+      "line": 8,
+      "code": "blog",
+      "title": "Befehl „blog“",
+      "summary": "Befehl „blog“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „blog“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n54",
+      "tokenIds": [
+        "t59"
+      ],
+      "start": 518,
+      "end": 519,
+      "line": 8,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an blog.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n55",
+      "tokenIds": [
+        "t61"
+      ],
+      "start": 520,
+      "end": 547,
+      "line": 8,
+      "code": "text[start_blog:start_team]",
+      "title": "Argument",
+      "summary": "Übergibt „text[start_blog:start_team]“ an blog.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t62",
+      "tokenIds": [
+        "t62"
+      ],
+      "start": 547,
+      "end": 548,
+      "line": 8,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n56",
+      "tokenIds": [
+        "t63"
+      ],
+      "start": 548,
+      "end": 552,
+      "line": 9,
+      "code": "team",
+      "title": "Befehl „team“",
+      "summary": "Befehl „team“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „team“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n57",
+      "tokenIds": [
+        "t65"
+      ],
+      "start": 553,
+      "end": 554,
+      "line": 9,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an team.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n58",
+      "tokenIds": [
+        "t67"
+      ],
+      "start": 555,
+      "end": 582,
+      "line": 9,
+      "code": "text[start_team:start_next]",
+      "title": "Argument",
+      "summary": "Übergibt „text[start_team:start_next]“ an team.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t68",
+      "tokenIds": [
+        "t68"
+      ],
+      "start": 582,
+      "end": 583,
+      "line": 9,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n59",
+      "tokenIds": [
+        "t69"
+      ],
+      "start": 583,
+      "end": 586,
+      "line": 10,
+      "code": "new",
+      "title": "Befehl „new“",
+      "summary": "Befehl „new“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „new“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n60",
+      "tokenIds": [
+        "t71"
+      ],
+      "start": 587,
+      "end": 588,
+      "line": 10,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an new.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n61",
+      "tokenIds": [
+        "t73"
+      ],
+      "start": 589,
+      "end": 606,
+      "line": 10,
+      "code": "text[:start_blog]",
+      "title": "Argument",
+      "summary": "Übergibt „text[:start_blog]“ an new.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n62",
+      "tokenIds": [
+        "t75"
+      ],
+      "start": 607,
+      "end": 608,
+      "line": 10,
+      "code": "+",
+      "title": "Argument",
+      "summary": "Übergibt „+“ an new.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n63",
+      "tokenIds": [
+        "t77"
+      ],
+      "start": 609,
+      "end": 613,
+      "line": 10,
+      "code": "team",
+      "title": "Argument",
+      "summary": "Übergibt „team“ an new.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n64",
+      "tokenIds": [
+        "t79"
+      ],
+      "start": 614,
+      "end": 615,
+      "line": 10,
+      "code": "+",
+      "title": "Argument",
+      "summary": "Übergibt „+“ an new.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n65",
+      "tokenIds": [
+        "t81"
+      ],
+      "start": 616,
+      "end": 620,
+      "line": 10,
+      "code": "blog",
+      "title": "Argument",
+      "summary": "Übergibt „blog“ an new.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n66",
+      "tokenIds": [
+        "t83"
+      ],
+      "start": 621,
+      "end": 622,
+      "line": 10,
+      "code": "+",
+      "title": "Argument",
+      "summary": "Übergibt „+“ an new.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n67",
+      "tokenIds": [
+        "t85"
+      ],
+      "start": 623,
+      "end": 640,
+      "line": 10,
+      "code": "text[start_next:]",
+      "title": "Argument",
+      "summary": "Übergibt „text[start_next:]“ an new.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t86",
+      "tokenIds": [
+        "t86"
+      ],
+      "start": 640,
+      "end": 641,
+      "line": 10,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n68",
+      "tokenIds": [
+        "t87"
+      ],
+      "start": 641,
+      "end": 656,
+      "line": 11,
+      "code": "path.write_text",
+      "title": "Befehl „path.write_text“",
+      "summary": "Befehl „path.write_text“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „path.write_text“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n69",
+      "tokenIds": [
+        "t88"
+      ],
+      "start": 656,
+      "end": 657,
+      "line": 11,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n70",
+      "tokenIds": [
+        "t89"
+      ],
+      "start": 657,
+      "end": 660,
+      "line": 11,
+      "code": "new",
+      "title": "Argument",
+      "summary": "Übergibt „new“ an path.write_text.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n71",
+      "tokenIds": [
+        "t90"
+      ],
+      "start": 660,
+      "end": 661,
+      "line": 11,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t91",
+      "tokenIds": [
+        "t91"
+      ],
+      "start": 661,
+      "end": 662,
+      "line": 11,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n72",
+      "tokenIds": [
+        "t92"
+      ],
+      "start": 662,
+      "end": 667,
+      "line": 12,
+      "code": "print",
+      "title": "Befehl „print“",
+      "summary": "Befehl „print“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „print“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n73",
+      "tokenIds": [
+        "t93"
+      ],
+      "start": 667,
+      "end": 668,
+      "line": 12,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n74",
+      "tokenIds": [
+        "t94"
+      ],
+      "start": 668,
+      "end": 677,
+      "line": 12,
+      "code": "'swapped'",
+      "title": "Argument",
+      "summary": "Übergibt „swapped“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n75",
+      "tokenIds": [
+        "t95"
+      ],
+      "start": 677,
+      "end": 678,
+      "line": 12,
+      "code": ",",
+      "title": "Argument",
+      "summary": "Übergibt „,“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n76",
+      "tokenIds": [
+        "t97"
+      ],
+      "start": 679,
+      "end": 682,
+      "line": 12,
+      "code": "len",
+      "title": "Argument",
+      "summary": "Übergibt „len“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n77",
+      "tokenIds": [
+        "t98"
+      ],
+      "start": 682,
+      "end": 683,
+      "line": 12,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n78",
+      "tokenIds": [
+        "t99"
+      ],
+      "start": 683,
+      "end": 687,
+      "line": 12,
+      "code": "blog",
+      "title": "Argument",
+      "summary": "Übergibt „blog“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n79",
+      "tokenIds": [
+        "t100"
+      ],
+      "start": 687,
+      "end": 688,
+      "line": 12,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n80",
+      "tokenIds": [
+        "t101"
+      ],
+      "start": 688,
+      "end": 689,
+      "line": 12,
+      "code": ",",
+      "title": "Argument",
+      "summary": "Übergibt „,“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n81",
+      "tokenIds": [
+        "t103"
+      ],
+      "start": 690,
+      "end": 693,
+      "line": 12,
+      "code": "len",
+      "title": "Argument",
+      "summary": "Übergibt „len“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n82",
+      "tokenIds": [
+        "t104"
+      ],
+      "start": 693,
+      "end": 694,
+      "line": 12,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n83",
+      "tokenIds": [
+        "t105"
+      ],
+      "start": 694,
+      "end": 698,
+      "line": 12,
+      "code": "team",
+      "title": "Argument",
+      "summary": "Übergibt „team“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n84",
+      "tokenIds": [
+        "t106"
+      ],
+      "start": 698,
+      "end": 699,
+      "line": 12,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n85",
+      "tokenIds": [
+        "t107"
+      ],
+      "start": 699,
+      "end": 700,
+      "line": 12,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t108",
+      "tokenIds": [
+        "t108"
+      ],
+      "start": 700,
+      "end": 701,
+      "line": 12,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t110",
+      "tokenIds": [
+        "t110"
+      ],
+      "start": 715,
+      "end": 716,
+      "line": 13,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n86",
+      "tokenIds": [
+        "t111"
+      ],
+      "start": 716,
+      "end": 721,
+      "line": 14,
+      "code": "idx_b",
+      "title": "Befehl „idx_b“",
+      "summary": "Befehl „idx_b“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „idx_b“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n87",
+      "tokenIds": [
+        "t113"
+      ],
+      "start": 722,
+      "end": 723,
+      "line": 14,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an idx_b.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n88",
+      "tokenIds": [
+        "t115"
+      ],
+      "start": 724,
+      "end": 733,
+      "line": 14,
+      "code": "new.index",
+      "title": "Argument",
+      "summary": "Übergibt „new.index“ an idx_b.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n89",
+      "tokenIds": [
+        "t116"
+      ],
+      "start": 733,
+      "end": 734,
+      "line": 14,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n90",
+      "tokenIds": [
+        "t117"
+      ],
+      "start": 734,
+      "end": 757,
+      "line": 14,
+      "code": "'id=\"beitrag-im-fokus\"'",
+      "title": "Argument",
+      "summary": "Übergibt „id=\"beitrag-im-fokus\"“ an idx_b.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n91",
+      "tokenIds": [
+        "t118"
+      ],
+      "start": 757,
+      "end": 758,
+      "line": 14,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t119",
+      "tokenIds": [
+        "t119"
+      ],
+      "start": 758,
+      "end": 759,
+      "line": 14,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n92",
+      "tokenIds": [
+        "t120"
+      ],
+      "start": 759,
+      "end": 764,
+      "line": 15,
+      "code": "idx_u",
+      "title": "Befehl „idx_u“",
+      "summary": "Befehl „idx_u“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „idx_u“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n93",
+      "tokenIds": [
+        "t122"
+      ],
+      "start": 765,
+      "end": 766,
+      "line": 15,
+      "code": "=",
+      "title": "Argument",
+      "summary": "Übergibt „=“ an idx_u.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n94",
+      "tokenIds": [
+        "t124"
+      ],
+      "start": 767,
+      "end": 776,
+      "line": 15,
+      "code": "new.index",
+      "title": "Argument",
+      "summary": "Übergibt „new.index“ an idx_u.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n95",
+      "tokenIds": [
+        "t125"
+      ],
+      "start": 776,
+      "end": 777,
+      "line": 15,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n96",
+      "tokenIds": [
+        "t126"
+      ],
+      "start": 777,
+      "end": 793,
+      "line": 15,
+      "code": "'id=\"ueber-uns\"'",
+      "title": "Argument",
+      "summary": "Übergibt „id=\"ueber-uns\"“ an idx_u.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n97",
+      "tokenIds": [
+        "t127"
+      ],
+      "start": 793,
+      "end": 794,
+      "line": 15,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t128",
+      "tokenIds": [
+        "t128"
+      ],
+      "start": 794,
+      "end": 795,
+      "line": 15,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n98",
+      "tokenIds": [
+        "t129"
+      ],
+      "start": 795,
+      "end": 800,
+      "line": 16,
+      "code": "print",
+      "title": "Befehl „print“",
+      "summary": "Befehl „print“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „print“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n99",
+      "tokenIds": [
+        "t130"
+      ],
+      "start": 800,
+      "end": 801,
+      "line": 16,
+      "code": "(",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n100",
+      "tokenIds": [
+        "t131"
+      ],
+      "start": 801,
+      "end": 820,
+      "line": 16,
+      "code": "'ueber before blog'",
+      "title": "Argument",
+      "summary": "Übergibt „ueber before blog“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n101",
+      "tokenIds": [
+        "t132"
+      ],
+      "start": 820,
+      "end": 821,
+      "line": 16,
+      "code": ",",
+      "title": "Argument",
+      "summary": "Übergibt „,“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n102",
+      "tokenIds": [
+        "t134"
+      ],
+      "start": 822,
+      "end": 827,
+      "line": 16,
+      "code": "idx_u",
+      "title": "Argument",
+      "summary": "Übergibt „idx_u“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n103",
+      "tokenIds": [
+        "t136"
+      ],
+      "start": 828,
+      "end": 829,
+      "line": 16,
+      "code": "<",
+      "title": "Umleitung",
+      "summary": "Liest Eingabe aus einer Datei.",
+      "detail": "Kann Dateien überschreiben. Zusammen mit sudo oder Pfaden außerhalb des Projekts prüfenswert.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n104",
+      "tokenIds": [
+        "t138"
+      ],
+      "start": 830,
+      "end": 835,
+      "line": 16,
+      "code": "idx_b",
+      "title": "Argument",
+      "summary": "Übergibt „idx_b“ an print.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n105",
+      "tokenIds": [
+        "t139"
+      ],
+      "start": 835,
+      "end": 836,
+      "line": 16,
+      "code": ")",
+      "title": "Operator",
+      "summary": "Verbindet oder steuert Befehle.",
+      "detail": "Struktur des Shell-Befehls, selbst keine Aktion auf Daten.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t140",
+      "tokenIds": [
+        "t140"
+      ],
+      "start": 836,
+      "end": 837,
+      "line": 16,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n106",
+      "tokenIds": [
+        "t141"
+      ],
+      "start": 837,
+      "end": 839,
+      "line": 17,
+      "code": "PY",
+      "title": "Befehl „py“",
+      "summary": "Befehl „py“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „py“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "sep-t142",
+      "tokenIds": [
+        "t142"
+      ],
+      "start": 839,
+      "end": 840,
+      "line": 17,
+      "code": "\n",
+      "title": "Neue Zeile",
+      "summary": "Nächster Befehl in einem mehrzeiligen Script.",
+      "detail": "Jede Zeile ist ein eigener Schritt. Alle Zeilen gemeinsam prüfen.",
+      "category": "structure",
+      "risk": "none"
+    }
+  ],
+  "userMessage": "Ohne Rückfrage\n\npython3 <<'PY'\nfrom pathlib import Path\npath = Path('/Users/nicolastexo/Documents/Rocketory Landingpage/legacy/index.html')\ntext = path.read_text()\nstart_blog = text.index('    <section class=\"rk-section rk-featured rk-featured-focus rk-tone-orange\" id=\"beitrag-im-fokus\">')\nstart_team = text.index('    <section class=\"rk-page-hero rk-page-hero--dark rk-page-hero--split rk-page-hero--embed\" id=\"ueber-uns\"')\nstart_next = text.index('    <section class=\"rk-section rk-ag-posts rk-tone-c\" id=\"projekte-preview\"')\nblog = text[start_blog:start_team]\nteam = text[start_team:start_next]\nnew = text[:start_blog] + team + blog + text[start_next:]\npath.write_text(new)\nprint('swapped', len(blog), len(team))\n# verify order\nidx_b = new.index('id=\"beitrag-im-fokus\"')\nidx_u = new.index('id=\"ueber-uns\"')\nprint('ueber before blog', idx_u < idx_b)\nPY\n\nWas die Teile tun:\n  1. << — Liest Eingabe aus einer Datei. [Niedrig]\n  2. 'PY' — Übergibt „PY“ an python3. [Niedrig]\n  3. pathlib — Übergibt „pathlib“ an from. [Niedrig]\n  4. import — Übergibt „import“ an from. [Niedrig]\n  5. Path — Übergibt „Path“ an from. [Niedrig]\n  6. = — Übergibt „=“ an path. [Niedrig]\n  7. Path — Übergibt „Path“ an path. [Niedrig]\n  8. '/Users/nicolastexo/Documents/Rocketory Landingpage/legacy/index.html' — Bezieht sich auf /Users/nicolastexo/Documents/Rocketory Landingpage/legacy/index.html im Dateisystem. [Niedrig]\n  9. = — Übergibt „=“ an text. [Niedrig]\n  10. path.read_text — Übergibt „path.read_text“ an text. [Niedrig]\n  11. = — Übergibt „=“ an start_blog. [Niedrig]\n  12. text.index — Übergibt „text.index“ an start_blog. [Niedrig]\n  13. ' <section class=\"rk-section rk-featured rk-featured-focus rk-tone-orange\" id=\"beitrag-im-fokus\">' — Übergibt „    <section class=\"rk-section rk-featured rk-featured-focus rk-tone-orange\" id=\"beitrag-im-fokus\">“ an start_blog. [Niedrig]\n  14. = — Übergibt „=“ an start_team. [Niedrig]\n  15. text.index — Übergibt „text.index“ an start_team. [Niedrig]\n  16. ' <section class=\"rk-page-hero rk-page-hero--dark rk-page-hero--split rk-page-hero--embed\" id=\"ueber-uns\"' — Übergibt „    <section class=\"rk-page-hero rk-page-hero--dark rk-page-hero--split rk-page-hero--embed\" id=\"ueber-uns\"“ an start_team. [Niedrig]\n  17. = — Übergibt „=“ an start_next. [Niedrig]\n  18. text.index — Übergibt „text.index“ an start_next. [Niedrig]\n  19. ' <section class=\"rk-section rk-ag-posts rk-tone-c\" id=\"projekte-preview\"' — Übergibt „    <section class=\"rk-section rk-ag-posts rk-tone-c\" id=\"projekte-preview\"“ an start_next. [Niedrig]\n  20. = — Übergibt „=“ an blog. [Niedrig]\n  21. text[start_blog:start_team] — Übergibt „text[start_blog:start_team]“ an blog. [Niedrig]\n  22. = — Übergibt „=“ an team. [Niedrig]\n  23. text[start_team:start_next] — Übergibt „text[start_team:start_next]“ an team. [Niedrig]\n  24. = — Übergibt „=“ an new. [Niedrig]\n  25. text[:start_blog] — Übergibt „text[:start_blog]“ an new. [Niedrig]\n  26. + — Übergibt „+“ an new. [Niedrig]\n  27. team — Übergibt „team“ an new. [Niedrig]\n  28. + — Übergibt „+“ an new. [Niedrig]\n  29. blog — Übergibt „blog“ an new. [Niedrig]\n  30. + — Übergibt „+“ an new. [Niedrig]\n  31. text[start_next:] — Übergibt „text[start_next:]“ an new. [Niedrig]\n  32. new — Übergibt „new“ an path.write_text. [Niedrig]\n  33. 'swapped' — Übergibt „swapped“ an print. [Niedrig]\n  34. , — Übergibt „,“ an print. [Niedrig]\n  35. len — Übergibt „len“ an print. [Niedrig]\n  36. blog — Übergibt „blog“ an print. [Niedrig]\n  37. , — Übergibt „,“ an print. [Niedrig]\n  38. len — Übergibt „len“ an print. [Niedrig]\n  39. team — Übergibt „team“ an print. [Niedrig]\n  40. = — Übergibt „=“ an idx_b. [Niedrig]\n  41. new.index — Übergibt „new.index“ an idx_b. [Niedrig]\n  42. 'id=\"beitrag-im-fokus\"' — Übergibt „id=\"beitrag-im-fokus\"“ an idx_b. [Niedrig]\n  43. = — Übergibt „=“ an idx_u. [Niedrig]\n  44. new.index — Übergibt „new.index“ an idx_u. [Niedrig]\n  45. 'id=\"ueber-uns\"' — Übergibt „id=\"ueber-uns\"“ an idx_u. [Niedrig]\n  46. 'ueber before blog' — Übergibt „ueber before blog“ an print. [Niedrig]\n  47. , — Übergibt „,“ an print. [Niedrig]\n  48. idx_u — Übergibt „idx_u“ an print. [Niedrig]\n  49. < — Liest Eingabe aus einer Datei. [Niedrig]\n  50. idx_b — Übergibt „idx_b“ an print. [Niedrig]"
+}
