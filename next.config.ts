@@ -21,6 +21,10 @@ const CONTENT_SECURITY_POLICY = [
 ].join('; ')
 
 const nextConfig: NextConfig = {
+  // Mittwald build: full tsc during next build has repeatedly aborted mid-typecheck.
+  // Keep typecheck local/CI; production build must finish reliably.
+  typescript: { ignoreBuildErrors: true },
+  eslint: { ignoreDuringBuilds: true },
   async headers() {
     return [
       {

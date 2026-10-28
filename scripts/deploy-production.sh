@@ -7,7 +7,10 @@
 #   2. npm run deploy
 #
 # Optional:
-#   SKIP_SEED=1 npm run deploy      # Blog-Seed überspringen
+#   SKIP_SEED=1 npm run deploy
+#
+# Build läuft über mittnite (`npm start` temporär = build && start),
+# weil detached Background-Builds auf Mittwald abgebrochen werden.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -36,9 +39,7 @@ GIT_REMOTE=$(printf %q "$GIT_REMOTE")
 GIT_BRANCH=$(printf %q "$GIT_BRANCH")
 SKIP_SEED=$(printf %q "$SKIP_SEED")
 GITHUB_DEPLOY_KEY="\$HOME/.ssh/github_rocketory"
-DEPLOY_DIR="/tmp/rocketory-deploy"
-LOG="\$DEPLOY_DIR/build.log"
-PID_FILE="\$DEPLOY_DIR/pid"
+LOG_STDOUT="/var/log/nodejs/da0076d5-54e9-4aa0-9e9c-7e19d0ac4deb-stdout.log"
 
 cd "\$REMOTE_PATH"
 
@@ -58,7 +59,6 @@ git reset --hard "origin/\$GIT_BRANCH"
 echo "==> npm ci"
 npm ci
 
-# Mittwald: sharp 0.35.x bricht next build (vips_colourspace). Pin erzwingen falls Lockfile driftet.
 SHARP_VER="\$(node -p "require('./node_modules/sharp/package.json').version" 2>/dev/null || true)"
 if [[ "\$SHARP_VER" != "0.34.5" ]]; then
   echo "==> sharp \$SHARP_VER → pin 0.34.5"
@@ -82,45 +82,49 @@ if [[ "\$SKIP_SEED" != "1" && -f .env.production ]]; then
     || echo "WARN: seed fehlgeschlagen – Blog ggf. manuell aktualisieren" >&2
 fi
 
-mkdir -p "\$DEPLOY_DIR"
-if [[ -f "\$PID_FILE" ]]; then
-  OLD_PID="\$(cat "\$PID_FILE" 2>/dev/null || true)"
-  if [[ -n "\${OLD_PID:-}" ]] && kill -0 "\$OLD_PID" 2>/dev/null; then
-    echo "ERROR: Deploy-Build läuft bereits (PID \$OLD_PID). Warte oder beende ihn." >&2
-    exit 1
-  fi
-fi
+echo "==> Build + Start über mittnite"
+mittnitectl job stop node >/dev/null 2>&1 || true
+cp package.json package.json.bak-deploy
+node <<'NODE'
+const fs = require('fs')
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+pkg.scripts.start =
+  'cross-env NODE_OPTIONS="--no-deprecation --max-old-space-size=4096" next build && cross-env NODE_OPTIONS=--no-deprecation next start'
+fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n')
+NODE
 
-echo "==> npm run build (detached, Log: \$LOG)"
-node "\$REMOTE_PATH/scripts/deploy-build-detached.mjs" "\$REMOTE_PATH"
+MARKER="Ready in"
+BEFORE_LINES="\$(wc -l < "\$LOG_STDOUT" 2>/dev/null || echo 0)"
+mittnitectl job start node
 
-echo "==> Warte auf Build …"
-for i in \$(seq 1 120); do
-  if grep -q '^DONE ' "\$LOG" 2>/dev/null; then
-    echo "==> Build fertig"
-    tail -n 30 "\$LOG"
-    if grep -q '^BUILD_EXIT:0\$' "\$LOG"; then
-      echo "Deploy finished. Check ${SITE_URL}"
-      exit 0
+echo "==> Warte auf Ready …"
+for i in \$(seq 1 180); do
+  if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ | grep -q '^200\$'; then
+    echo "==> App antwortet"
+    # restore normal start script (build already done)
+    if [[ -f package.json.bak-deploy ]]; then
+      mv package.json.bak-deploy package.json
+      echo "==> package.json start wiederhergestellt"
     fi
-    echo "ERROR: Build fehlgeschlagen. Log: \$LOG" >&2
-    exit 1
+    curl -s -o /dev/null -w "homepage:%{http_code}\n" http://127.0.0.1:3000/ || true
+    curl -s -o /dev/null -w "admin:%{http_code}\n" http://127.0.0.1:3000/admin || true
+    curl -s -o /dev/null -w "form-settings:%{http_code}\n" http://127.0.0.1:3000/api/form-settings || true
+    echo "Deploy finished. Check ${SITE_URL}"
+    exit 0
   fi
-  if [[ -f "\$PID_FILE" ]]; then
-    BPID="\$(cat "\$PID_FILE" 2>/dev/null || true)"
-    if [[ -n "\${BPID:-}" ]] && ! kill -0 "\$BPID" 2>/dev/null; then
-      if ! grep -q '^DONE ' "\$LOG" 2>/dev/null; then
-        echo "ERROR: Build-Prozess beendet ohne DONE. Log:" >&2
-        tail -n 80 "\$LOG" >&2 || true
-        exit 1
-      fi
-    fi
+  # show progress from logs
+  if [[ -f "\$LOG_STDOUT" ]]; then
+    tail -n 3 "\$LOG_STDOUT" | sed 's/^/  /' || true
   fi
   sleep 5
 done
 
-echo "ERROR: Timeout beim Warten auf Build. Log: \$LOG" >&2
-tail -n 80 "\$LOG" >&2 || true
+# restore even on failure
+if [[ -f package.json.bak-deploy ]]; then
+  mv package.json.bak-deploy package.json
+fi
+echo "ERROR: Timeout – App nicht bereit. Logs:" >&2
+tail -n 80 "\$LOG_STDOUT" >&2 || true
 exit 1
 REMOTE
 

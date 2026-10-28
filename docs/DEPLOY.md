@@ -9,7 +9,9 @@
 npm run deploy
 ```
 
-Das Script zieht auf dem Server `origin/main`, installiert Dependencies, pinnt ggf. `sharp@0.34.5`, stellt fehlende DB-Spalten sicher, baut Next.js und startet die Node-App neu.
+Das Script zieht auf dem Server `origin/main`, installiert Dependencies, pinnt ggf. `sharp@0.34.5`, stellt fehlende DB-Spalten sicher, baut Next.js über mittnite und startet die Node-App neu.
+
+Während des Builds kann die Seite kurz **503** zeigen – das ist normal, bis `Ready` kommt (oft 1–3 Minuten).
 
 Voraussetzung: SSH-Key unter `.deploy-keys/mittwald_ed25519` (bereits eingerichtet).
 
