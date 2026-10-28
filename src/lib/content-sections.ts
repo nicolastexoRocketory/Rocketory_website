@@ -1,3 +1,5 @@
+import { looksLikeHtml, sanitizeCmsHtml } from '@/lib/sanitize'
+
 export type ContentSection = {
   title: string
   body: string
@@ -42,7 +44,7 @@ export function sectionAnchor(title: string, index: number): string {
 function normalizeSectionBody(body: string): string {
   const trimmed = body.trim()
   if (!trimmed) return ''
-  if (/<[a-z][\s\S]*>/i.test(trimmed)) return trimmed
+  if (looksLikeHtml(trimmed)) return sanitizeCmsHtml(trimmed)
 
   return trimmed
     .split(/\n{2,}/)
@@ -55,7 +57,7 @@ function normalizeSectionBody(body: string): string {
 function normalizeIntroHtml(intro: string | null | undefined): string {
   const trimmed = (intro || '').trim()
   if (!trimmed) return ''
-  if (/<[a-z][\s\S]*>/i.test(trimmed)) return trimmed
+  if (looksLikeHtml(trimmed)) return sanitizeCmsHtml(trimmed)
   return `<p class="rk-blog-intro">${escapeHtml(trimmed).replace(/\n/g, '<br>')}</p>`
 }
 
@@ -113,7 +115,7 @@ export function resolveArticleBodyHtml(options: {
 }): string {
   const fromSections = buildHtmlFromContentSections(options.contentSections, options.contentIntro)
   if (fromSections) return fromSections
-  return (options.legacyHtml || '').trim()
+  return sanitizeCmsHtml((options.legacyHtml || '').trim())
 }
 
 export type ParsedLegacyArticle = {

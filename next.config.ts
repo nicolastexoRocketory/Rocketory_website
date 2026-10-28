@@ -3,9 +3,35 @@ import type { NextConfig } from 'next'
 
 const LONG_CACHE = 'public, max-age=31536000, immutable'
 
+/** Baseline XSS mitigation. Inline scripts remain for Matomo/Payload; tighten later with nonces if needed. */
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'self'",
+  "form-action 'self'",
+  // unsafe-inline/eval: Next inline boot, Matomo snippet, Payload admin
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://challenges.cloudflare.com https:",
+  "frame-src 'self' https://challenges.cloudflare.com https://www.google.com https://maps.google.com https://www.youtube.com https://youtube.com",
+  "worker-src 'self' blob:",
+].join('; ')
+
 const nextConfig: NextConfig = {
   async headers() {
     return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Content-Security-Policy', value: CONTENT_SECURITY_POLICY },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+        ],
+      },
       {
         source: '/api/media/file/:path*',
         headers: [{ key: 'Cache-Control', value: LONG_CACHE }],

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { getPayloadClient } from '@/lib/payload'
+import { toPlainText, toPlainTextMultiline } from '@/lib/sanitize'
 import { getTurnstileConfig, resolveFormKind, verifyTurnstileToken } from '@/lib/turnstile'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -28,6 +29,17 @@ type ContactPayload = {
 
 function clean(value: unknown, maxLength = 5000): string {
   if (typeof value !== 'string') return ''
+  return toPlainText(value).slice(0, maxLength)
+}
+
+function cleanMultiline(value: unknown, maxLength = 8000): string {
+  if (typeof value !== 'string') return ''
+  return toPlainTextMultiline(value).slice(0, maxLength)
+}
+
+/** Turnstile token must stay opaque; do not strip as HTML text. */
+function cleanToken(value: unknown, maxLength = 2048): string {
+  if (typeof value !== 'string') return ''
   return value.trim().slice(0, maxLength)
 }
 
@@ -42,7 +54,7 @@ export async function POST(request: Request) {
 
   const name = clean(body.name, 200)
   const email = clean(body.email, 320)
-  const message = clean(body.message, 8000)
+  const message = cleanMultiline(body.message, 8000)
 
   if (!name) {
     return NextResponse.json({ error: 'Bitte gib deinen Namen ein.' }, { status: 400 })
@@ -78,7 +90,7 @@ export async function POST(request: Request) {
     if (turnstile.enabled) {
       const result = await verifyTurnstileToken(
         turnstile.secretKey,
-        clean(body.turnstileToken, 2048),
+        cleanToken(body.turnstileToken, 2048),
         remoteIp,
       )
       if (!result.ok) {
@@ -94,14 +106,14 @@ export async function POST(request: Request) {
         source: 'website',
         intent,
         intentLabel,
-        detailSummary: clean(body.detailSummary, 2000),
+        detailSummary: cleanMultiline(body.detailSummary, 2000),
         message,
         name,
         company: clean(body.company, 200),
         email,
         phone: clean(body.phone, 80),
         referral: clean(body.referral, 200),
-        projectBrief: clean(body.projectBrief, 4000),
+        projectBrief: cleanMultiline(body.projectBrief, 4000),
         projectPages: clean(body.projectPages, 120),
         projectTimeline: clean(body.projectTimeline, 120),
         festpreisPaket: clean(body.festpreisPaket, 80),

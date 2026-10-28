@@ -1,3 +1,5 @@
+import { sanitizeCmsHtml } from '@/lib/sanitize'
+
 import { getStaticComponentHtml } from './static-html'
 
 const BODY_END_MARKERS = [
@@ -137,8 +139,8 @@ export function normalizeBlogArticleHtml(html: string): string {
   const fromMainBlock = fromContentBlock ? '' : extractBlogMainBody(trimmed)
   const raw = fromContentBlock || fromMainBlock || stripOuterBlogWrappers(trimmed)
   const cleaned = balanceFragmentDivs(stripBlogSidebarMarkup(raw).trim())
-
-  return cleaned || '<p>Noch kein Inhalt hinterlegt.</p>'
+  const safe = sanitizeCmsHtml(cleaned || '')
+  return safe || '<p>Noch kein Inhalt hinterlegt.</p>'
 }
 
 export function getBlogSidebarHtml(): string {
