@@ -464,7 +464,7 @@
         .catch(function (err) {
           turnstileApi.reset()
           if (submitBtn) submitBtn.disabled = false
-          if (ctaLabel) ctaLabel.textContent = 'Rückmeldung anfordern'
+          if (ctaLabel) ctaLabel.textContent = 'Kostenlosen Check erhalten'
           showError(
             'rkKiEmailError',
             err.message || 'Senden fehlgeschlagen. Bitte später erneut versuchen.',

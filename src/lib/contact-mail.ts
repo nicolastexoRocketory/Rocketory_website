@@ -31,6 +31,20 @@ function buildAdminEmailBody(doc: ContactInquiry, settings?: EmailSetting): stri
 }
 
 function buildCustomerEmailBody(doc: ContactInquiry, settings?: EmailSetting): string {
+  if (doc.intent === 'ki-check') {
+    return [
+      `Hallo ${doc.name},`,
+      '',
+      'vielen Dank für deine Anfrage zum kostenlosen KI-Check bei Rocketory.',
+      'Wir erstellen jetzt deinen Analysebericht – er kommt in der Regel innerhalb von 24 bis 48 Stunden bei dir an.',
+      '',
+      'Bei Rückfragen erreichst du uns unter beratung@rocketory.de.',
+      '',
+      'Viele Grüße',
+      'Dein Rocketory-Team',
+    ].join('\n')
+  }
+
   const custom = settings?.customerConfirmationBody?.trim()
   if (custom) {
     return custom

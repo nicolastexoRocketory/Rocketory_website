@@ -45,7 +45,7 @@ mittwald_build_ssh_cmd() {
     MITTWALD_SSH_WRAPPER="$(mktemp)"
     cat >"$MITTWALD_SSH_WRAPPER" <<EOF
 #!/usr/bin/env bash
-exec ssh -i "$key" -o IdentitiesOnly=yes -p "$port" -o StrictHostKeyChecking=accept-new "\$@"
+exec ssh -i "$key" -o IdentitiesOnly=yes -p "$port" -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=120 "\$@"
 EOF
     chmod +x "$MITTWALD_SSH_WRAPPER"
     printf '%s' "$MITTWALD_SSH_WRAPPER"
@@ -53,7 +53,7 @@ EOF
     MITTWALD_SSH_WRAPPER="$(mktemp)"
     cat >"$MITTWALD_SSH_WRAPPER" <<EOF
 #!/usr/bin/env bash
-exec sshpass -p "$MITTWALD_SSH_PASS" ssh -p "$port" -o StrictHostKeyChecking=accept-new "\$@"
+exec sshpass -p "$MITTWALD_SSH_PASS" ssh -p "$port" -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=120 "\$@"
 EOF
     chmod +x "$MITTWALD_SSH_WRAPPER"
     printf '%s' "$MITTWALD_SSH_WRAPPER"
