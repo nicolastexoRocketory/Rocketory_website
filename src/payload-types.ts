@@ -1075,7 +1075,7 @@ export interface EmailSetting {
    */
   replyToEmail?: string | null;
   /**
-   * Eine oder mehrere E-Mail-Adressen (komma- oder semikolongetrennt), an die neue Kontaktanfragen gesendet werden.
+   * Fallback, falls beim Kontakt- oder KI-Check-Formular keine eigenen Empfänger gesetzt sind. Komma- oder semikolongetrennt.
    */
   notificationEmail?: string | null;
   notificationSubjectPrefix?: string | null;
@@ -1100,6 +1100,38 @@ export interface EmailSetting {
    * Optional. Platzhalter: {name}, {intent}. Leer = Standardtext.
    */
   customerConfirmationBody?: string | null;
+  /**
+   * Empfänger für Anfragen vom Kontaktformular. Komma- oder semikolongetrennt. Leer = Fallback „Benachrichtigung an“.
+   */
+  kontaktNotificationEmail?: string | null;
+  /**
+   * Cloudflare Turnstile für das Kontaktformular. Wirkt nur, wenn Site Key und Secret Key gesetzt sind.
+   */
+  kontaktTurnstileEnabled?: boolean | null;
+  /**
+   * Öffentlicher Key (Widget im Frontend).
+   */
+  kontaktTurnstileSiteKey?: string | null;
+  /**
+   * Nur Backend – wird nie an den Browser ausgegeben.
+   */
+  kontaktTurnstileSecretKey?: string | null;
+  /**
+   * Empfänger für Anfragen vom KI-Check-Formular. Komma- oder semikolongetrennt. Leer = Fallback „Benachrichtigung an“.
+   */
+  kiCheckNotificationEmail?: string | null;
+  /**
+   * Cloudflare Turnstile für den KI-Check. Wirkt nur, wenn Site Key und Secret Key gesetzt sind.
+   */
+  kiCheckTurnstileEnabled?: boolean | null;
+  /**
+   * Öffentlicher Key (Widget im Frontend).
+   */
+  kiCheckTurnstileSiteKey?: string | null;
+  /**
+   * Nur Backend – wird nie an den Browser ausgegeben.
+   */
+  kiCheckTurnstileSecretKey?: string | null;
   /**
    * Einbettungs-URL aus Google Maps → Teilen → Karte einbetten. Wird auf der Agentur-Seite unter „Über Bünde“ verwendet.
    */
@@ -1147,6 +1179,14 @@ export interface EmailSettingsSelect<T extends boolean = true> {
   notificationBcc?: T;
   adminEmailFooter?: T;
   customerConfirmationBody?: T;
+  kontaktNotificationEmail?: T;
+  kontaktTurnstileEnabled?: T;
+  kontaktTurnstileSiteKey?: T;
+  kontaktTurnstileSecretKey?: T;
+  kiCheckNotificationEmail?: T;
+  kiCheckTurnstileEnabled?: T;
+  kiCheckTurnstileSiteKey?: T;
+  kiCheckTurnstileSecretKey?: T;
   googleMapsEmbedUrl?: T;
   googleMapsLinkUrl?: T;
   updatedAt?: T;

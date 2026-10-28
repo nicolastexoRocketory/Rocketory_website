@@ -6,7 +6,7 @@ export const EmailSettings: GlobalConfig = {
   admin: {
     group: 'Kontaktanfragen',
     description:
-      'SMTP-Zugang, Absender und Empfänger für Kontaktformular-Benachrichtigungen. Ohne aktive SMTP-Konfiguration werden Anfragen nur im Backend gespeichert.',
+      'SMTP-Zugang, Absender und Formular-Einstellungen (Kontakt + KI-Check). Turnstile-Keys in Cloudflare anlegen (Domains rocketory.de und localhost). Ohne aktive SMTP-Konfiguration werden Anfragen nur im Backend gespeichert.',
   },
   access: {
     read: ({ req }) => Boolean(req.user),
@@ -103,12 +103,12 @@ export const EmailSettings: GlobalConfig = {
         {
           name: 'notificationEmail',
           type: 'text',
-          label: 'Benachrichtigung an',
+          label: 'Benachrichtigung an (Fallback)',
           defaultValue:
             'beratung@rocketory.de, nicolas@rocketory.de, nicolastexo@rocketory.de',
           admin: {
             description:
-              'Eine oder mehrere E-Mail-Adressen (komma- oder semikolongetrennt), an die neue Kontaktanfragen gesendet werden.',
+              'Fallback, falls beim Kontakt- oder KI-Check-Formular keine eigenen Empfänger gesetzt sind. Komma- oder semikolongetrennt.',
           },
         },
         {
@@ -174,6 +174,92 @@ export const EmailSettings: GlobalConfig = {
             description:
               'Optional. Platzhalter: {name}, {intent}. Leer = Standardtext.',
             condition: (_, siblingData) => Boolean(siblingData?.sendCustomerConfirmation),
+          },
+        },
+      ],
+    },
+    {
+      type: 'collapsible',
+      label: 'Kontaktformular',
+      admin: { initCollapsed: false },
+      fields: [
+        {
+          name: 'kontaktNotificationEmail',
+          type: 'text',
+          label: 'Admin-Mails (Kontaktformular)',
+          admin: {
+            description:
+              'Empfänger für Anfragen vom Kontaktformular. Komma- oder semikolongetrennt. Leer = Fallback „Benachrichtigung an“.',
+          },
+        },
+        {
+          name: 'kontaktTurnstileEnabled',
+          type: 'checkbox',
+          label: 'Turnstile aktiv',
+          defaultValue: true,
+          admin: {
+            description: 'Cloudflare Turnstile für das Kontaktformular. Wirkt nur, wenn Site Key und Secret Key gesetzt sind.',
+          },
+        },
+        {
+          name: 'kontaktTurnstileSiteKey',
+          type: 'text',
+          label: 'Turnstile Site Key',
+          admin: {
+            description: 'Öffentlicher Key (Widget im Frontend).',
+            condition: (_, siblingData) => Boolean(siblingData?.kontaktTurnstileEnabled),
+          },
+        },
+        {
+          name: 'kontaktTurnstileSecretKey',
+          type: 'text',
+          label: 'Turnstile Secret Key',
+          admin: {
+            description: 'Nur Backend – wird nie an den Browser ausgegeben.',
+            condition: (_, siblingData) => Boolean(siblingData?.kontaktTurnstileEnabled),
+          },
+        },
+      ],
+    },
+    {
+      type: 'collapsible',
+      label: 'KI-Check Formular',
+      admin: { initCollapsed: false },
+      fields: [
+        {
+          name: 'kiCheckNotificationEmail',
+          type: 'text',
+          label: 'Admin-Mails (KI-Check)',
+          admin: {
+            description:
+              'Empfänger für Anfragen vom KI-Check-Formular. Komma- oder semikolongetrennt. Leer = Fallback „Benachrichtigung an“.',
+          },
+        },
+        {
+          name: 'kiCheckTurnstileEnabled',
+          type: 'checkbox',
+          label: 'Turnstile aktiv',
+          defaultValue: true,
+          admin: {
+            description: 'Cloudflare Turnstile für den KI-Check. Wirkt nur, wenn Site Key und Secret Key gesetzt sind.',
+          },
+        },
+        {
+          name: 'kiCheckTurnstileSiteKey',
+          type: 'text',
+          label: 'Turnstile Site Key',
+          admin: {
+            description: 'Öffentlicher Key (Widget im Frontend).',
+            condition: (_, siblingData) => Boolean(siblingData?.kiCheckTurnstileEnabled),
+          },
+        },
+        {
+          name: 'kiCheckTurnstileSecretKey',
+          type: 'text',
+          label: 'Turnstile Secret Key',
+          admin: {
+            description: 'Nur Backend – wird nie an den Browser ausgegeben.',
+            condition: (_, siblingData) => Boolean(siblingData?.kiCheckTurnstileEnabled),
           },
         },
       ],

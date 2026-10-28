@@ -29,6 +29,55 @@
   var nextBtn = document.getElementById('rkFormNext');
   var submitBtn = document.getElementById('rkFormSubmit');
   var summaryEl = document.getElementById('rkFormSummary');
+  var turnstileEl = document.getElementById('rkContactTurnstile');
+  var turnstileApi = {
+    enabled: false,
+    getToken: function () { return ''; },
+    reset: function () {}
+  };
+  var turnstileMounting = false;
+  var turnstileMounted = false;
+
+  function loadTurnstileHelper() {
+    if (window.rkTurnstileForm) return Promise.resolve();
+    return new Promise(function (resolve) {
+      var existing = document.querySelector('script[src*="turnstile-form.js"]');
+      if (existing) {
+        var tries = 0;
+        var timer = setInterval(function () {
+          tries += 1;
+          if (window.rkTurnstileForm || tries > 60) {
+            clearInterval(timer);
+            resolve();
+          }
+        }, 50);
+        return;
+      }
+      var script = document.createElement('script');
+      script.src = '/js/turnstile-form.js';
+      script.onload = function () { resolve(); };
+      script.onerror = function () { resolve(); };
+      document.head.appendChild(script);
+    });
+  }
+
+  function ensureTurnstileMounted() {
+    if (turnstileMounted || turnstileMounting || !turnstileEl) return;
+    turnstileMounting = true;
+    loadTurnstileHelper().then(function () {
+      if (!window.rkTurnstileForm) {
+        turnstileMounting = false;
+        return;
+      }
+      return window.rkTurnstileForm.mount(turnstileEl, 'kontakt').then(function (api) {
+        turnstileApi = api;
+        turnstileMounted = true;
+        turnstileMounting = false;
+      });
+    }).catch(function () {
+      turnstileMounting = false;
+    });
+  }
 
   var INTENT_LABELS = {
     individuell: 'Individuelles Projekt',
@@ -333,6 +382,8 @@
         String(TOTAL_STEPS).padStart(2, '0');
     }
 
+    if (currentStep === TOTAL_STEPS) ensureTurnstileMounted();
+
     if (backBtn) backBtn.hidden = currentStep === 1;
     if (nextBtn) nextBtn.hidden = currentStep === TOTAL_STEPS;
     if (submitBtn) submitBtn.hidden = currentStep !== TOTAL_STEPS;
@@ -533,6 +584,12 @@
     e.preventDefault();
     if (!validateStep(6)) return;
 
+    var turnstileToken = turnstileApi.getToken();
+    if (turnstileApi.enabled && !turnstileToken) {
+      showError('message', 'Bitte bestätige die Sicherheitsprüfung.');
+      return;
+    }
+
     var name = fields.name.value.trim();
     var company = fields.company.value.trim();
     var email = fields.email.value.trim();
@@ -567,7 +624,8 @@
         festpreisPaket: getCheckedValue('festpreis_paket'),
         festpreisTech: getCheckedValue('festpreis_tech'),
         seoLaufzeit: getCheckedValue('seo_laufzeit'),
-        redesignTyp: getCheckedValue('redesign_typ')
+        redesignTyp: getCheckedValue('redesign_typ'),
+        turnstileToken: turnstileToken
       })
     })
       .then(function (res) {
@@ -580,11 +638,13 @@
           throw new Error((result.data && result.data.error) || 'Senden fehlgeschlagen.');
         }
 
+        turnstileApi.reset();
         form.classList.add('is-submitted');
         if (label) label.textContent = 'Gesendet ✓';
         if (success) success.classList.add('is-visible');
       })
       .catch(function (err) {
+        turnstileApi.reset();
         if (submitBtn) submitBtn.disabled = false;
         if (label) label.textContent = 'Anfrage absenden';
         showError('message', err.message || 'Senden fehlgeschlagen. Bitte versuche es später erneut.');

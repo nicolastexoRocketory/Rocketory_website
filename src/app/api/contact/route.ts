@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { getPayloadClient } from '@/lib/payload'
+import { getTurnstileConfig, resolveFormKind, verifyTurnstileToken } from '@/lib/turnstile'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -22,6 +23,7 @@ type ContactPayload = {
   seoLaufzeit?: string
   redesignTyp?: string
   budget?: string
+  turnstileToken?: string
 }
 
 function clean(value: unknown, maxLength = 5000): string {
@@ -56,9 +58,33 @@ export async function POST(request: Request) {
 
   const intent = clean(body.intent, 80)
   const intentLabel = clean(body.intentLabel, 200) || intent
+  const formKind = resolveFormKind(intent)
+  const remoteIp =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    ''
 
   try {
     const payload = await getPayloadClient()
+
+    let settings
+    try {
+      settings = await payload.findGlobal({ slug: 'email-settings' })
+    } catch {
+      settings = null
+    }
+
+    const turnstile = getTurnstileConfig(settings, formKind)
+    if (turnstile.enabled) {
+      const result = await verifyTurnstileToken(
+        turnstile.secretKey,
+        clean(body.turnstileToken, 2048),
+        remoteIp,
+      )
+      if (!result.ok) {
+        return NextResponse.json({ error: result.error }, { status: 400 })
+      }
+    }
 
     await payload.create({
       collection: 'contact-inquiries',
@@ -83,10 +109,7 @@ export async function POST(request: Request) {
         seoLaufzeit: clean(body.seoLaufzeit, 80),
         redesignTyp: clean(body.redesignTyp, 80),
         budget: clean(body.budget, 80),
-        ipAddress:
-          request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-          request.headers.get('x-real-ip') ||
-          '',
+        ipAddress: remoteIp,
         userAgent: clean(request.headers.get('user-agent') || '', 500),
       },
     })

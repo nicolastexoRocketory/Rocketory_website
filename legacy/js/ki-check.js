@@ -45,6 +45,63 @@
     var submitBtn = document.getElementById('rkKiSubmit')
     var actions = document.getElementById('rkKiActions')
     var success = document.getElementById('rkKiSuccess')
+    var turnstileEl = document.getElementById('rkKiTurnstile')
+    var turnstileApi = {
+      enabled: false,
+      getToken: function () {
+        return ''
+      },
+      reset: function () {},
+    }
+    var turnstileMounting = false
+    var turnstileMounted = false
+
+    function loadTurnstileHelper() {
+      if (window.rkTurnstileForm) return Promise.resolve()
+      return new Promise(function (resolve) {
+        var existing = document.querySelector('script[src*="turnstile-form.js"]')
+        if (existing) {
+          var tries = 0
+          var timer = setInterval(function () {
+            tries += 1
+            if (window.rkTurnstileForm || tries > 60) {
+              clearInterval(timer)
+              resolve()
+            }
+          }, 50)
+          return
+        }
+        var script = document.createElement('script')
+        script.src = '/js/turnstile-form.js'
+        script.onload = function () {
+          resolve()
+        }
+        script.onerror = function () {
+          resolve()
+        }
+        document.head.appendChild(script)
+      })
+    }
+
+    function ensureTurnstileMounted() {
+      if (turnstileMounted || turnstileMounting || !turnstileEl) return
+      turnstileMounting = true
+      loadTurnstileHelper()
+        .then(function () {
+          if (!window.rkTurnstileForm) {
+            turnstileMounting = false
+            return
+          }
+          return window.rkTurnstileForm.mount(turnstileEl, 'kiCheck').then(function (api) {
+            turnstileApi = api
+            turnstileMounted = true
+            turnstileMounting = false
+          })
+        })
+        .catch(function () {
+          turnstileMounting = false
+        })
+    }
     var analyzingBar = document.getElementById('rkKiAnalyzingBar')
     var analyzingStatus = document.getElementById('rkKiAnalyzingStatus')
     var analyzingList = document.getElementById('rkKiAnalyzingList')
@@ -126,6 +183,7 @@
       if (nextBtn) nextBtn.hidden = analyzing || lead || urlStep
       if (startBtn) startBtn.hidden = !urlStep
       if (submitBtn) submitBtn.hidden = !lead
+      if (lead) ensureTurnstileMounted()
 
       if (analyzing) startAnalyze()
     }
@@ -345,6 +403,12 @@
       e.preventDefault()
       if (!validateStep(5)) return
 
+      var turnstileToken = turnstileApi.getToken()
+      if (turnstileApi.enabled && !turnstileToken) {
+        showError('rkKiEmailError', 'Bitte bestätige die Sicherheitsprüfung.')
+        return
+      }
+
       var name = nameInput.value.trim()
       var email = emailInput.value.trim()
       var phone = phoneInput ? phoneInput.value.trim() : ''
@@ -378,6 +442,7 @@
           email: email,
           phone: phone,
           projectBrief: url,
+          turnstileToken: turnstileToken,
         }),
       })
         .then(function (res) {
@@ -389,6 +454,7 @@
           if (!result.ok) {
             throw new Error((result.data && result.data.error) || 'Senden fehlgeschlagen.')
           }
+          turnstileApi.reset()
           form.classList.add('is-submitted')
           if (progressWrap) progressWrap.hidden = true
           if (actions) actions.hidden = true
@@ -396,6 +462,7 @@
           if (success) success.classList.add('is-visible')
         })
         .catch(function (err) {
+          turnstileApi.reset()
           if (submitBtn) submitBtn.disabled = false
           if (ctaLabel) ctaLabel.textContent = 'Rückmeldung anfordern'
           showError(

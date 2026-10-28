@@ -109,7 +109,13 @@ export async function sendContactInquiryNotification(
   const transporter = createTransporter(settings)
   const prefix = settings.notificationSubjectPrefix?.trim() || 'Kontaktanfrage'
   const intentLabel = doc.intentLabel || doc.intent || 'Anfrage'
-  const recipients = parseEmailList(settings.notificationEmail)
+  const isKiCheck = doc.intent === 'ki-check'
+  const formRecipients = parseEmailList(
+    isKiCheck ? settings.kiCheckNotificationEmail : settings.kontaktNotificationEmail,
+  )
+  const recipients = formRecipients.length
+    ? formRecipients
+    : parseEmailList(settings.notificationEmail)
   const cc = parseEmailList(settings.notificationCc)
   const bcc = parseEmailList(settings.notificationBcc)
 

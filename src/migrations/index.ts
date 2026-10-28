@@ -7,6 +7,7 @@ import * as migration_20260817_media_site_path from './20260817_media_site_path'
 import * as migration_20261027_posts_bottom_gallery from './20261027_posts_bottom_gallery';
 import * as migration_20261027_content_sections from './20261027_content_sections';
 import * as migration_20261027_content_intro from './20261027_content_intro';
+import * as migration_20261028_email_settings_form_turnstile from './20261028_email_settings_form_turnstile';
 
 export const migrations = [
   {
@@ -53,5 +54,10 @@ export const migrations = [
     up: migration_20261027_content_intro.up,
     down: migration_20261027_content_intro.down,
     name: '20261027_content_intro',
+  },
+  {
+    up: migration_20261028_email_settings_form_turnstile.up,
+    down: migration_20261028_email_settings_form_turnstile.down,
+    name: '20261028_email_settings_form_turnstile',
   },
 ];
