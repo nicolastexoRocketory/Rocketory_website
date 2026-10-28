@@ -92,38 +92,7 @@ if [[ -f "\$PID_FILE" ]]; then
 fi
 
 echo "==> npm run build (detached, Log: \$LOG)"
-REMOTE_PATH_FOR_NODE="\$REMOTE_PATH" node <<'NODE'
-const { spawn } = require('child_process')
-const fs = require('fs')
-const remotePath = process.env.REMOTE_PATH_FOR_NODE
-const logPath = '/tmp/rocketory-deploy/build.log'
-const pidPath = '/tmp/rocketory-deploy/pid'
-fs.writeFileSync(logPath, `START ${new Date().toISOString()}\n`)
-const out = fs.openSync(logPath, 'a')
-const script = [
-  'set -euo pipefail',
-  'cd ' + JSON.stringify(remotePath),
-  'npm run build',
-  'echo BUILD_EXIT:$?',
-  'if command -v mittnitectl >/dev/null 2>&1; then',
-  '  mittnitectl job restart node || mittnitectl job start node || true',
-  'fi',
-  'sleep 4',
-  'curl -s -o /dev/null -w "homepage:%{http_code}\\n" http://127.0.0.1:3000/ || true',
-  'curl -s -o /dev/null -w "admin:%{http_code}\\n" http://127.0.0.1:3000/admin || true',
-  'curl -s -o /dev/null -w "form-settings:%{http_code}\\n" http://127.0.0.1:3000/api/form-settings || true',
-  'echo DONE $(date -Is)',
-].join('\n')
-const child = spawn('bash', ['-lc', script], {
-  cwd: remotePath,
-  detached: true,
-  stdio: ['ignore', out, out],
-  env: process.env,
-})
-fs.writeFileSync(pidPath, String(child.pid))
-child.unref()
-console.log('BUILD_PID=' + child.pid)
-NODE
+node "\$REMOTE_PATH/scripts/deploy-build-detached.mjs" "\$REMOTE_PATH"
 
 echo "==> Warte auf Build …"
 for i in \$(seq 1 120); do
