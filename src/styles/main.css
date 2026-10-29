@@ -3335,6 +3335,8 @@ html.is-in-app-browser .rk-hero .rk-hero-img--static.rk-hero-media--mobile,
 
   #leistungen .rk-usp-grid,
   #angebote-leistungen .rk-usp-grid,
+  #leistungen-verteiler .rk-usp-grid,
+  .rk-page-hero--leistungen .rk-usp-grid,
   #nutzen .rk-usp-grid,
   #kernvorteile .rk-bento-grid,
   #werte .rk-home-bento-grid,
@@ -3358,6 +3360,8 @@ html.is-in-app-browser .rk-hero .rk-hero-img--static.rk-hero-media--mobile,
 
   #leistungen .rk-usp-grid::-webkit-scrollbar,
   #angebote-leistungen .rk-usp-grid::-webkit-scrollbar,
+  #leistungen-verteiler .rk-usp-grid::-webkit-scrollbar,
+  .rk-page-hero--leistungen .rk-usp-grid::-webkit-scrollbar,
   #nutzen .rk-usp-grid::-webkit-scrollbar,
   #kernvorteile .rk-bento-grid::-webkit-scrollbar,
   #werte .rk-home-bento-grid::-webkit-scrollbar,
@@ -3365,6 +3369,8 @@ html.is-in-app-browser .rk-hero .rk-hero-img--static.rk-hero-media--mobile,
 
   #leistungen .rk-usp-grid > .rk-usp-cell,
   #angebote-leistungen .rk-usp-grid > .rk-usp-cell,
+  #leistungen-verteiler .rk-usp-grid > .rk-usp-cell,
+  .rk-page-hero--leistungen .rk-usp-grid > .rk-usp-cell,
   #nutzen .rk-usp-grid > .rk-usp-cell,
   .rk-usp-carousel .rk-usp-cell,
   #kernvorteile .rk-bento-grid > .rk-bento-cell,
@@ -3412,6 +3418,8 @@ html.is-in-app-browser .rk-hero .rk-hero-img--static.rk-hero-media--mobile,
 
   #leistungen .rk-usp-grid > .rk-usp-cell,
   #angebote-leistungen .rk-usp-grid > .rk-usp-cell,
+  #leistungen-verteiler .rk-usp-grid > .rk-usp-cell,
+  .rk-page-hero--leistungen .rk-usp-grid > .rk-usp-cell,
   #nutzen .rk-usp-grid > .rk-usp-cell,
   .rk-usp-carousel .rk-usp-cell,
   #werte .rk-home-bento-grid > .rk-home-bento-cell,
@@ -3422,6 +3430,39 @@ html.is-in-app-browser .rk-hero .rk-hero-img--static.rk-hero-media--mobile,
     padding-right:var(--rk-card-pad-x) !important;
     padding-bottom:clamp(18px,3vw,22px) !important;
     border-right:none !important;
+  }
+
+  /* Dunkler Leistungen-Hero: Carousel darf nicht auf --bg (weiß) springen */
+  .rk-page-hero--leistungen .rk-usp-carousel,
+  #leistungen-verteiler .rk-usp-carousel{
+    border-color:rgba(245,244,240,0.16);
+    background:transparent;
+    margin-top:clamp(12px,2.5vw,20px);
+  }
+  .rk-page-hero--leistungen .rk-usp-carousel-ui,
+  #leistungen-verteiler .rk-usp-carousel-ui{
+    border-top-color:rgba(245,244,240,0.16);
+    background:rgba(245,244,240,0.06);
+  }
+  .rk-page-hero--leistungen .rk-usp-carousel-arrow,
+  #leistungen-verteiler .rk-usp-carousel-arrow{
+    border-color:rgba(245,244,240,0.22);
+    background:rgba(10,15,30,0.85);
+    color:var(--hero-text);
+  }
+  .rk-page-hero--leistungen .rk-usp-carousel-arrow:not(:disabled):hover,
+  #leistungen-verteiler .rk-usp-carousel-arrow:not(:disabled):hover{
+    border-color:rgba(255,140,100,0.55);
+    color:#fff;
+    background:rgba(193,39,45,0.28);
+  }
+  .rk-page-hero--leistungen .rk-usp-carousel-dot,
+  #leistungen-verteiler .rk-usp-carousel-dot{
+    background:rgba(245,244,240,0.28);
+  }
+  .rk-page-hero--leistungen .rk-usp-carousel-dot.is-active,
+  #leistungen-verteiler .rk-usp-carousel-dot.is-active{
+    background:#fff;
   }
 
   #kernvorteile .rk-usp-carousel{
