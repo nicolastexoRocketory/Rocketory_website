@@ -24,10 +24,16 @@ mittwald_resolve_ssh_key() {
   return 1
 }
 
+mittwald_ssh_user() {
+  printf '%s' "${MITTWALD_SSH_USER:-nicolas@viralista.de@a-fghqd3}"
+}
+
+mittwald_ssh_host() {
+  printf '%s' "${MITTWALD_SSH_HOST:-ssh.lashorst.project.host}"
+}
+
 mittwald_ssh_target() {
-  printf '%s@%s' \
-    "${MITTWALD_SSH_USER:-nicolas@viralista.de@a-fghqd3}" \
-    "${MITTWALD_SSH_HOST:-ssh.lashorst.project.host}"
+  printf '%s@%s' "$(mittwald_ssh_user)" "$(mittwald_ssh_host)"
 }
 
 MITTWALD_SSH_WRAPPER=""
@@ -40,12 +46,14 @@ mittwald_cleanup_ssh_wrapper() {
 mittwald_build_ssh_cmd() {
   local root_dir="${1:-$(mittwald_root_dir)}"
   local port="${MITTWALD_SSH_PORT:-22}"
-  local key
+  local user host key
+  user="$(mittwald_ssh_user)"
+  host="$(mittwald_ssh_host)"
   if key="$(mittwald_resolve_ssh_key "$root_dir")"; then
     MITTWALD_SSH_WRAPPER="$(mktemp)"
     cat >"$MITTWALD_SSH_WRAPPER" <<EOF
 #!/usr/bin/env bash
-exec ssh -i "$key" -o IdentitiesOnly=yes -p "$port" -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=120 "\$@"
+exec ssh -i "$key" -o IdentitiesOnly=yes -o BatchMode=yes -o PreferredAuthentications=publickey -p "$port" -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=120 -l "$user" "$host" "\$@"
 EOF
     chmod +x "$MITTWALD_SSH_WRAPPER"
     printf '%s' "$MITTWALD_SSH_WRAPPER"
@@ -53,12 +61,12 @@ EOF
     MITTWALD_SSH_WRAPPER="$(mktemp)"
     cat >"$MITTWALD_SSH_WRAPPER" <<EOF
 #!/usr/bin/env bash
-exec sshpass -p "$MITTWALD_SSH_PASS" ssh -p "$port" -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=120 "\$@"
+exec sshpass -p "$MITTWALD_SSH_PASS" ssh -p "$port" -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=120 -l "$user" "$host" "\$@"
 EOF
     chmod +x "$MITTWALD_SSH_WRAPPER"
     printf '%s' "$MITTWALD_SSH_WRAPPER"
   else
-    printf 'ssh -p %s -o StrictHostKeyChecking=accept-new' "$port"
+    printf 'ssh -p %s -o StrictHostKeyChecking=accept-new -o BatchMode=yes -l %s %s' "$port" "$user" "$host"
   fi
 }
 
@@ -67,5 +75,5 @@ mittwald_ssh() {
   shift || true
   local ssh_cmd
   ssh_cmd="$(mittwald_build_ssh_cmd "$root_dir")"
-  "$ssh_cmd" "$(mittwald_ssh_target)" "$@"
+  "$ssh_cmd" "$@"
 }
