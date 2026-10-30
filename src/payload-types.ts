@@ -607,6 +607,28 @@ export interface ContactInquiry {
   budget?: string | null;
   ipAddress?: string | null;
   userAgent?: string | null;
+  /**
+   * Wird beim Öffnen mit der Anfrage-Mail vorausgefüllt – jederzeit änderbar.
+   */
+  replyRecipientEmail?: string | null;
+  replyRecipientName?: string | null;
+  replySubject?: string | null;
+  replyWebsite?: string | null;
+  /**
+   * z. B. „Keine KI erkennbar“ oder eine kurze Begründung.
+   */
+  replyAiAssessment?: string | null;
+  replyLabelingAssessment?: string | null;
+  /**
+   * Haupttext des Analyseberichts an den Kunden.
+   */
+  replyReportBody?: string | null;
+  /**
+   * z. B. Gesprächsangebot oder konkreter Handlungsvorschlag.
+   */
+  replyNextStep?: string | null;
+  replySentAt?: string | null;
+  replySentTo?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -986,6 +1008,16 @@ export interface ContactInquiriesSelect<T extends boolean = true> {
   budget?: T;
   ipAddress?: T;
   userAgent?: T;
+  replyRecipientEmail?: T;
+  replyRecipientName?: T;
+  replySubject?: T;
+  replyWebsite?: T;
+  replyAiAssessment?: T;
+  replyLabelingAssessment?: T;
+  replyReportBody?: T;
+  replyNextStep?: T;
+  replySentAt?: T;
+  replySentTo?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1046,7 +1078,7 @@ export interface Homepage {
   createdAt?: string | null;
 }
 /**
- * SMTP-Zugang, Absender und Empfänger für Kontaktformular-Benachrichtigungen. Ohne aktive SMTP-Konfiguration werden Anfragen nur im Backend gespeichert.
+ * SMTP-Zugang, Absender und Formular-Einstellungen (Kontakt + KI-Check). Turnstile-Keys in Cloudflare anlegen (Domains rocketory.de und localhost). Ohne aktive SMTP-Konfiguration werden Anfragen nur im Backend gespeichert.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "email-settings".
@@ -1133,7 +1165,7 @@ export interface EmailSetting {
    */
   kiCheckTurnstileSecretKey?: string | null;
   /**
-   * Einbettungs-URL aus Google Maps → Teilen → Karte einbetten. Wird auf der Agentur-Seite unter „Über Bünde“ verwendet.
+   * Einbettungs-URL mit Firmenpin (Rocketory, Zimmerstr. 16). Alternativ: Google Maps → Teilen → Karte einbetten. Wird auf Agentur / Bünde verwendet.
    */
   googleMapsEmbedUrl?: string | null;
   googleMapsLinkUrl?: string | null;

@@ -273,17 +273,18 @@ export const EmailSettings: GlobalConfig = {
           type: 'text',
           label: 'Google Maps Embed-URL',
           defaultValue:
-            'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25135.8!2d8.5864!3d52.1984!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47ba74da50b9f0e9%3A0x422e0d927eb334fc!2s32257%20B%C3%BCnde!5e0!3m2!1sde!2sde!4v1710000000000!5m2!1sde!2sde',
+            'https://www.google.com/maps?q=Rocketory,+Zimmerstra%C3%9Fe+16,+32257+B%C3%BCnde&hl=de&z=17&output=embed',
           admin: {
             description:
-              'Einbettungs-URL aus Google Maps → Teilen → Karte einbetten. Wird auf der Agentur-Seite unter „Über Bünde“ verwendet.',
+              'Einbettungs-URL mit Firmenpin (Rocketory, Zimmerstr. 16). Alternativ: Google Maps → Teilen → Karte einbetten. Wird auf Agentur / Bünde verwendet.',
           },
         },
         {
           name: 'googleMapsLinkUrl',
           type: 'text',
           label: 'Google Maps Link (neuer Tab)',
-          defaultValue: 'https://www.google.com/maps/search/?api=1&query=52.1984,8.5864',
+          defaultValue:
+            'https://www.google.com/maps/search/?api=1&query=Rocketory,+Zimmerstra%C3%9Fe+16,+32257+B%C3%BCnde',
         },
       ],
     },

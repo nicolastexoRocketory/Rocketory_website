@@ -76,10 +76,22 @@ if [[ -f scripts/ensure-email-settings-columns.mjs ]]; then
     || echo "WARN: Spalten-Check fehlgeschlagen" >&2
 fi
 
+if [[ -f scripts/ensure-contact-inquiry-reply-columns.mjs ]]; then
+  echo "==> ensure contact_inquiries reply columns"
+  node scripts/ensure-contact-inquiry-reply-columns.mjs ./payload.db \
+    || echo "WARN: Reply-Spalten-Check fehlgeschlagen" >&2
+fi
+
 if [[ "\$SKIP_SEED" != "1" && -f .env.production ]]; then
   echo "==> Blog-Posts synchronisieren (seed, vor Build)"
   NODE_OPTIONS=--no-deprecation ./node_modules/.bin/tsx --env-file=.env.production src/scripts/seed-posts.ts \
     || echo "WARN: seed fehlgeschlagen – Blog ggf. manuell aktualisieren" >&2
+fi
+
+# Mittnite PATH oft ohne node_modules/.bin → explizite Binaries, kein cross-env
+if [[ ! -x ./node_modules/.bin/next ]]; then
+  echo "ERROR: next fehlt nach npm ci – Abbruch" >&2
+  exit 1
 fi
 
 echo "==> Build + Start über mittnite"
@@ -88,24 +100,30 @@ cp package.json package.json.bak-deploy
 node <<'NODE'
 const fs = require('fs')
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+// Explizite Pfade: mittnite findet cross-env/next sonst oft nicht
 pkg.scripts.start =
-  'cross-env NODE_OPTIONS="--no-deprecation --max-old-space-size=4096" next build && cross-env NODE_OPTIONS=--no-deprecation next start'
+  'NODE_OPTIONS="--no-deprecation --max-old-space-size=4096" ./node_modules/.bin/next build && NODE_OPTIONS=--no-deprecation ./node_modules/.bin/next start'
 fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n')
 NODE
 
-MARKER="Ready in"
-BEFORE_LINES="\$(wc -l < "\$LOG_STDOUT" 2>/dev/null || echo 0)"
 mittnitectl job start node
 
 echo "==> Warte auf Ready …"
 for i in \$(seq 1 180); do
   if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ | grep -q '^200\$'; then
     echo "==> App antwortet"
-    # restore normal start script (build already done)
-    if [[ -f package.json.bak-deploy ]]; then
-      mv package.json.bak-deploy package.json
-      echo "==> package.json start wiederhergestellt"
-    fi
+    # dauerhaft ohne cross-env starten (mittnite-kompatibel)
+    node <<'NODE'
+const fs = require('fs')
+const bak = 'package.json.bak-deploy'
+const src = fs.existsSync(bak) ? bak : 'package.json'
+const pkg = JSON.parse(fs.readFileSync(src, 'utf8'))
+pkg.scripts.start = 'NODE_OPTIONS=--no-deprecation ./node_modules/.bin/next start'
+pkg.scripts.build = 'NODE_OPTIONS=--no-deprecation ./node_modules/.bin/next build'
+fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n')
+if (fs.existsSync(bak)) fs.unlinkSync(bak)
+console.log('start=', pkg.scripts.start)
+NODE
     curl -s -o /dev/null -w "homepage:%{http_code}\n" http://127.0.0.1:3000/ || true
     curl -s -o /dev/null -w "admin:%{http_code}\n" http://127.0.0.1:3000/admin || true
     curl -s -o /dev/null -w "form-settings:%{http_code}\n" http://127.0.0.1:3000/api/form-settings || true
@@ -119,9 +137,15 @@ for i in \$(seq 1 180); do
   sleep 5
 done
 
-# restore even on failure
+# restore even on failure – aber mittnite-sicheres start-Skript
 if [[ -f package.json.bak-deploy ]]; then
-  mv package.json.bak-deploy package.json
+  node <<'NODE'
+const fs = require('fs')
+const pkg = JSON.parse(fs.readFileSync('package.json.bak-deploy', 'utf8'))
+pkg.scripts.start = 'NODE_OPTIONS=--no-deprecation ./node_modules/.bin/next start'
+fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n')
+fs.unlinkSync('package.json.bak-deploy')
+NODE
 fi
 echo "ERROR: Timeout – App nicht bereit. Logs:" >&2
 tail -n 80 "\$LOG_STDOUT" >&2 || true

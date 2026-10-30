@@ -27,13 +27,14 @@ Beispiel:
 SKIP_SEED=1 npm run deploy
 ```
 
-Schema-Fixes für Turnstile/E-Mail-Felder laufen automatisch über `scripts/ensure-email-settings-columns.mjs` (ohne interaktive Payload-Migration).
+Schema-Fixes für Turnstile/E-Mail-Felder und KI-Check-Antwort-Felder laufen automatisch über `scripts/ensure-email-settings-columns.mjs` bzw. `scripts/ensure-contact-inquiry-reply-columns.mjs` (ohne interaktive Payload-Migration).
 
 ## Checks nach dem Deploy
 
 - https://rocketory.de/
 - https://rocketory.de/admin
 - https://rocketory.de/api/form-settings (Turnstile Site Keys)
+- Admin → Kontaktanfrage öffnen → Tab **Antwort senden** → Felder ausfüllen → **Bericht senden** (braucht aktives SMTP unter E-Mail & SMTP)
 
 ## Hinweise
 

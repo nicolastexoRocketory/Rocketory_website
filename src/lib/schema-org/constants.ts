@@ -48,15 +48,19 @@ export const LEGAL_ADDRESS = {
   addressCountry: 'DE',
 }
 
-/** Geo näher an Zimmerstr. 16, Bünde (Büro). */
+/** Geo Zimmerstr. 16, Bünde (Büro Remise / Nominatim). */
 export const GEO_BUNDE = {
   '@type': 'GeoCoordinates' as const,
-  latitude: 52.1972,
-  longitude: 8.5839,
+  latitude: 52.2063142,
+  longitude: 8.5911147,
 }
 
+/** Google Maps: Firmenpin Rocketory (Büroadresse). */
+export const MAPS_EMBED_URL =
+  'https://www.google.com/maps?q=Rocketory,+Zimmerstra%C3%9Fe+16,+32257+B%C3%BCnde&hl=de&z=17&output=embed'
+
 export const MAPS_URL =
-  'https://www.google.com/maps/search/?api=1&query=Zimmerstr.+16,+32257+B%C3%BCnde'
+  'https://www.google.com/maps/search/?api=1&query=Rocketory,+Zimmerstra%C3%9Fe+16,+32257+B%C3%BCnde'
 
 export const LOCATION_OG_IMAGE = '/assets/images/buende/buende-a30.webp'
 

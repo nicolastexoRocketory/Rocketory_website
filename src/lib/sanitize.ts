@@ -109,7 +109,13 @@ export function sanitizeGoogleMapsUrl(
 
   if (kind === 'embed') {
     if (!embedHosts.has(host)) return ''
-    if (!url.pathname.startsWith('/maps/embed')) return ''
+    const isPbEmbed = url.pathname.startsWith('/maps/embed')
+    // Named place search embed: /maps?q=Rocketory+…&output=embed
+    const isQueryEmbed =
+      (url.pathname === '/maps' || url.pathname === '/maps/') &&
+      url.searchParams.get('output') === 'embed' &&
+      Boolean(url.searchParams.get('q')?.trim())
+    if (!isPbEmbed && !isQueryEmbed) return ''
   } else if (!linkHosts.has(host)) {
     return ''
   }

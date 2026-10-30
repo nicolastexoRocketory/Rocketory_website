@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
+import { sendKiCheckReportEndpoint } from '@/collections/endpoints/sendKiCheckReport'
 import { sendContactInquiryNotification } from '@/lib/contact-mail'
 
 const STATUS_OPTIONS = [
@@ -33,6 +34,7 @@ export const ContactInquiries: CollectionConfig = {
     update: ({ req }) => Boolean(req.user),
     delete: ({ req }) => Boolean(req.user),
   },
+  endpoints: [sendKiCheckReportEndpoint],
   hooks: {
     beforeChange: [
       ({ data }) => {
@@ -208,6 +210,91 @@ export const ContactInquiries: CollectionConfig = {
               type: 'text',
               label: 'Browser / User-Agent',
               admin: { readOnly: true },
+            },
+          ],
+        },
+        {
+          label: 'Antwort senden',
+          description:
+            'Personalisierter KI-Check-Analysebericht per E-Mail. Empfänger und Felder kannst du vor dem Versand anpassen.',
+          fields: [
+            {
+              name: 'replyRecipientEmail',
+              type: 'email',
+              label: 'Empfänger-E-Mail',
+              admin: {
+                description: 'Wird beim Öffnen mit der Anfrage-Mail vorausgefüllt – jederzeit änderbar.',
+              },
+            },
+            {
+              name: 'replyRecipientName',
+              type: 'text',
+              label: 'Anrede / Name',
+            },
+            {
+              name: 'replySubject',
+              type: 'text',
+              label: 'Betreff',
+              defaultValue: 'Dein KI-Check-Analysebericht – Rocketory',
+            },
+            {
+              name: 'replyWebsite',
+              type: 'text',
+              label: 'Webseite',
+            },
+            {
+              name: 'replyAiAssessment',
+              type: 'textarea',
+              label: 'Einschätzung KI-Einsatz',
+              admin: {
+                description: 'z. B. „Keine KI erkennbar“ oder eine kurze Begründung.',
+              },
+            },
+            {
+              name: 'replyLabelingAssessment',
+              type: 'textarea',
+              label: 'Einschätzung Kennzeichnung',
+            },
+            {
+              name: 'replyReportBody',
+              type: 'textarea',
+              label: 'Empfehlungen / Bericht',
+              admin: {
+                description: 'Haupttext des Analyseberichts an den Kunden.',
+                rows: 10,
+              },
+            },
+            {
+              name: 'replyNextStep',
+              type: 'textarea',
+              label: 'Nächster Schritt (optional)',
+              admin: {
+                description: 'z. B. Gesprächsangebot oder konkreter Handlungsvorschlag.',
+              },
+            },
+            {
+              name: 'replySentAt',
+              type: 'date',
+              label: 'Zuletzt gesendet am',
+              admin: {
+                readOnly: true,
+                date: { pickerAppearance: 'dayAndTime' },
+              },
+            },
+            {
+              name: 'replySentTo',
+              type: 'text',
+              label: 'Zuletzt gesendet an',
+              admin: { readOnly: true },
+            },
+            {
+              name: 'sendKiCheckReport',
+              type: 'ui',
+              admin: {
+                components: {
+                  Field: '@/components/admin/SendKiCheckReport#SendKiCheckReport',
+                },
+              },
             },
           ],
         },
