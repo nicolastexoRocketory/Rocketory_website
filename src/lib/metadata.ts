@@ -5,8 +5,9 @@ import { parseLegacySchemaJson } from './build-default-post-schema'
 import { getBlogLegacyPage, getLegacyPage, getLegacyPageLead } from './legacy-page'
 import { getPostHeroImage } from './posts'
 import { getProjectHeroImage } from './projects'
+import { SITE_URL } from './site-url'
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://rocketory.de'
+export { SITE_URL }
 export const SITE_NAME = 'Rocketory'
 
 /** Startseite & site-weiter Fallback (140–160 Zeichen, H1 bleibt eigenständig). */

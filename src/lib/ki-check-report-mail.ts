@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
 import type { Payload } from 'payload'
 
-import { SITE_URL } from '@/lib/metadata'
+import { SITE_URL } from '@/lib/site-url'
 import { toPlainText, toPlainTextMultiline } from '@/lib/sanitize'
 import type { EmailSetting } from '@/payload-types'
 
